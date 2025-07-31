@@ -25,3 +25,11 @@ spring:
     servlet:
       multipart:
         enabled: true
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: prometheus, health , info
+    metrics:
+      tags:
+        application: ${spring.application.name}

@@ -29,6 +29,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
     implementation 'org.mariadb.jdbc:mariadb-java-client'
 

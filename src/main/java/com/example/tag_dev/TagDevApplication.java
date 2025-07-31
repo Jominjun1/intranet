@@ -12,11 +12,6 @@ public class TagDevApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(TagDevApplication.class, args);
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String rawPassword = "admin1234!";
-        String encodedPassword = encoder.encode(rawPassword);
-
-        System.out.println("Encoded password: " + encodedPassword);
     }
 
     @Bean
