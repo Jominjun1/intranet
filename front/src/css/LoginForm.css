@@ -1,0 +1,261 @@
+.login-bg-bizon {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  overflow: hidden;
+  z-index: 1000;
+  padding: 0;
+}
+
+.login-text-bizon {
+  position: absolute;
+  left: 10%;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  max-width: 500px;
+  text-align: left;
+  z-index: 2;
+}
+
+.login-text-bizon h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  line-height: 1.3;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.login-text-bizon p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.login-card-bizon {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 0;
+  box-shadow: -8px 0 32px 0 rgba(31, 38, 135, 0.15);
+  padding: 42px 47px 31px 47px;
+  width: 520px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: slideInFromRight 0.8s ease-out;
+  margin: 0;
+  position: relative;
+  overflow-y: auto;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes slideInFromRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(100%); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.login-header-bizon {
+  text-align: center;
+  margin-bottom: 20px;
+  animation: fadeIn 0.7s 0.3s both;
+}
+
+.login-logo-bizon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
+}
+
+.login-header-bizon h2 {
+  color: #1a237e;
+  font-size: 1.95rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.login-header-bizon p {
+  color: #5c6bc0;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.login-form-bizon {
+  width: 100%;
+  margin-bottom: 12px;
+  animation: fadeIn 0.7s 0.5s both;
+}
+
+.input-bizon .el-input__wrapper {
+  border-radius: 8px;
+  border: 1.5px solid #b6c6e3;
+  background: #fafdff;
+  transition: border 0.2s;
+}
+
+.input-bizon .el-input__wrapper:focus-within {
+  border: 1.5px solid #1976d2;
+  background: #fff;
+}
+
+.login-btn-bizon {
+  font-size: 1.43rem;
+  font-weight: 600;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #1976d2 0%, #2196f3 100%);
+  border: none;
+  color: #fff;
+  transition: box-shadow 0.2s, background 0.2s;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
+}
+
+.login-btn-bizon:hover {
+  background: linear-gradient(90deg, #1565c0 0%, #1976d2 100%);
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.15);
+}
+
+.login-options-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.remember-id-item {
+  margin-bottom: 8px;
+  margin-top: 4px;
+}
+
+.remember-id-checkbox {
+  font-size: 0.9rem;
+  color: #5c6bc0;
+  font-weight: 500;
+}
+
+.remember-id-checkbox :deep(.el-checkbox__label) {
+  color: #5c6bc0;
+  font-weight: 500;
+}
+
+.remember-id-checkbox :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+  background-color: #1976d2;
+  border-color: #1976d2;
+}
+
+.remember-id-checkbox :deep(.el-checkbox__input.is-checked + .el-checkbox__label) {
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.login-links-bizon {
+  display: flex;
+  justify-content: right;
+  width: auto;
+  margin: 0;
+  animation: fadeIn 0.7s 0.7s both;
+}
+
+.login-footer-bizon {
+  text-align: center;
+  color: #b6c6e3;
+  font-size: 0.9rem;
+  margin-top: 12px;
+  animation: fadeIn 0.7s 0.9s both;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .login-bg-bizon {
+    padding: 0;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .login-text-bizon {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    text-align: center;
+    margin-bottom: 30px;
+    max-width: 90vw;
+    padding: 20px;
+  }
+  
+  .login-text-bizon h1 {
+    font-size: 1.8rem;
+  }
+  
+  .login-text-bizon p {
+    font-size: 1rem;
+  }
+  
+  .login-card-bizon {
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    padding: 20px 16px 16px 16px;
+    border-radius: 0;
+    animation: slideInFromBottom 0.8s ease-out;
+  }
+  
+  @keyframes slideInFromBottom {
+    from { 
+      opacity: 0; 
+      transform: translateY(100%); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+  
+  .login-header-bizon h2 {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card-bizon {
+    padding: 16px 12px 12px 12px;
+  }
+  
+  .login-text-bizon h1 {
+    font-size: 1.5rem;
+  }
+  
+  .login-text-bizon p {
+    font-size: 0.9rem;
+  }
+} 

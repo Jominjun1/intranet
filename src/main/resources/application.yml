@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3307/intra_web_dev
+    username: root
+    password: mmin0307@
+  security:
+    user:
+      name: teiaDevMin
+      password: mmin0307@
+    jwt:
+      token:
+        secret-key: "CREATE$<TEIA_MMIN_2025>$/v'@'v/JWT_TOKEN_SECRET_KEYS"
+        expire-length: 3600000
+      issuer: TAG_DEV
+  jpa:
+    generate-ddl: true
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.MariaDBDialect
+    upload:
+      photo:
+        images: src/main/resources/static/images
+    servlet:
+      multipart:
+        enabled: true
