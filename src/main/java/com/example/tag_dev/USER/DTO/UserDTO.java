@@ -15,10 +15,8 @@ public class UserDTO {
     private String login_id;
     private String password;
     private String dept_cd;
-    private String user_level;
     private String user_job;
     private String user_stat;
-    private String lang_cd;
     private Long reg_id;
     private Date reg_dt;
     private Long update_id;
@@ -27,5 +25,4 @@ public class UserDTO {
     private Date hire_dt;
     private Date change_password_dt;
     private Long fail_login_cnt;
-    private String total_vac_dt;
 }

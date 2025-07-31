@@ -67,7 +67,7 @@ public class UserService {
 
                 userLog.setLoginId(user.getLoginId());
                 userLog.setStatus("성공");
-                userLog.setIp_addr(request.getHeader("X-Forwarded-For"));
+                userLog.setIp_addr(getClientIP(request));
                 userLog.setHttp_refr(request.getHeader("referer"));
                 userLog.setRegDt(new Date());
 
@@ -83,7 +83,7 @@ public class UserService {
                 ));
             } else{
                 System.out.println("[로그인] 비밀번호 불일치, 로그인 실패");
-                Long failCount = user.getFail_login_cnt() != null ? user.getFail_login_cnt(): 0L;
+                long failCount = user.getFail_login_cnt() != null ? user.getFail_login_cnt(): 0L;
                 failCount++;
                 user.setFail_login_cnt(failCount);
                 if(failCount >=5 ){
@@ -93,7 +93,7 @@ public class UserService {
 
                     userLog.setLoginId(user.getLoginId());
                     userLog.setStatus("잠김");
-                    userLog.setIp_addr(request.getHeader("X-Forwarded-For"));
+                    userLog.setIp_addr(getClientIP(request));
                     userLog.setHttp_refr(request.getHeader("referer"));
                     userLog.setRegDt(new Date());
 
@@ -105,7 +105,7 @@ public class UserService {
 
                 userLog.setLoginId(user.getLoginId());
                 userLog.setStatus("실패");
-                userLog.setIp_addr(request.getHeader("X-Forwarded-For"));
+                userLog.setIp_addr(getClientIP(request));
                 userLog.setHttp_refr(request.getHeader("referer"));
                 userLog.setRegDt(new Date());
 
@@ -135,7 +135,7 @@ public class UserService {
 
                 userLog.setLoginId(user.getLoginId());
                 userLog.setStatus("로그아웃");
-                userLog.setIp_addr(request.getHeader("X-Forwarded-For"));
+                userLog.setIp_addr(getClientIP(request));
                 userLog.setHttp_refr(request.getHeader("referer"));
                 userLog.setRegDt(new Date());
 
@@ -179,7 +179,7 @@ public class UserService {
 
         UserLog userLog = new UserLog();
         userLog.setLoginId(user.getLoginId());
-        userLog.setIp_addr(request.getHeader("X-Forwarded-For"));
+        userLog.setIp_addr(getClientIP(request));
         userLog.setHttp_refr(request.getHeader("referer"));
         userLog.setRegDt(new Date());
         userLog.setStatus("회원가입");
@@ -221,10 +221,6 @@ public class UserService {
                 user.setDept_cd(user.getDept_cd());
                 isUpdated = true;
             }
-            if (userDto.getUser_level() != null && !userDto.getUser_level().isEmpty()) {
-                user.setUser_level(user.getUser_level());
-                isUpdated = true;
-            }
             if (userDto.getUser_job() != null && !userDto.getUser_job().isEmpty()) {
                 user.setUser_job(user.getUser_job());
                 isUpdated = true;
@@ -233,16 +229,8 @@ public class UserService {
                 user.setUser_stat(user.getUser_stat());
                 isUpdated = true;
             }
-            if (userDto.getLang_cd() != null && !userDto.getLang_cd().isEmpty()) {
-                user.setLang_cd(user.getLang_cd());
-                isUpdated = true;
-            }
             if (userDto.getHire_dt() != null) {
                 user.setHire_dt(user.getHire_dt());
-                isUpdated = true;
-            }
-            if (userDto.getTotal_vac_dt() != null && !userDto.getTotal_vac_dt().isEmpty()) {
-                user.setTotal_vac_dt(user.getTotal_vac_dt());
                 isUpdated = true;
             }
 
@@ -349,11 +337,9 @@ public class UserService {
             user.setUserEmail(userDTO.getUser_email());
             user.setUserPhoneNum(userDTO.getUser_phone_num());
             user.setDept_cd(userDTO.getDept_cd());
-            user.setUser_level(userDTO.getUser_level());
             user.setUser_job(userDTO.getUser_job());
             user.setUser_acl(String.valueOf(userDTO.getUser_acl()));
             user.setUser_stat(userDTO.getUser_stat());
-            user.setLang_cd(userDTO.getLang_cd());
             user.setHire_dt(userDTO.getHire_dt());
             user.setReg_dt(new Date());
             user.setReg_id(jwtTokenProvider.extractUserId(token));
@@ -513,25 +499,23 @@ public class UserService {
         }
     }
 
-    // 부서 삭제 ( 관리자 기능 )
-    public ResponseEntity<?> deleteDept(String token , String deptCode) {
-        if (!jwtTokenProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    // IP 변환 메소드
+    public static String getClientIP(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip.split(",")[0].trim();
         }
 
-        try{
-            deptRepository.deleteByDeptCode(deptCode);
-            DeptLog deptLog = new DeptLog();
-            deptLog.setDeptCode(deptCode);
-            deptLog.setDeptStatus("부서 삭제");
-            deptLog.setUpdateDt(new Date());
-            deptLog.setUpdateUser(jwtTokenProvider.extractUserName(token));
-            deptLogRepository.save(deptLog);
-
-            return ResponseEntity.ok("부서 삭제 완료");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("부서 수정 중 오류가 발생: " + e.getMessage());
+        ip = request.getHeader("Proxy-Client-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
         }
+
+        ip = request.getHeader("WL-Proxy-Client-IP"); // WebLogic
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+        return request.getRemoteAddr();
     }
 
 }

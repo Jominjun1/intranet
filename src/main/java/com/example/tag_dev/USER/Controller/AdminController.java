@@ -100,26 +100,13 @@ public class AdminController {
         }
     }
 
-    // 부서 수정
+    // 부서 수정/삭제
     @PutMapping("/changeDept/{deptCode}")
     public ResponseEntity<?> updateDept(@PathVariable String deptCode, @RequestBody DeptDTO deptDTO, @RequestHeader("Authorization") String JwtToken) {
         try{
             log.info("부서 수정 요청 : {}", jwtTokenProvider.extractUserName(JwtToken));
             String token = JwtToken.substring(7);
             return ResponseEntity.ok(userService.updateDept(deptCode, token, deptDTO));
-        }catch (Exception e) {
-            log.info("에러 발생 : {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    // 부서 삭제
-    @DeleteMapping("/delete/{deptCode}")
-    public ResponseEntity<?> deleteDept(@PathVariable String deptCode, @RequestHeader("Authorization") String JwtToken) {
-        try{
-            log.info("삭제 요청 : {} " ,  jwtTokenProvider.extractUserName(JwtToken));
-            String token = JwtToken.substring(7);
-            return ResponseEntity.ok(userService.deleteDept(deptCode, token));
         }catch (Exception e) {
             log.info("에러 발생 : {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

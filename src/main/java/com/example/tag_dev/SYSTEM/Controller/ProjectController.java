@@ -50,7 +50,7 @@ public class ProjectController {
         }
     }
 
-    // 프로젝트 수정
+    // 프로젝트 수정/삭제
     @PostMapping("/update{projectCode}")
     public ResponseEntity<?> updateProject(@PathVariable String projectCode , @RequestHeader("Authorization") String JwtToken , @RequestBody ProjectDTO projectDTO) {
         try{

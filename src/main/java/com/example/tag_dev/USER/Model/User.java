@@ -37,11 +37,9 @@ public class User {
 
     private String password; // 로그인 비밀번호
     private String dept_cd; // 부서 코드
-    private String user_level; // 사용자 직급
-    private String user_job; // 사용자 직책
+    private String user_job; // 사용자 직책 ( 사원 , 대리 등 )
     private String user_stat; // 사용자 상태
 
-    private String lang_cd; // 언어 코드
     private Long reg_id; // 등록한 사용자 ID
     private Date reg_dt; // 등록일자
     private Long update_id; // 수정한 사용자 ID
@@ -50,7 +48,6 @@ public class User {
     private Date hire_dt; // 입사일자
     private Date change_password_dt; // 비밀번호 변경 일자
     private Long fail_login_cnt; // 실패한 로그인 횟수
-    private String total_vac_dt; // 전체 휴가 일수
 
     private String jwt_token; // JWT 토큰
     private Date jwt_expiry_pt; // JWT 만료일자

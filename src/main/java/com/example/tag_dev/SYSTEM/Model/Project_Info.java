@@ -19,6 +19,7 @@ public class Project_Info {
     private String project_name; // 프로젝트 명
     private String project_leader; // 프로젝트 PM
     private String project_category; // 프로젝트 유형
+    private String del_yn; // 삭제여부
     private String customer; // 고객사
     private String region; // 지역
     private String deptCd; // 담당 부서

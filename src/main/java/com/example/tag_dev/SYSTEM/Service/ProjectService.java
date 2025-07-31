@@ -30,6 +30,7 @@ public class ProjectService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    // 프로젝트 생성
     public ResponseEntity<?> createProject(String token , ProjectDTO projectDTO) {
         if(!jwtTokenProvider.validateToken(token)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -51,6 +52,7 @@ public class ProjectService {
             project_Info.setProject_name(projectDTO.getProject_name());
             project_Info.setProject_status(projectDTO.getProject_status());
             project_Info.setProject_leader(projectDTO.getProject_leader());
+            project_Info.setDel_yn("N");
             project_Info.setProject_status(projectDTO.getProject_status());
             project_Info.setCustomer(projectDTO.getCustomer());
             project_Info.setDeptCd(projectDTO.getDeptCd());
@@ -66,6 +68,7 @@ public class ProjectService {
             projectLog.setProject_status(project_Info.getProject_status());
             projectLog.setCustomer(project_Info.getCustomer());
             projectLog.setDeptCd(project_Info.getDeptCd());
+            projectLog.setDel_yn(project_Info.getDel_yn());
             projectLog.setStartDt(project_Info.getStartDt());
             projectLog.setEndDt(project_Info.getEndDt());
             projectLog.setRegion(project_Info.getRegion());
@@ -80,6 +83,7 @@ public class ProjectService {
         }
     }
 
+    // 프로젝트 조회
     public ResponseEntity<?> getAllProject(String token){
         if(!jwtTokenProvider.validateToken(token)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -88,6 +92,7 @@ public class ProjectService {
         return ResponseEntity.ok(projects);
     }
 
+    // 프로젝트 수정/삭제
     public ResponseEntity<?> updateProject( String projectCode, String token, ProjectDTO projectDTO) {
         if(!jwtTokenProvider.validateToken(token)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -107,6 +112,10 @@ public class ProjectService {
             }
             if(projectDTO.getProject_status() != null && !projectDTO.getProject_status().isEmpty()){
                 projectInfo.setProject_status(projectDTO.getProject_status());
+                isUpdated = true;
+            }
+            if(projectDTO.getDelYn() != null && !projectDTO.getDelYn().isEmpty()){
+                projectInfo.setDel_yn(projectDTO.getDelYn());
                 isUpdated = true;
             }
             if(projectDTO.getCustomer() != null && !projectDTO.getCustomer().isEmpty()){
@@ -150,11 +159,12 @@ public class ProjectService {
                 projectLog.setStartDt(projectInfo.getStartDt());
                 projectLog.setEndDt(projectInfo.getEndDt());
                 projectLog.setRegion(projectInfo.getRegion());
+                projectLog.setDel_yn(projectInfo.getDel_yn());
                 projectLog.setUserName(jwtTokenProvider.extractUserName(token));
                 projectLog.setRegDt(new Date());
                 projectLogRepository.save(projectLog);
 
-                return ResponseEntity.ok("프로젝트 정보 수정 완료");
+                return ResponseEntity.ok("프로젝트 정보 수정/삭제 완료");
             } else{
                 return ResponseEntity.ok("수정할 내용 없음");
             }
