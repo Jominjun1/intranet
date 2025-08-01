@@ -82,7 +82,6 @@ public class UserService {
                         "user_email" , user.getUserEmail()
                 ));
             } else{
-                System.out.println("[로그인] 비밀번호 불일치, 로그인 실패");
                 long failCount = user.getFail_login_cnt() != null ? user.getFail_login_cnt(): 0L;
                 failCount++;
                 user.setFail_login_cnt(failCount);
@@ -161,35 +160,9 @@ public class UserService {
         return userRepository.findByUserNameAndLoginIdAndUserEmailAndUserPhoneNum(userDTO.getUser_name() , userDTO.getLogin_id() , userDTO.getUser_email() , userDTO.getUser_phone_num());
     }
 
-    // 회원 가입
-    public ResponseEntity<?> register(UserDTO userDTO , HttpServletRequest request) {
-        if(userRepository.findByLoginId(userDTO.getLogin_id()).isPresent()){
-            throw new IllegalArgumentException("이미 사용중인 로그인 ID");
-        }
-        User user = new User();
-        user.setUserName(userDTO.getUser_name());
-        user.setUser_en_name(userDTO.getUser_en_name());
-        user.setLoginId(userDTO.getLogin_id());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        user.setUserEmail(userDTO.getUser_email());
-        user.setUserPhoneNum(userDTO.getUser_phone_num());
-        user.setUser_stat("PENDING");
-
-        userRepository.save(user);
-
-        UserLog userLog = new UserLog();
-        userLog.setLoginId(user.getLoginId());
-        userLog.setIp_addr(getClientIP(request));
-        userLog.setHttp_refr(request.getHeader("referer"));
-        userLog.setRegDt(new Date());
-        userLog.setStatus("회원가입");
-        userLogRepository.save(userLog);
-
-        return ResponseEntity.ok(user);
-    }
 
     // ====================================== 관리자 관련 =====================================//
-    // 사용자 업데이트 ( 관리자 기능 )
+    // 사용자 수정/삭제 ( 관리자 기능 )
     public ResponseEntity<?> updateUserInfo(String userId, UserDTO userDto, String jwtToken) {
         if(!jwtTokenProvider.validateToken(jwtToken)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -231,6 +204,10 @@ public class UserService {
             }
             if (userDto.getHire_dt() != null) {
                 user.setHire_dt(user.getHire_dt());
+                isUpdated = true;
+            }
+            if( userDto.getDelYn() != null && !userDto.getDelYn().isEmpty()){
+                user.setDelYn(user.getDelYn());
                 isUpdated = true;
             }
 
@@ -359,26 +336,7 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 생성 중 오류가 발생: " + e.getMessage());
         }
     }
-    // 사용자 삭제 ( 관리자 기능 )
-    public ResponseEntity<?> deleteUser(String loginId, String token) {
-        if (!jwtTokenProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        try {
-            userRepository.deleteByLoginId(loginId);
-            UserLog userLog = new UserLog();
-            userLog.setLoginId(loginId);
-            userLog.setStatus("삭제됨");
-            userLog.setUpdate_dt(new Date());
-            userLog.setUpdate_id(jwtTokenProvider.extractUserId((token)));
-            userLogRepository.save(userLog);
-
-            return ResponseEntity.ok("사용자가 삭제 완료.");
-        }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 삭제 중 오류가 발생: " + e.getMessage());
-        }
-    }
-
+    
     // 사용자 비밀번호 변경 ( 관리자 기능 )
     public ResponseEntity<?> changeUserPasswordByAdmin(String loginId, UserDTO userDTO, String token) {
         if (!jwtTokenProvider.validateToken(token)) {
@@ -453,7 +411,7 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("부서 수정 중 오류가 발생: " + e.getMessage());
         }
     }
-    // 부서 수정 ( 관리자 기능 )
+    // 부서 수정/삭제 ( 관리자 기능 )
     public ResponseEntity<?> updateDept(String deptCode, String token , DeptDTO deptDTO) {
         if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -474,6 +432,10 @@ public class UserService {
                 deptInfo.setDeptStatus(deptDTO.getDeptStatus());
                 isUpdated = true;
             }
+            if(deptDTO.getDelYn() != null && !deptDTO.getDelYn().trim().isEmpty()){
+                deptInfo.setDel_yn(deptDTO.getDelYn());
+                isUpdated = true;
+            }
             if(isUpdated){
                 deptInfo.setUpdateDt(new Date());
                 deptInfo.setUpdateUser(jwtTokenProvider.extractUserName(token));
@@ -485,6 +447,7 @@ public class UserService {
                 deptLog.setDeptStatus(deptDTO.getDeptStatus());
                 deptLog.setRegDt(deptDTO.getRegDt());
                 deptLog.setUserName(deptDTO.getUserName());
+                deptLog.setDel
                 deptLog.setUserName(jwtTokenProvider.extractUserName(token));
                 deptLog.setUpdateDt(new Date());
                 deptLog.setUpdateUser(jwtTokenProvider.extractUserName(token));

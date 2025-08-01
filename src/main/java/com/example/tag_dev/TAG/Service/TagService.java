@@ -52,7 +52,7 @@ public class TagService {
         this.versionInfoLog = versionInfoLog;
         this.commonLogRepo = commonLogRepo;
     }
-
+    // 조회 (필터 - Mac주소 , 시리얼번호 , 공장코드 , 삭제 여부 )
     public ResponseEntity<?> getTagInventoryList(String macAddr, String facCd, String facNo, String delFilter) {
         try {
             // 검색 조건이 없으면 빈 배열 반환
@@ -85,9 +85,7 @@ public class TagService {
                     }
                 } else {
                     // common이 null이어도 검색 조건이 없으면 포함
-                    if (hasSearchCondition) {
-                        continue;
-                    }
+                    continue;
                 }
                 Map<String, Object> row = new HashMap<>();
                 row.put("tagNo", basic.getTagNo());
@@ -101,15 +99,9 @@ public class TagService {
                 row.put("macDupYn", basic.getMAC_DUP_YN());
                 
                 // common 정보가 있으면 추가
-                if (common != null) {
-                    row.put("macAddr", common.getMacAddr());
-                    row.put("facCd", common.getFacCd());
-                    row.put("facNo", common.getFacNo());
-                } else {
-                    row.put("macAddr", null);
-                    row.put("facCd", null);
-                    row.put("facNo", null);
-                }
+                row.put("macAddr", common.getMacAddr());
+                row.put("facCd", common.getFacCd());
+                row.put("facNo", common.getFacNo());
                 Optional<Version_Info> ver = versionRepo.findAll().stream().filter(v -> v.getTagNo().equals(basic.getTagNo())).max(Comparator.comparing(Version_Info::getTAG_VER));
                 row.put("tagVer", ver.map(Version_Info::getTAG_VER).orElse("1.0"));
                 long asCount = prodAsRepo.findAll().stream()
@@ -125,6 +117,7 @@ public class TagService {
         }
     }
 
+    //
     public ResponseEntity<?> getProcStep(String tagNo) {
         try {
             Proc_Step result = procStepRepo.findAll().stream().filter(p -> tagNo.equals(p.getTagNo())).findFirst().orElse(null);
@@ -151,6 +144,7 @@ public class TagService {
                 setting.setFW_VER(dto.getFW_VER());
                 setting.setUPDATE_DT(new Date());
                 setting.setUPDATE_ID(dto.getUPDATE_ID());
+                setting.setDelYn(dto.getDelYn());
                 settingRepo.save(setting);
 
                 SettingInfoLog settingInfoLog = new SettingInfoLog();
@@ -160,7 +154,11 @@ public class TagService {
                 settingInfoLog.setUPDATE_ID(dto.getUPDATE_ID());
                 settingInfoLog.setUPDATE_DT(new Date());
                 settingInfoLog.setUPDATE_ID(dto.getUPDATE_ID());
-                settingInfoLog.setLogType("UPDATE");
+                if(Objects.equals(dto.getDelYn(), "Y")){
+                    settingInfoLog.setLogType("삭제");
+                }else {
+                    settingInfoLog.setLogType("수정");
+                }
                 settingLogRepo.save(settingInfoLog);
 
                 Optional<Version_Info> verOpt = versionRepo.findAll().stream().filter(v -> v.getTagNo().equals(tagNo)).max(Comparator.comparing(Version_Info::getTAG_VER));
@@ -175,6 +173,9 @@ public class TagService {
                 newVersion.setTAG_VER(newVer);
                 newVersion.setCREATE_DT(new Date());
                 newVersion.setCREATE_ID(dto.getUPDATE_ID());
+                if(Objects.equals(dto.getDelYn(), "Y")){
+                    newVersion.setDelYn("Y");
+                }
                 versionRepo.save(newVersion);
 
                 VersionInfoLog versionInfoLog = new VersionInfoLog();
@@ -184,7 +185,11 @@ public class TagService {
                 versionInfoLog.setCreateDt(newVersion.getCREATE_DT());
                 versionInfoLog.setUPDATE_ID(newVersion.getUPDATE_ID());
                 versionInfoLog.setUPDATE_DT(new Date());
-                versionInfoLog.setLogType("UPDATE");
+                if(Objects.equals(dto.getDelYn(), "Y")){
+                    versionInfoLog.setLogType("삭제");
+                }else {
+                    versionInfoLog.setLogType("수정");
+                }
             }
             return ResponseEntity.ok(setting);
         } catch (Exception e) {
@@ -213,6 +218,7 @@ public class TagService {
                     asMap.put("create_ID", as.getCREATE_ID());
                     asMap.put("update_DT", as.getUPDATE_DT());
                     asMap.put("update_ID", as.getUPDATE_ID());
+                    asMap.put("del_yn", as.getDelYn());
                     Common_Info common = commons.stream()
                         .filter(c -> tagNo.equals(
                             (c.getMacAddr() != null ? c.getMacAddr().replace(":", "") : "") +
@@ -245,6 +251,7 @@ public class TagService {
             newAs.setCREATE_ID((String) dto.get("updateId"));
             newAs.setUPDATE_DT(new Date());
             newAs.setUPDATE_ID((String) dto.get("updateId"));
+            newAs.setDelYn("N");
             List<Prod_As> existingAs = prodAsRepo.findAll().stream()
                 .filter(as -> tagNo.equals(as.getTagNo()))
                 .toList();
@@ -264,7 +271,7 @@ public class TagService {
             prodAsLog.setUPDATE_DT(new Date());
             prodAsLog.setUPDATE_ID(saved.getUPDATE_ID());
             prodAsLog.setUPDATE_ID(saved.getUPDATE_ID());
-            prodAsLog.setLogType("CREATE");
+            prodAsLog.setLogType("생성");
             prodAsLog.setTagNo(saved.getTagNo());
 
             prodAsLogRepo.save(prodAsLog);
@@ -307,7 +314,11 @@ public class TagService {
                     prodAsLog.setUPDATE_DT(new Date());
                     prodAsLog.setUPDATE_ID(saved.getUPDATE_ID());
                     prodAsLog.setUPDATE_ID(saved.getUPDATE_ID());
-                    prodAsLog.setLogType("UPDATE");
+                    if(Objects.equals(saved.getDelYn(), "Y")){
+                        prodAsLog.setLogType("삭제");
+                    }else {
+                        prodAsLog.setLogType("수정");
+                    }
                     prodAsLog.setTagNo(saved.getTagNo());
 
                     prodAsLogRepo.save(prodAsLog);

@@ -24,7 +24,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
         Long userId = jwtTokenProvider.extractUserId(token);
         session.getAttributes().put("userId", userId);
-
         System.out.println("웹소켓 연결됨: " + userId);
     }
 

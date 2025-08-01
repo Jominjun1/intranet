@@ -70,17 +70,6 @@ public class UserController {
         }
     }
 
-    // 회원가입
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserDTO userDTO ,  HttpServletRequest request){
-        try{
-            log.info("회원 가입 요청 : {}", userDTO.getLogin_id());
-            return ResponseEntity.ok(userService.register(userDTO , request));
-        } catch (Exception e) {
-            log.info("에러 발생 : {}" , e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
 
     // 비밀번호 변경
     @PutMapping("/changePwd/{login_id}")

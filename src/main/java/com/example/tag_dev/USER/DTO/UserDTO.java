@@ -1,5 +1,6 @@
 package com.example.tag_dev.USER.DTO;
 
+import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.util.Date;
@@ -25,4 +26,5 @@ public class UserDTO {
     private Date hire_dt;
     private Date change_password_dt;
     private Long fail_login_cnt;
+    private String delYn;
 }
