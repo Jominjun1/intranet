@@ -62,14 +62,13 @@
     <!-- 테이블 영역 -->
     <div class="table-section">
       <el-table :data="paginatedData" style="width:100%" v-loading="loading">
-        <el-table-column prop="userId" label="사용자ID" width="100" />
-        <el-table-column prop="userName" label="이름" width="120" />
-        <el-table-column prop="loginId" label="로그인ID" width="120" />
-        <el-table-column prop="userEmail" label="이메일" width="200" />
-        <el-table-column prop="userPhoneNum" label="전화번호" width="130" />
-        <el-table-column prop="deptCd" label="부서코드" width="100" />
-        <el-table-column prop="userLevel" label="레벨" width="80" />
-        <el-table-column prop="userJob" label="직책" width="100" />
+        <el-table-column prop="user_id" label="사용자ID" width="100" />
+        <el-table-column prop="user_name" label="이름" width="120" />
+        <el-table-column prop="login_id" label="로그인ID" width="120" />
+        <el-table-column prop="user_email" label="이메일" width="200" />
+        <el-table-column prop="user_phone_num" label="전화번호" width="130" />
+        <el-table-column prop="dept_cd" label="부서코드" width="100" />
+        <el-table-column prop="user_job" label="직책" width="100" />
         <el-table-column prop="user_acl" label="권한" width="100">
           <template #default="{ row }">
             <el-tag :type="getAclType(row.user_acl)">
@@ -84,10 +83,9 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="langCd" label="언어" width="80" />
-        <el-table-column prop="hireDt" label="입사일" width="120">
+        <el-table-column prop="hire_dt" label="입사일" width="120">
           <template #default="{ row }">
-            {{ formatDate(row.hireDt) }}
+            {{ formatDate(row.hire_dt) }}
           </template>
         </el-table-column>
         <el-table-column label="작업" width="150">
@@ -199,9 +197,6 @@
         <el-form-item label="부서코드" prop="dept_cd">
           <el-input v-model="userForm.dept_cd" placeholder="부서코드를 입력하세요" />
         </el-form-item>
-        <el-form-item label="레벨" prop="user_level">
-          <el-input v-model="userForm.user_level" placeholder="레벨을 입력하세요" />
-        </el-form-item>
         <el-form-item label="직책" prop="user_job">
           <el-input v-model="userForm.user_job" placeholder="직책을 입력하세요" />
         </el-form-item>
@@ -221,9 +216,6 @@
             <el-option label="잠금" value="LOCK" />
             <el-option label="비활성" value="INACTIVE" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="언어" prop="lang_cd">
-          <el-input v-model="userForm.lang_cd" placeholder="언어코드를 입력하세요" />
         </el-form-item>
         <el-form-item label="입사일" prop="hire_dt">
           <el-date-picker v-model="userForm.hire_dt" type="date" placeholder="입사일을 선택하세요" />
@@ -290,9 +282,9 @@ const paginatedData = computed(() => {
 // 필터링된 데이터
 const filteredData = computed(() => {
   return users.value.filter(user => {
-    const matchesName = searchName.value ? user.userName?.includes(searchName.value) : true
-    const matchesLoginId = searchLoginId.value ? user.loginId?.includes(searchLoginId.value) : true
-    const matchesDeptCd = searchDeptCd.value ? user.deptCd?.includes(searchDeptCd.value) : true
+    const matchesName = searchName.value ? user.user_name?.includes(searchName.value) : true
+    const matchesLoginId = searchLoginId.value ? user.login_id?.includes(searchLoginId.value) : true
+    const matchesDeptCd = searchDeptCd.value ? user.dept_cd?.includes(searchDeptCd.value) : true
     const matchesAcl = searchAcl.value ? parseInt(user.user_acl)?.toString() === searchAcl.value : true
     const matchesStat = searchStat.value ? user.user_stat === searchStat.value : true
     return matchesName && matchesLoginId && matchesDeptCd && matchesAcl && matchesStat
@@ -308,11 +300,9 @@ const userForm = ref({
   user_email: '',
   user_phone_num: '',
   dept_cd: '',
-  user_level: '',
   user_job: '',
   user_acl: 1,
   user_stat: 'ACTIVE',
-  lang_cd: '',
   hire_dt: null
 })
 
@@ -400,10 +390,9 @@ async function loadUsers() {
     
     // 사용자 데이터 디버깅
     if (users.value.length > 0) {
-      console.log("첫 번째 사용자 데이터:", users.value[0])
-      console.log("hireDt 값:", users.value[0].hireDt, "타입:", typeof users.value[0].hireDt)
-      console.log("hire_dt 값:", users.value[0].hire_dt, "타입:", typeof users.value[0].hire_dt)
-      console.log("모든 키:", Object.keys(users.value[0]))
+          console.log("첫 번째 사용자 데이터:", users.value[0])
+    console.log("hire_dt 값:", users.value[0].hire_dt, "타입:", typeof users.value[0].hire_dt)
+    console.log("모든 키:", Object.keys(users.value[0]))
     }
     
 
@@ -455,8 +444,8 @@ async function deleteUser(user) {
     console.log('loginId 값:', user.loginId, '타입:', typeof user.loginId)
     console.log('login_id 값:', user.login_id, '타입:', typeof user.login_id)
     
-    // loginId 또는 login_id 중 사용 가능한 값 찾기
-    const loginId = user.loginId || user.login_id
+    // login_id 값 사용
+    const loginId = user.login_id
     
     // loginId가 null이거나 undefined인 경우 처리
     if (!loginId) {
@@ -465,7 +454,7 @@ async function deleteUser(user) {
     }
     
     await ElMessageBox.confirm(
-      `정말 사용자 "${user.userName}" (${loginId})을(를) 삭제하시겠습니까?`,
+      `정말 사용자 "${user.user_name}" (${loginId})을(를) 삭제하시겠습니까?`,
       '사용자 삭제 확인',
       {
         confirmButtonText: '삭제',
@@ -475,7 +464,7 @@ async function deleteUser(user) {
     )
     
     const token = sessionStorage.getItem('jwt_token')
-    await axios.delete(`/Admin/deleteUser${loginId}`, {
+    await axios.delete(`/Admin/deleteUser/${loginId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     
@@ -493,14 +482,13 @@ async function deleteUser(user) {
 function editUser(user) {
   isEditMode.value = true
   userForm.value = {
-    userId: user.userId,
-    user_name: user.userName || '',  user_en_name: user.user_en_name || '',
-    login_id: user.loginId || '',    password: '', // 비밀번호는 빈 값으로 초기화
-    user_email: user.userEmail || '',    user_phone_num: user.userPhoneNum || '',
-    dept_cd: user.deptCd || '',    user_level: user.userLevel || '',
-    user_job: user.userJob || '',    user_acl: user.user_acl || 1,
-    user_stat: user.user_stat || 'ACTIVE',    lang_cd: user.langCd || '',
-    hire_dt: user.hireDt || null
+    user_id: user.user_id,
+    user_name: user.user_name || '',  user_en_name: user.user_en_name || '',
+    login_id: user.login_id || '',    password: '', // 비밀번호는 빈 값으로 초기화
+    user_email: user.user_email || '',    user_phone_num: user.user_phone_num || '',
+    dept_cd: user.dept_cd || '',    user_job: user.user_job || '',
+    user_acl: user.user_acl || 1,    user_stat: user.user_stat || 'ACTIVE',
+    hire_dt: user.hire_dt || null
   }
   showAddUserForm.value = true
 }
@@ -530,7 +518,7 @@ async function saveUser() {
       const userDataForUpdate = { ...userForm.value }
       delete userDataForUpdate.password // 비밀번호는 별도로 처리했으므로 제거
       
-      await axios.put(`/Admin/update/${userForm.value.userId}`, userDataForUpdate, {
+      await axios.put(`/Admin/update/${userForm.value.user_id}`, userDataForUpdate, {
         headers: { Authorization: `Bearer ${token}` }
       })
       ElMessage.success('사용자 정보가 수정되었습니다.')
@@ -559,9 +547,8 @@ function resetUserForm() {
     user_name: '',  user_en_name: '',
     login_id: '',    password: '',
     user_email: '',    user_phone_num: '',
-    dept_cd: '',    user_level: '',
-    user_job: '',    user_acl: 1,
-    user_stat: 'ACTIVE',    lang_cd: '',
+    dept_cd: '',    user_job: '',
+    user_acl: 1,    user_stat: 'ACTIVE',
     hire_dt: null
   }
   isEditMode.value = false

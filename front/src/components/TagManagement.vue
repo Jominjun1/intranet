@@ -836,7 +836,7 @@ async function searchVersionHistory() {
   }
   try {
     const res = await axios.get(`/tags/version-history/${searchTagNo.value.trim()}`)
-    versionHistoryData.value = res.data.body || res.data
+    versionHistoryData.value = res.data.body || res.data || []
     if (!versionHistoryData.value || versionHistoryData.value.length === 0) {
       ElMessage.warning('해당 태그의 버전 이력이 없습니다.')
     }
@@ -853,7 +853,7 @@ async function searchCommonHistory() {
   }
   try {
     const res = await axios.get(`/tags/common_history/${searchTagNo.value.trim()}`)
-    commonHistoryData.value = res.data.body || res.data
+    commonHistoryData.value = res.data.body || res.data || []
     if (!commonHistoryData.value || commonHistoryData.value.length === 0) {
       ElMessage.warning('해당 태그의 공통정보가 없습니다.')
     }
@@ -904,7 +904,7 @@ async function showProcStep(tagNo) {
 async function showVersionHistory(tagNo) {
   try {
     const res = await axios.get(`/tags/version-history/${tagNo}`)
-    versionHistoryData.value = res.data.body || res.data
+    versionHistoryData.value = res.data.body || res.data || []
     versionHistoryVisible.value = true
   } catch (error) {
     ElMessage.error('버전 이력을 불러오는 중 오류가 발생했습니다.')
@@ -914,7 +914,7 @@ async function showVersionHistory(tagNo) {
 async function showCommonHistory(tagNo) {
   try {
     const res = await axios.get(`/tags/common_history/${tagNo}`)
-    commonHistoryData.value = res.data.body || res.data
+    commonHistoryData.value = res.data.body || res.data || []
     commonHistoryVisible.value = true
   } catch (error) {
     ElMessage.error('공통정보 이력을 불러오는 중 오류가 발생했습니다.')

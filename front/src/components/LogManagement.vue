@@ -385,54 +385,32 @@ async function loadLogs() {
   loading.value = true
   try {
     currentPage.value = 1 // 페이지 초기화
-    const params = {}
+    const params = {
+      type: selectedLogType.value
+    }
 
     if (dateRange.value && dateRange.value.length === 2) {
       params.startDate = dateRange.value[0]
       params.endDate = dateRange.value[1]
     }
 
-    let endpoint = ''
-    switch (selectedLogType.value) {
-      case 'user':
-        endpoint = '/logs/user'
-        break
-      case 'basic':
-        endpoint = '/logs/basic-info'
-        break
-      case 'common':
-        endpoint = '/logs/common-info'
-        break
-      case 'setting':
-        endpoint = '/logs/setting-info'
-        break
-      case 'proc':
-        endpoint = '/logs/proc-step'
-        break
-      case 'prod':
-        endpoint = '/logs/prod-as'
-        break
-      case 'version':
-        endpoint = '/logs/version-info'
-        break
-    }
-
-    const response = await axios.get(endpoint, { params })
+    const response = await axios.get('/Log/getLog', { params })
     
-    if (response.data && response.data.content) {
-      logs.value = response.data.content
-      total.value = response.data.totalElements
-    } else {
-      logs.value = response.data || []
-      total.value = logs.value.length
+    // 백엔드 응답 구조에 맞게 데이터 추출
+    let responseData = response.data
+    
+    // 응답이 래핑된 경우 body에서 추출
+    if (responseData && typeof responseData === 'object' && responseData.body !== undefined) {
+      responseData = responseData.body
     }
+    
+    logs.value = Array.isArray(responseData) ? responseData : []
 
     ElMessage.success('로그를 성공적으로 조회했습니다.')
   } catch (error) {
     console.error('로그 조회 오류:', error)
     ElMessage.error('로그 조회 중 오류가 발생했습니다.')
     logs.value = []
-    total.value = 0
   } finally {
     loading.value = false
   }

@@ -20,9 +20,9 @@
             class="input-bizon"
           />
         </el-form-item>
-        <el-form-item prop="password">
+        <el-form-item prop="user_pwd">
           <el-input
-            v-model="loginForm.password"
+            v-model="loginForm.user_pwd"
             type="password"
             placeholder="비밀번호를 입력하세요"
             prefix-icon="el-icon-lock"
@@ -117,7 +117,7 @@ import loginBg from '../image/login_img.jpg'
 import '../css/LoginForm.css'
 
 const emit = defineEmits(['login-success'])
-const loginForm = reactive({ login_id: '', password: '' })
+const loginForm = reactive({ login_id: '', user_pwd: '' })
 const findIdForm = reactive({ user_name: '', user_email: '', user_phone_num: '' })
 const findPasswordForm = reactive({ user_name: '', login_id: '', user_email: '', user_phone_num: '' })
 const loading = ref(false)
@@ -128,7 +128,7 @@ const rememberId = ref(false)
 
 const rules = {
   login_id: [{ required: true, message: '아이디를 입력하세요', trigger: 'blur' }],
-  password: [{ required: true, message: '비밀번호를 입력하세요', trigger: 'blur' }]
+  user_pwd: [{ required: true, message: '비밀번호를 입력하세요', trigger: 'blur' }]
 }
 
 // 저장된 아이디 불러오기
@@ -204,9 +204,11 @@ async function handleLogin() {
 
 async function findId() {
   try {
-    const response = await axios.get('/user/findID', { params: findIdForm })
+    const response = await axios.get(`/user/findID/${findIdForm.login_id}`, { 
+      data: findIdForm 
+    })
     if (response.data) {
-      ElMessage.success(`찾은 아이디: ${response.data.loginId}`)
+      ElMessage.success(`찾은 아이디: ${response.data.login_id}`)
     } else {
       ElMessage.warning('일치하는 정보가 없습니다.')
     }
@@ -218,7 +220,12 @@ async function findId() {
 
 async function findPassword() {
   try {
-    const response = await axios.put('/user/changePwd', findPasswordForm)
+    const token = sessionStorage.getItem('jwt_token')
+    const response = await axios.put(`/user/changePwd/${findPasswordForm.login_id}`, {
+      user_pwd: findPasswordForm.user_pwd
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
     ElMessage.success('비밀번호 변경 요청이 완료되었습니다.')
     showFindPassword.value = false
   } catch (error) {
