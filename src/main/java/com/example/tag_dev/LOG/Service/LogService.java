@@ -34,12 +34,6 @@ public class LogService {
 
     // 로그 조회 ( 동적 )
     public ResponseEntity<?> searchLog(String type) {
-        switch(type.toLowerCase()) {
-            case "user":
-                return userLogRepository.findAll();
-                break;
-            case "project":
-                return procStepLogRepository.findAll();
-        }
+        return ResponseEntity.ok().build();
     }
 }
