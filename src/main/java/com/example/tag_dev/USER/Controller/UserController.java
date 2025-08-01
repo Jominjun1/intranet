@@ -70,7 +70,6 @@ public class UserController {
         }
     }
 
-
     // 비밀번호 변경
     @PutMapping("/changePwd/{login_id}")
     public ResponseEntity<?> changePwd(@PathVariable String loginId, @RequestBody UserDTO userDTO , @RequestHeader("Authorization") String JwtToken){
@@ -84,16 +83,4 @@ public class UserController {
         }
     }
 
-    // 회원 삭제
-    @DeleteMapping("/deleteUser{login_id}")
-    public ResponseEntity<?> deleteUser(@PathVariable String loginId , @RequestHeader("Authorization") String JwtToken){
-        try{
-            log.info("유저 삭제 요청 : LoginId = {}",loginId);
-            String token = JwtToken.startsWith("Bearer ") ? JwtToken.substring(7) : JwtToken;
-            return ResponseEntity.ok(userService.deleteUser(loginId , token));
-        } catch (Exception e) {
-            log.info("에러 발생 : {}" , e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
 }

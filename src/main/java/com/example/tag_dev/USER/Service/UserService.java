@@ -447,7 +447,6 @@ public class UserService {
                 deptLog.setDeptStatus(deptDTO.getDeptStatus());
                 deptLog.setRegDt(deptDTO.getRegDt());
                 deptLog.setUserName(deptDTO.getUserName());
-                deptLog.setDel
                 deptLog.setUserName(jwtTokenProvider.extractUserName(token));
                 deptLog.setUpdateDt(new Date());
                 deptLog.setUpdateUser(jwtTokenProvider.extractUserName(token));
