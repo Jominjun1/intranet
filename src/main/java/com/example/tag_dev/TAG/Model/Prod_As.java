@@ -21,17 +21,19 @@ public class Prod_As {
 
     @Column(name="TAG_NO")
     private String tagNo; // 스마트 태그 번호
-    private Long AS_CNT; // AS 횟수
-    private String AS_DOC; // AS 문서번호
-    private Date OCCR_DT; // AS 발생일
-    private String OCCR_RSN; // AS 발생사유
-    private Date CLOSE_DT; // AS 종결일
-    private String CLOSE_RSLT; // AS 처리 결과
-    private Date DELIVERY_DT; // 납품일
-    private Date CREATE_DT; // 생성일
-    private String CREATE_ID; // 생성자(사번)
-    private Date UPDATE_DT; // 수정일
-    private String UPDATE_ID; // 수정자(사번)
-    private String delYn; // 삭제여부
+    @Column(name="AS_CNT")
+    private Long asCnt; // AS 횟수
+    @Column(name="AS_DOC")
+    private String asDoc; // AS 문서번호
+    private Date Occr_dt; // AS 발생일
+    private String Occ_rrsn; // AS 발생사유
+    private Date Close_dt; // AS 종결일
+    private String Close_rslt; // AS 처리 결과
+    private Date Delivery_dt; // 납품일
+    private Date Create_dt; // 생성일
+    private String Create_id; // 생성자(사번)
+    private Date Update_dt; // 수정일
+    private String Update_id; // 수정자(사번)
+    private String Status;
 
 }

@@ -22,8 +22,8 @@ public class Setting_Info {
 
     @Column(name="TAG_NO")
     private String tagNo; // 스마트 태그 번호
-    private String HW_VER; // 하드웨어 버전
-    private String FW_VER; // 펌웨어 버전
+    private String HW_version; // 하드웨어 버전
+    private String FW_version; // 펌웨어 버전
     private String LED_SEC; // LED ON 주기
     private String RI_MS; // 송신주기
     private String TX_POWER; // 신호 강도
@@ -47,5 +47,5 @@ public class Setting_Info {
     private String CREATE_ID; // 생성자(사번)
     private Date UPDATE_DT; // 수정일
     private String UPDATE_ID; // 수정자(사번)
-    private String delYn; // 삭제여부
+    private String Status;
 }

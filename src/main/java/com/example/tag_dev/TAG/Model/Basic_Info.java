@@ -21,19 +21,21 @@ public class Basic_Info {
 
     @Column(name="TAG_NO")
     private String tagNo;  // 스마트태그 번호
-    @Column(name="tagType")
+    @Column(name="TAG_TYPE")
     private String tagType; // 스마트 태그 타입
-    private String ERP_CD; // ERP 코드
-    private String MNG_CTG; // 관리 카테고리(태그 ,앵커 , SC)
-    private String LOT; // LOT 번호
-    private String PROD_ODR; // 생산 지시
-    private String PJT_CD; // 프로젝트 코드
-    private String PJT_MNGR; // 프로젝트 매니저
-    private String MAC_DUP_YN; // MAC 중복 여부
-    private Date CREATE_DT; // 생성일
-    private String CREATE_ID; // 생성자(사번)
-    private Date UPDATE_DT; // 수정일
-    private String UPDATE_ID; // 수정자(사번)
-    private String delYn; // 삭제여부
+    @Column(name="ERP_CODE")
+    private String erpCode; // ERP 코드
+    @Column(name="MNG_CATEGORY")
+    private String MngCategory; // 관리 카테고리(태그 ,앵커 , SC)
+    private String Lot; // LOT 번호
+    private String Prod_order; // 생산 지시
+    private String Project_code; // 프로젝트 코드
+    private String Project_manager; // 프로젝트 매니저
+    private String Mac_duple_yn; // MAC 중복 여부
+    private Date Create_dt; // 생성일
+    private String Create_id; // 생성자(사번)
+    private Date Update_dt; // 수정일
+    private String Update_id; // 수정자(사번)
+    private String Status; // 삭제여부
 
 }

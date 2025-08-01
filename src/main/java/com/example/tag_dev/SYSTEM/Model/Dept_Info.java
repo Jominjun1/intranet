@@ -22,13 +22,12 @@ public class Dept_Info {
     private String dept; // 부서명
     @Column(name="USER_NAME")
     private String userName; // 등록자 명
-    private String del_yn; // 삭제여부
+    @Column(name="STATUS")
+    private String Status; // 사용여부
     @Column(name="REG_DT")
     private Date regDt; // 등록일
     @Column(name="UPDATE_DT")
     private Date updateDt; // 수정일
     @Column(name="UPDATE_USER")
     private String updateUser; // 수정자 명
-    @Column(name="DEPT_STATUS")
-    private String deptStatus; // 이용 여부
 }

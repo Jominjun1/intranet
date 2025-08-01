@@ -74,7 +74,7 @@ public class AdminController {
         }
     }
 
-    // 사용자 정보 수정
+    // 사용자 정보 수정/삭제
     @PutMapping("/update/{user_id}")
     public ResponseEntity<?> updateUserInfo(@PathVariable String user_id, @RequestBody UserDTO user_dto, @RequestHeader("Authorization") String JwtToken) {
         try {

@@ -23,7 +23,7 @@ public class ProjectLog {
     private String customer; // 고객사
     private String region; // 지역
     private String deptCd; // 담당 부서
-    private String del_yn; // 삭제 여부
+    private String Status;
     private String project_status; // 프로젝트 진행 상황
     private Date startDt; // 계약 날짜
     private Date endDt; // 종료 날짜
@@ -32,4 +32,5 @@ public class ProjectLog {
     private String userName; // 등록한 사람
     @Column(name="REG_DT")
     private Date regDt; // 등록일
+
 }

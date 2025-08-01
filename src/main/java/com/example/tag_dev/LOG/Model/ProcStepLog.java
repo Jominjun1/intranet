@@ -19,7 +19,6 @@ public class ProcStepLog {
 
     @Column(name ="TAG_NO")
     private String tagNo;  // 스마트태그 번호
-    private String LogType; // 로그 타입
     private Date RECEIPT_DT; // 입고일
     private Date DELIVERY_DT; // 납품일
     private Date LAB_INSP_DT; // 연구소 검수일
@@ -31,5 +30,6 @@ public class ProcStepLog {
     private String CREATE_ID; // 생성자(사번)
     private Date UPDATE_DT; // 수정일
     private String UPDATE_ID; // 수정자(사번)
+    private String Status;
 
 }

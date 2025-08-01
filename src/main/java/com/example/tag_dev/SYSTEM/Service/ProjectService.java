@@ -52,7 +52,7 @@ public class ProjectService {
             project_Info.setProject_name(projectDTO.getProject_name());
             project_Info.setProject_status(projectDTO.getProject_status());
             project_Info.setProject_leader(projectDTO.getProject_leader());
-            project_Info.setDel_yn("N");
+            project_Info.setStatus("N");
             project_Info.setProject_status(projectDTO.getProject_status());
             project_Info.setCustomer(projectDTO.getCustomer());
             project_Info.setDeptCd(projectDTO.getDeptCd());
@@ -68,7 +68,7 @@ public class ProjectService {
             projectLog.setProject_status(project_Info.getProject_status());
             projectLog.setCustomer(project_Info.getCustomer());
             projectLog.setDeptCd(project_Info.getDeptCd());
-            projectLog.setDel_yn(project_Info.getDel_yn());
+            projectLog.setStatus(project_Info.getStatus());
             projectLog.setStartDt(project_Info.getStartDt());
             projectLog.setEndDt(project_Info.getEndDt());
             projectLog.setRegion(project_Info.getRegion());
@@ -114,8 +114,8 @@ public class ProjectService {
                 projectInfo.setProject_status(projectDTO.getProject_status());
                 isUpdated = true;
             }
-            if(projectDTO.getDelYn() != null && !projectDTO.getDelYn().isEmpty()){
-                projectInfo.setDel_yn(projectDTO.getDelYn());
+            if(projectDTO.getStatus() != null && !projectDTO.getStatus().isEmpty()){
+                projectInfo.setStatus(projectDTO.getStatus());
                 isUpdated = true;
             }
             if(projectDTO.getCustomer() != null && !projectDTO.getCustomer().isEmpty()){
@@ -159,7 +159,11 @@ public class ProjectService {
                 projectLog.setStartDt(projectInfo.getStartDt());
                 projectLog.setEndDt(projectInfo.getEndDt());
                 projectLog.setRegion(projectInfo.getRegion());
-                projectLog.setDel_yn(projectInfo.getDel_yn());
+                if(projectInfo.getStatus().equals("Y")) {
+                    projectLog.setStatus(projectInfo.getStatus());
+                } else {
+                    projectLog.setStatus(projectInfo.getStatus());
+                }
                 projectLog.setUserName(jwtTokenProvider.extractUserName(token));
                 projectLog.setRegDt(new Date());
                 projectLogRepository.save(projectLog);

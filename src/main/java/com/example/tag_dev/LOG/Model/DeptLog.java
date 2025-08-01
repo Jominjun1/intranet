@@ -27,6 +27,6 @@ public class DeptLog {
     private Date updateDt;
     @Column(name="UPDATE_USER")
     private String updateUser;
-    @Column(name="DEPT_STATUS")
-    private String deptStatus; // 이용 여부
+    @Column(name="STATUS")
+    private String Status;
 }

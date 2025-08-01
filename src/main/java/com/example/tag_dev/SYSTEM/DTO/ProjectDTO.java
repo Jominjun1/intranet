@@ -17,8 +17,7 @@ public class ProjectDTO {
     private String project_status; // 프로젝트 진행 상황
     private Date startDt; // 계약 날짜
     private Date endDt; // 종료 날짜
-    private String delYn; // 삭제여부
-
+    private String Status;
     private String userName; // 등록한 사람
     private Date regDt; // 등록일
 }

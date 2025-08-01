@@ -206,8 +206,8 @@ public class UserService {
                 user.setHire_dt(user.getHire_dt());
                 isUpdated = true;
             }
-            if( userDto.getDelYn() != null && !userDto.getDelYn().isEmpty()){
-                user.setDelYn(user.getDelYn());
+            if( userDto.getStatus() != null && !userDto.getStatus().isEmpty()){
+                user.setStatus(user.getStatus());
                 isUpdated = true;
             }
 
@@ -221,12 +221,16 @@ public class UserService {
                 userLog.setLoginId(user.getLoginId());
                 userLog.setUpdate_dt(new Date());
                 userLog.setUpdate_id(jwtTokenProvider.extractUserId((jwtToken)));
-                userLog.setStatus("정보수정");
+                if(user.getStatus().equals("Y")){
+                    userLog.setStatus("삭제");
+                }else {
+                    userLog.setStatus("정보수정");
+                }
                 userLogRepository.save(userLog);
 
                 return ResponseEntity.ok("사용자 정보 수정 완료");
             } else {
-                return ResponseEntity.ok("수정할 내용이 없습니다.");
+                return ResponseEntity.ok("수정할 내용 없음");
             }
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 없음");
@@ -287,7 +291,7 @@ public class UserService {
 
             return ResponseEntity.ok("변경 성공");
         }else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("<UNK>");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호 변경중 오류 발생");
         }
 
     }
@@ -301,7 +305,7 @@ public class UserService {
         
         // 로그인 ID 중복 확인
         if(userRepository.findByLoginId(userDTO.getLogin_id()).isPresent()){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용중인 로그인 ID입니다.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용중인 로그인 ID");
         }
         
         try {
@@ -319,6 +323,7 @@ public class UserService {
             user.setUser_stat(userDTO.getUser_stat());
             user.setHire_dt(userDTO.getHire_dt());
             user.setReg_dt(new Date());
+            user.setStatus("N");
             user.setReg_id(jwtTokenProvider.extractUserId(token));
             
             userRepository.save(user);
@@ -380,12 +385,13 @@ public class UserService {
             deptInfo.setDeptCode(deptDTO.getDeptCode());
             deptInfo.setDept(deptDTO.getDept());
             deptInfo.setRegDt(new Date());
+            deptInfo.setStatus("N");
             deptInfo.setUserName(jwtTokenProvider.extractUserName(token));
 
             deptRepository.save(deptInfo);
 
             DeptLog deptLog = new DeptLog();
-            deptLog.setDeptStatus(deptDTO.getDeptStatus());
+            deptLog.setStatus("생성");
             deptLog.setUserName(jwtTokenProvider.extractUserName(token));
             deptLog.setRegDt(deptDTO.getRegDt());
             deptLog.setDeptCode(deptDTO.getDeptCode());
@@ -428,12 +434,8 @@ public class UserService {
                 deptInfo.setDept(deptDTO.getDept());
                 isUpdated = true;
             }
-            if(deptDTO.getDeptStatus() != null && !deptDTO.getDeptStatus().trim().isEmpty()){
-                deptInfo.setDeptStatus(deptDTO.getDeptStatus());
-                isUpdated = true;
-            }
-            if(deptDTO.getDelYn() != null && !deptDTO.getDelYn().trim().isEmpty()){
-                deptInfo.setDel_yn(deptDTO.getDelYn());
+            if(deptDTO.getStatus() != null && !deptDTO.getStatus().trim().isEmpty()){
+                deptInfo.setStatus(deptDTO.getStatus());
                 isUpdated = true;
             }
             if(isUpdated){
@@ -444,7 +446,11 @@ public class UserService {
                 DeptLog deptLog = new DeptLog();
                 deptLog.setDeptCode(deptDTO.getDeptCode());
                 deptLog.setDept(deptDTO.getDept());
-                deptLog.setDeptStatus(deptDTO.getDeptStatus());
+                if(deptDTO.getStatus().equals("Y")){
+                    deptLog.setStatus("삭제");
+                }else{
+                    deptLog.setStatus("사용중");
+                }
                 deptLog.setRegDt(deptDTO.getRegDt());
                 deptLog.setUserName(deptDTO.getUserName());
                 deptLog.setUserName(jwtTokenProvider.extractUserName(token));

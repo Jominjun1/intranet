@@ -32,5 +32,5 @@ public class TagSettingDTO {
     private String CREATE_ID; // 생성자(사번)
     private Date UPDATE_DT; // 수정일
     private String UPDATE_ID; // 수정자(사번)
-    private String delYn; // 삭제여부
+    private String Status; // 삭제여부
 }

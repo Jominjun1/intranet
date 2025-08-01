@@ -13,6 +13,5 @@ public class DeptDTO {
     private Date regDt;
     private Date updateDt;
     private String updateUser;
-    private String deptStatus;
-    private String delYn; // 삭제여부
+    private String Status;
 }

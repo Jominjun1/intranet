@@ -24,7 +24,7 @@ public class CommonInfoLog {
     @Column(name="FAC_NO")
     private String facNo; // 공장 시리얼 번호
 
-    private String LogType; // 로그 타입
+    private String Status;
 
     @Column(name="CREATE_DT")
     private Date createDt; // 생성일

@@ -21,7 +21,7 @@ public class BasicInfoLog {
     private String tagNo;  // 스마트태그 번호
     @Column(name="tagType")
     private String tagType; // 스마트 태그 타입
-    private String LogType; // 로그 타입
+    private String Status;
     private String ERP_CD; // ERP 코드
     private String MNG_CTG; // 관리 카테고리(태그 ,앵커 , SC)
     private String LOT; // LOT 번호

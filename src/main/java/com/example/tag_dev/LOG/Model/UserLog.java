@@ -22,7 +22,7 @@ public class UserLog {
 
     private String ip_addr; // IP주소
     private String http_refr; // HTTP 레퍼런스
-    private String status; // 상태
+    private String Status;
     @Column(name="reg_dt")
     private Date regDt; // 등록일자
     private Date update_dt; // 수정일자

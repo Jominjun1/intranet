@@ -22,10 +22,10 @@ public class Version_Info {
 
     @Column(name="TAG_NO")
     private String tagNo; // 스마트태그 번호
-    private String TAG_VER; // 제품 번호
+    private String Tag_version; // 제품 번호
     private Date CREATE_DT; // 생성일
     private String CREATE_ID; // 생성자(사번)
     private Date UPDATE_DT; // 수정일
     private String UPDATE_ID; // 수정자(사번)
-    private String delYn; // 삭제여부
+    private String Status;
 }
