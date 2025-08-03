@@ -56,11 +56,11 @@ public class TagService {
     public ResponseEntity<?> getTagInventoryList(String macAddr, String facCd, String facNo, String delFilter) {
         try {
             // 검색 조건이 없으면 빈 배열 반환
-            boolean hasSearchCondition = (macAddr != null && !macAddr.trim().isEmpty()) || 
-                                       (facCd != null && !facCd.trim().isEmpty()) || 
+            boolean hasSearchCondition = (macAddr != null && !macAddr.trim().isEmpty()) ||
+                    (facCd != null && !facCd.trim().isEmpty()) ||
 
-                                       (facNo != null && !facNo.trim().isEmpty());
-            
+                    (facNo != null && !facNo.trim().isEmpty());
+
             if (!hasSearchCondition) {
                 return ResponseEntity.ok(new ArrayList<>());
             }
@@ -69,18 +69,18 @@ public class TagService {
             List<Map<String, Object>> result = new ArrayList<>();
             for (Basic_Info basic : basics) {
                 Common_Info common = commons.stream()
-                    .filter(c -> basic.getTagNo().equals(
-                        (c.getMacAddr() != null ? c.getMacAddr().replace(":", "") : "") +
-                        (c.getFacCd() != null ? c.getFacCd() : "") +
-                        (c.getFacNo() != null ? c.getFacNo() : "")
-                    ))
-                    .findFirst().orElse(null);
-                
+                        .filter(c -> basic.getTagNo().equals(
+                                (c.getMacAddr() != null ? c.getMacAddr().replace(":", "") : "") +
+                                        (c.getFacCd() != null ? c.getFacCd() : "") +
+                                        (c.getFacNo() != null ? c.getFacNo() : "")
+                        ))
+                        .findFirst().orElse(null);
+
                 // 검색 조건에 맞는지 확인
                 if (common != null) {
                     if ((macAddr != null && !macAddr.trim().isEmpty() && !common.getMacAddr().contains(macAddr)) ||
-                        (facCd != null && !facCd.trim().isEmpty() && !common.getFacCd().contains(facCd)) ||
-                        (facNo != null && !facNo.trim().isEmpty() && !common.getFacNo().contains(facNo))) {
+                            (facCd != null && !facCd.trim().isEmpty() && !common.getFacCd().contains(facCd)) ||
+                            (facNo != null && !facNo.trim().isEmpty() && !common.getFacNo().contains(facNo))) {
                         continue;
                     }
                 } else {
@@ -97,7 +97,7 @@ public class TagService {
                 row.put("Project_code", basic.getProject_code());
                 row.put("Project_manager", basic.getProject_manager());
                 row.put("Mac_duple_yn", basic.getMac_duple_yn());
-                
+
                 // common 정보가 있으면 추가
                 row.put("mac_Addr", common.getMacAddr());
                 row.put("fac_Cd", common.getFacCd());
@@ -105,9 +105,9 @@ public class TagService {
                 Optional<Version_Info> ver = versionRepo.findAll().stream().filter(v -> v.getTagNo().equals(basic.getTagNo())).max(Comparator.comparing(Version_Info::getTag_version));
                 row.put("tag_Version", ver.map(Version_Info::getTag_version).orElse("1.0"));
                 long asCount = prodAsRepo.findAll().stream()
-                    .filter(a -> a.getTagNo().equals(basic.getTagNo()))
-                    .filter(a -> a.getAsCnt() != null && a.getAsCnt() > 0)
-                    .count();
+                        .filter(a -> a.getTagNo().equals(basic.getTagNo()))
+                        .filter(a -> a.getAsCnt() != null && a.getAsCnt() > 0)
+                        .count();
                 row.put("as_Cnt", asCount);
                 result.add(row);
             }
@@ -220,12 +220,12 @@ public class TagService {
                     asMap.put("update_Id", as.getUpdate_dt());
                     asMap.put("status", as.getStatus());
                     Common_Info common = commons.stream()
-                        .filter(c -> tagNo.equals(
-                            (c.getMacAddr() != null ? c.getMacAddr().replace(":", "") : "") +
-                            (c.getFacCd() != null ? c.getFacCd() : "") +
-                            (c.getFacNo() != null ? c.getFacNo() : "")
-                        ))
-                        .findFirst().orElse(null);
+                            .filter(c -> tagNo.equals(
+                                    (c.getMacAddr() != null ? c.getMacAddr().replace(":", "") : "") +
+                                            (c.getFacCd() != null ? c.getFacCd() : "") +
+                                            (c.getFacNo() != null ? c.getFacNo() : "")
+                            ))
+                            .findFirst().orElse(null);
                     asMap.put("mac_ADDR", common != null ? common.getMacAddr() : "");
                     result.add(asMap);
                 }
@@ -253,8 +253,8 @@ public class TagService {
             newAs.setUpdate_id((String) dto.get("update_Id"));
             newAs.setStatus("N");
             List<Prod_As> existingAs = prodAsRepo.findAll().stream()
-                .filter(as -> tagNo.equals(as.getTagNo()))
-                .toList();
+                    .filter(as -> tagNo.equals(as.getTagNo()))
+                    .toList();
             newAs.setAsCnt((long) (existingAs.size() + 1));
             Prod_As saved = prodAsRepo.save(newAs);
 
@@ -286,8 +286,8 @@ public class TagService {
             final Long asId = dto.get("id") != null ? Long.valueOf(dto.get("id").toString()) : null;
             if (asId != null) {
                 Optional<Prod_As> existingAs = prodAsRepo.findAll().stream()
-                    .filter(as -> asId.equals(as.getProd_as_id()))
-                    .findFirst();
+                        .filter(as -> asId.equals(as.getProd_as_id()))
+                        .findFirst();
                 if (existingAs.isPresent()) {
                     Prod_As as = existingAs.get();
                     as.setAsDoc((String) dto.get("as_Doc"));
@@ -372,11 +372,11 @@ public class TagService {
     public ResponseEntity<?> getVersionHistory(String tagNo) {
         try {
             List<Version_Info> versions = versionRepo.findAll().stream()
-                .filter(v -> tagNo.equals(v.getTagNo()))
-                .toList();
+                    .filter(v -> tagNo.equals(v.getTagNo()))
+                    .toList();
             List<Setting_Info> settings = settingRepo.findAll().stream()
-                .filter(s -> tagNo.equals(s.getTagNo()))
-                .toList();
+                    .filter(s -> tagNo.equals(s.getTagNo()))
+                    .toList();
             List<Map<String, Object>> result = new ArrayList<>();
             for (Version_Info version : versions) {
                 Map<String, Object> versionData = new HashMap<>();
@@ -388,8 +388,8 @@ public class TagService {
                 versionData.put("update_Dt", version.getUPDATE_DT());
                 versionData.put("update_Id", version.getUPDATE_ID());
                 Setting_Info setting = settings.stream()
-                    .filter(s -> s.getTagNo().equals(tagNo))
-                    .findFirst().orElse(null);
+                        .filter(s -> s.getTagNo().equals(tagNo))
+                        .findFirst().orElse(null);
                 if (setting != null) {
                     versionData.put("HW_VERSION", setting.getHW_version());
                     versionData.put("FW_VERSION", setting.getFW_version());
@@ -427,8 +427,8 @@ public class TagService {
             List<Map<String, Object>> result = new ArrayList<>();
             for (Common_Info c : all) {
                 String composedTagNo = (c.getMacAddr() != null ? c.getMacAddr().replace(":", "") : "") +
-                                       (c.getFacCd() != null ? c.getFacCd() : "") +
-                                       (c.getFacNo() != null ? c.getFacNo() : "");
+                        (c.getFacCd() != null ? c.getFacCd() : "") +
+                        (c.getFacNo() != null ? c.getFacNo() : "");
                 if (tagNo.equals(composedTagNo)) {
                     Map<String, Object> commonMap = new HashMap<>();
                     commonMap.put("mac_ADDR", c.getMacAddr());
@@ -482,8 +482,8 @@ public class TagService {
             Common_Info existing = null;
             for (Common_Info c : all) {
                 String composedTagNo = (c.getMacAddr() != null ? c.getMacAddr().replace(":", "") : "") +
-                                       (c.getFacCd() != null ? c.getFacCd() : "") +
-                                       (c.getFacNo() != null ? c.getFacNo() : "");
+                        (c.getFacCd() != null ? c.getFacCd() : "") +
+                        (c.getFacNo() != null ? c.getFacNo() : "");
                 if (tagNo.equals(composedTagNo)) {
                     existing = c;
                     break;
@@ -528,8 +528,8 @@ public class TagService {
             versionRepo.save(newVersion);
 
             Setting_Info setting = settingRepo.findAll().stream()
-                .filter(s -> tagNo.equals(s.getTagNo()))
-                .findFirst().orElse(new Setting_Info());
+                    .filter(s -> tagNo.equals(s.getTagNo()))
+                    .findFirst().orElse(new Setting_Info());
             setting.setTagNo(tagNo);
             setting.setHW_version((String) dto.get("HW_VERSION"));
             setting.setFW_version((String) dto.get("FW_VERSION"));
@@ -574,8 +574,8 @@ public class TagService {
     public ResponseEntity<?> updateVersionInfo(String tagNo, Map<String, Object> dto) {
         try {
             Setting_Info setting = settingRepo.findAll().stream()
-                .filter(s -> tagNo.equals(s.getTagNo()))
-                .findFirst().orElse(null);
+                    .filter(s -> tagNo.equals(s.getTagNo()))
+                    .findFirst().orElse(null);
             if (setting != null) {
                 setting.setHW_version((String) dto.get("HW_VERSION"));
                 setting.setFW_version((String) dto.get("FW_VERSION"));

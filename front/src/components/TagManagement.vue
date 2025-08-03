@@ -228,34 +228,34 @@
     <!-- 테이블 영역 -->
     <div class="table-section">
       <el-table :data="paginatedData" style="width:100%" v-loading="loading">
-        <el-table-column prop="tagNo" label="태그번호" width="150" />
-        <el-table-column prop="macAddr" label="MAC주소" width="150" />
-        <el-table-column prop="facCd" label="공장코드" width="100" />
-        <el-table-column prop="facNo" label="시리얼번호" width="120" />
-        <el-table-column prop="tagVer" label="제품버전" width="100" />
-        <el-table-column prop="tagType" label="태그타입" width="100" />
-        <el-table-column prop="erpCd" label="ERP코드" width="120" />
-        <el-table-column prop="mngCtg" label="관리카테고리" width="120" />
-        <el-table-column prop="lot" label="LOT번호" width="120" />
-        <el-table-column prop="prodOdr" label="생산지시" width="120" />
-        <el-table-column prop="pjtCd" label="프로젝트코드" width="120" />
-        <el-table-column prop="pjtMngr" label="프로젝트매니저" width="120" />
-        <el-table-column prop="macDupYn" label="MAC중복여부" width="120" />
-        <el-table-column prop="asCnt" label="AS횟수" width="80" />
-        <el-table-column prop="delYn" label="삭제여부" width="100">
+        <el-table-column prop="tag_No" label="태그번호" width="150" />
+        <el-table-column prop="mac_Addr" label="MAC주소" width="150" />
+        <el-table-column prop="fac_Cd" label="공장코드" width="100" />
+        <el-table-column prop="fac_No" label="시리얼번호" width="120" />
+        <el-table-column prop="tag_Version" label="제품버전" width="100" />
+        <el-table-column prop="tag_Type" label="태그타입" width="100" />
+        <el-table-column prop="erp_Code" label="ERP코드" width="120" />
+        <el-table-column prop="Mng_Category" label="관리카테고리" width="120" />
+        <el-table-column prop="Lot" label="LOT번호" width="120" />
+        <el-table-column prop="Prod_order" label="생산지시" width="120" />
+        <el-table-column prop="Project_code" label="프로젝트코드" width="120" />
+        <el-table-column prop="Project_manager" label="프로젝트매니저" width="120" />
+        <el-table-column prop="Mac_duple_yn" label="MAC중복여부" width="120" />
+        <el-table-column prop="as_Cnt" label="AS횟수" width="80" />
+        <el-table-column prop="Status" label="삭제여부" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.delYn === 'Y' ? 'danger' : 'success'">
-              {{ row.delYn === 'Y' ? '삭제됨' : '사용중' }}
+            <el-tag :type="row.Status === 'Y' ? 'danger' : 'success'">
+              {{ row.Status === 'Y' ? '삭제됨' : '사용중' }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="작업" width="250" align="right">
           <template #default="{ row }">
-            <el-button size="small" @click="showProcStep(row.tagNo)">처리단계</el-button>
-            <el-button size="small" @click="showSettingInfo(row.tagNo)">세팅정보</el-button>
-            <el-button size="small" @click="showVersionHistory(row.tagNo)">버전이력</el-button>
-            <el-button size="small" @click="showCommonHistory(row.tagNo)">공통정보</el-button>
-            <el-button size="small" @click="showAsInfo(row.tagNo)">AS이력</el-button>
+            <el-button size="small" @click="showProcStep(row.tag_No)">처리단계</el-button>
+            <el-button size="small" @click="showSettingInfo(row.tag_No)">세팅정보</el-button>
+            <el-button size="small" @click="showVersionHistory(row.tag_No)">버전이력</el-button>
+            <el-button size="small" @click="showCommonHistory(row.tag_No)">공통정보</el-button>
+            <el-button size="small" @click="showAsInfo(row.tag_No)">AS이력</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -620,9 +620,9 @@ const filteredData = computed(() => {
   }
   
   return tableData.value.filter(row => {
-    const macMatch = searchMac.value ? row.macAddr?.includes(searchMac.value) : true
-    const snMatch = searchSn.value ? row.facNo?.includes(searchSn.value) : true
-    const facCdMatch = searchFacCd.value ? row.facCd?.includes(searchFacCd.value) : true
+    const macMatch = searchMac.value ? row.mac_Addr?.includes(searchMac.value) : true
+    const snMatch = searchSn.value ? row.fac_No?.includes(searchSn.value) : true
+    const facCdMatch = searchFacCd.value ? row.fac_Cd?.includes(searchFacCd.value) : true
     return macMatch && snMatch && facCdMatch
   })
 })

@@ -12,10 +12,13 @@ import java.util.List;
 public class PasswordEncryptor {
 
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public PasswordEncryptor(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public void encryptAllAdminPasswords() {
         List<User> users = userRepository.findAll();

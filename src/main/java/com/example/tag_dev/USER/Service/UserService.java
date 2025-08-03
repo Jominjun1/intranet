@@ -302,12 +302,12 @@ public class UserService {
         if(!jwtTokenProvider.validateToken(token)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        
+
         // 로그인 ID 중복 확인
         if(userRepository.findByLoginId(userDTO.getLogin_id()).isPresent()){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용중인 로그인 ID");
         }
-        
+
         try {
             // 새 사용자 생성
             User user = new User();
@@ -325,9 +325,9 @@ public class UserService {
             user.setReg_dt(new Date());
             user.setStatus("N");
             user.setReg_id(jwtTokenProvider.extractUserId(token));
-            
+
             userRepository.save(user);
-            
+
             // 로그 기록
             UserLog userLog = new UserLog();
             userLog.setLoginId(user.getLoginId());
@@ -335,19 +335,19 @@ public class UserService {
             userLog.setRegDt(new Date());
             userLog.setUpdate_id(jwtTokenProvider.extractUserId((token)));
             userLogRepository.save(userLog);
-            
+
             return ResponseEntity.ok("사용자가 성공적으로 생성되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 생성 중 오류가 발생: " + e.getMessage());
         }
     }
-    
+
     // 사용자 비밀번호 변경 ( 관리자 기능 )
     public ResponseEntity<?> changeUserPasswordByAdmin(String loginId, UserDTO userDTO, String token) {
         if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        
+
         try {
             Optional<User> userOpt = userRepository.findByLoginId(loginId);
             if (userOpt.isPresent()) {
@@ -472,6 +472,11 @@ public class UserService {
         String ip = request.getHeader("X-Forwarded-For");
         if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
             return ip.split(",")[0].trim();
+        }
+
+        ip = request.getHeader("X-Real-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
         }
 
         ip = request.getHeader("Proxy-Client-IP");
