@@ -17,8 +17,8 @@ public class ProdAsLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long AS_LOG_SEQ;
 
-    @Column(name= "TAG_NO")
-    private String tagNo; // 스마트 태그 번호
+    @Column(name= "ORD_NO")
+    private String ordNo; // 스마트 태그 번호
     private Long AS_CNT; // AS 횟수
     private String AS_DOC; // AS 문서번호
     private Date OCCR_DT; // AS 발생일

@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Data
 public class TagSettingDTO {
-    private String TAG_NO; // 스마트 태그 번호
+    private String ORD_NO; // 스마트 태그 번호
     private String HW_VER; // 하드웨어 버전
     private String FW_VER; // 펌웨어 버전
     private String LED_SEC; // LED ON 주기

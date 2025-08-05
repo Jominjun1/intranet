@@ -21,37 +21,35 @@ import java.util.*;
 public class TagService {
 
     @Autowired
-    private final BasicInfoRepository basicRepo;
-    private final CommonInfoRepository commonRepo;
-    private final VersionInfoRepository versionRepo;
-    private final ProcStepRepository procStepRepo;
-    private final SettingInfoRepository settingRepo;
-    private final ProdAsRepository prodAsRepo;
-    private final ProdAsLogRepository prodAsLogRepo;
-    private final ProcStepLogRepository procStepLogRepo;
-    private final SettingInfoLogRepository settingLogRepo;
-    private final BasicInfoLogRepository basicInfoLog;
-    private final VersionInfoLogRepository versionInfoLog;
-    private final CommonInfoLogRepository commonLogRepo;
+    private final BasicInfoRepository basicInfoRepository;
+    private final CommonInfoRepository commonInfoRepository;
+    private final VersionInfoRepository versionInfoRepository;
+    private final ProcStepRepository procStepRepository;
+    private final SettingInfoRepository settingInfoRepository;
+    private final ProdAsRepository prodAsRepository;
+    private final ProdAsLogRepository prodAsLogRepository;
+    private final ProcStepLogRepository procStepLogRepository;
+    private final SettingInfoLogRepository settingInfoLogRepository;
+    private final BasicInfoLogRepository basicInfoLogRepository;
+    private final VersionInfoLogRepository versionInfoLogRepository;
+    private final CommonInfoLogRepository commonInfoLogRepository;
 
-
-
-    public TagService(BasicInfoRepository basicRepo, CommonInfoRepository commonRepo, VersionInfoRepository versionRepo, ProcStepRepository procStepRepo,
-                      SettingInfoRepository settingRepo, ProdAsRepository prodAsRepo, ProdAsLogRepository prodAsLogRepo, ProcStepLogRepository procStepLogRepo, SettingInfoLogRepository settingLogRepo, BasicInfoLogRepository basicInfoLog, VersionInfoLogRepository versionInfoLog, CommonInfoLogRepository commonLogRepo) {
-        this.basicRepo = basicRepo;
-        this.commonRepo = commonRepo;
-        this.versionRepo = versionRepo;
-        this.procStepRepo = procStepRepo;
-        this.settingRepo = settingRepo;
-        this.prodAsRepo = prodAsRepo;
-
-        this.prodAsLogRepo = prodAsLogRepo;
-        this.procStepLogRepo = procStepLogRepo;
-        this.settingLogRepo = settingLogRepo;
-        this.basicInfoLog = basicInfoLog;
-        this.versionInfoLog = versionInfoLog;
-        this.commonLogRepo = commonLogRepo;
+    public TagService(BasicInfoRepository basicInfoRepository, CommonInfoRepository commonInfoRepository, VersionInfoRepository versionInfoRepository, ProcStepRepository procStepRepository, SettingInfoRepository settingInfoRepository, ProdAsRepository prodAsRepository, ProdAsLogRepository prodAsLogRepository, ProcStepLogRepository procStepLogRepository, SettingInfoLogRepository settingInfoLogRepository, BasicInfoLogRepository basicInfoLogRepository, VersionInfoLogRepository versionInfoLogRepository, CommonInfoLogRepository commonInfoLogRepository) {
+        this.basicInfoRepository = basicInfoRepository;
+        this.commonInfoRepository = commonInfoRepository;
+        this.versionInfoRepository = versionInfoRepository;
+        this.procStepRepository = procStepRepository;
+        this.settingInfoRepository = settingInfoRepository;
+        this.prodAsRepository = prodAsRepository;
+        this.prodAsLogRepository = prodAsLogRepository;
+        this.procStepLogRepository = procStepLogRepository;
+        this.settingInfoLogRepository = settingInfoLogRepository;
+        this.basicInfoLogRepository = basicInfoLogRepository;
+        this.versionInfoLogRepository = versionInfoLogRepository;
+        this.commonInfoLogRepository = commonInfoLogRepository;
     }
+
+
     // 조회 (필터 - Mac주소 , 시리얼번호 , 공장코드 , 삭제 여부 )
     public ResponseEntity<?> getTagInventoryList(String macAddr, String facCd, String facNo, String delFilter) {
         try {
@@ -64,12 +62,12 @@ public class TagService {
             if (!hasSearchCondition) {
                 return ResponseEntity.ok(new ArrayList<>());
             }
-            List<Basic_Info> basics = basicRepo.findAll();
-            List<Common_Info> commons = commonRepo.findAll();
+            List<Basic_Info> basics = basicInfoRepository.findAll();
+            List<Common_Info> commons = commonInfoRepository.findAll();
             List<Map<String, Object>> result = new ArrayList<>();
             for (Basic_Info basic : basics) {
                 Common_Info common = commons.stream()
-                        .filter(c -> basic.getTagNo().equals(
+                        .filter(c -> basic.getOrdNo().equals(
                                 (c.getMacAddr() != null ? c.getMacAddr().replace(":", "") : "") +
                                         (c.getFacCd() != null ? c.getFacCd() : "") +
                                         (c.getFacNo() != null ? c.getFacNo() : "")
@@ -88,7 +86,7 @@ public class TagService {
                     continue;
                 }
                 Map<String, Object> row = new HashMap<>();
-                row.put("tag_No", basic.getTagNo());
+                row.put("tag_No", basic.getOrdNo());
                 row.put("tag_Type", basic.getTagType());
                 row.put("erp_Code", basic.getErpCode());
                 row.put("Mng_Category", basic.getMngCategory());
@@ -102,10 +100,10 @@ public class TagService {
                 row.put("mac_Addr", common.getMacAddr());
                 row.put("fac_Cd", common.getFacCd());
                 row.put("fac_No", common.getFacNo());
-                Optional<Version_Info> ver = versionRepo.findAll().stream().filter(v -> v.getTagNo().equals(basic.getTagNo())).max(Comparator.comparing(Version_Info::getTag_version));
+                Optional<Version_Info> ver = versionInfoRepository.findAll().stream().filter(v -> v.getOrdNo().equals(basic.getOrdNo())).max(Comparator.comparing(Version_Info::getTag_version));
                 row.put("tag_Version", ver.map(Version_Info::getTag_version).orElse("1.0"));
-                long asCount = prodAsRepo.findAll().stream()
-                        .filter(a -> a.getTagNo().equals(basic.getTagNo()))
+                long asCount = prodAsRepository.findAll().stream()
+                        .filter(a -> a.getOrdNo().equals(basic.getOrdNo()))
                         .filter(a -> a.getAsCnt() != null && a.getAsCnt() > 0)
                         .count();
                 row.put("as_Cnt", asCount);
@@ -118,77 +116,115 @@ public class TagService {
     }
 
     //
-    public ResponseEntity<?> getProcStep(String tagNo) {
+    public ResponseEntity<?> getProcStep(String ordNo) {
         try {
-            Proc_Step result = procStepRepo.findAll().stream().filter(p -> tagNo.equals(p.getTagNo())).findFirst().orElse(null);
+            Proc_Step result = procStepRepository.findAll().stream().filter(p -> ordNo.equals(p.getOrdNo())).findFirst().orElse(null);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    public ResponseEntity<?> getSettingInfo(String tagNo) {
+    public ResponseEntity<?> getSettingInfo(String ordNo) {
         try {
-            Setting_Info result = settingRepo.findAll().stream().filter(s -> tagNo.equals(s.getTagNo())).findFirst().orElse(null);
+            Setting_Info result = settingInfoRepository.findAll().stream().filter(s -> ordNo.equals(s.getOrdNo())).findFirst().orElse(null);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    public ResponseEntity<?> updateSettingInfo(String tagNo, TagSettingDTO dto) {
+    public ResponseEntity<?> getLatestVersionInfo(String ordNo) {
         try {
-            Setting_Info setting = settingRepo.findAll().stream().filter(s -> tagNo.equals(s.getTagNo())).findFirst().orElse(null);
+            Version_Info result = versionInfoRepository.findAll().stream()
+                    .filter(v -> ordNo.equals(v.getOrdNo()))
+                    .max(Comparator.comparing(Version_Info::getTag_version))
+                    .orElse(null);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    public ResponseEntity<?> updateSettingInfo(String ordNo, TagSettingDTO dto) {
+        try {
+            Setting_Info setting = settingInfoRepository.findAll().stream().filter(s -> ordNo.equals(s.getOrdNo())).findFirst().orElse(null);
             if (setting != null) {
-                setting.setHW_version(dto.getHW_VER());
-                setting.setFW_version(dto.getFW_VER());
-                setting.setUPDATE_DT(new Date());
-                setting.setUPDATE_ID(dto.getUPDATE_ID());
-                setting.setStatus(dto.getStatus());
-                settingRepo.save(setting);
-
-                SettingInfoLog settingInfoLog = new SettingInfoLog();
-                settingInfoLog.setTagNo(tagNo);
-                settingInfoLog.setHW_VER(dto.getHW_VER());
-                settingInfoLog.setFW_VER(dto.getFW_VER());
-                settingInfoLog.setUPDATE_ID(dto.getUPDATE_ID());
-                settingInfoLog.setUPDATE_DT(new Date());
-                settingInfoLog.setUPDATE_ID(dto.getUPDATE_ID());
-                if(Objects.equals(dto.getStatus(), "Y")){
-                    settingInfoLog.setLogType("삭제");
-                }else {
-                    settingInfoLog.setLogType("수정");
+                boolean isUpdated = false;
+                if(setting.getHW_version() != null &&  !setting.getHW_version().trim().isEmpty()){
+                    setting.setHW_version(dto.getHW_VER());
+                    isUpdated = true;
                 }
-                settingLogRepo.save(settingInfoLog);
-
-                Optional<Version_Info> verOpt = versionRepo.findAll().stream().filter(v -> v.getTagNo().equals(tagNo)).max(Comparator.comparing(Version_Info::getTag_version));
-                String newVer = verOpt.map(v -> {
-                    try {
-                        double vNum = Double.parseDouble(v.getTag_version());
-                        return String.format("%.1f", vNum + 0.1);
-                    } catch (Exception e) { return "1.1"; }
-                }).orElse("1.1");
-                Version_Info newVersion = new Version_Info();
-                newVersion.setTagNo(tagNo);
-                newVersion.setTag_version(newVer);
-                newVersion.setCREATE_DT(new Date());
-                newVersion.setCREATE_ID(dto.getUPDATE_ID());
-                if(Objects.equals(dto.getStatus(), "Y")){
-                    newVersion.setStatus("Y");
+                if(setting.getFW_version() != null && !setting.getFW_version().trim().isEmpty()){
+                    setting.setFW_version(dto.getFW_VER());
+                    isUpdated = true;
                 }
-                versionRepo.save(newVersion);
+                if(setting.getStatus() != null && !setting.getStatus().trim().isEmpty()) {
+                    setting.setStatus(dto.getStatus());
+                    isUpdated = true;
+                }
+                if(isUpdated) {
+                    setting.setUPDATE_DT(new Date());
+                    setting.setUPDATE_ID(UUID.randomUUID().toString());
+                    settingInfoRepository.save(setting);
 
-                VersionInfoLog versionInfoLog = new VersionInfoLog();
-                versionInfoLog.setTagNo(newVersion.getTagNo());
-                versionInfoLog.setTAG_VER(newVersion.getTag_version());
-                versionInfoLog.setCREATE_ID(newVersion.getCREATE_ID());
-                versionInfoLog.setCreateDt(newVersion.getCREATE_DT());
-                versionInfoLog.setUPDATE_ID(newVersion.getUPDATE_ID());
-                versionInfoLog.setUPDATE_DT(new Date());
-                if(Objects.equals(dto.getStatus(), "Y")){
-                    versionInfoLog.setLogType("삭제");
-                }else {
-                    versionInfoLog.setLogType("수정");
+
+                    SettingInfoLog settingInfoLog = new SettingInfoLog();
+                    settingInfoLog.setOrdNo(ordNo);
+                    settingInfoLog.setHW_VER(dto.getHW_VER());
+                    settingInfoLog.setFW_VER(dto.getFW_VER());
+                    settingInfoLog.setUPDATE_ID(dto.getUPDATE_ID());
+                    settingInfoLog.setUPDATE_DT(new Date());
+                    settingInfoLog.setUPDATE_ID(dto.getUPDATE_ID());
+                    if (Objects.equals(dto.getStatus(), "Y")) {
+                        settingInfoLog.setStatus("삭제");
+                    } else {
+                        settingInfoLog.setStatus("수정");
+                    }
+                    settingInfoLogRepository.save(settingInfoLog);
+
+                    Optional<Version_Info> verOpt = versionInfoRepository.findAll().stream().filter(v -> v.getOrdNo().equals(ordNo)).max(Comparator.comparing(Version_Info::getTag_version));
+                    String newVer = verOpt.map(v -> {
+                        try {
+                            double vNum = Double.parseDouble(v.getTag_version());
+                            return String.format("%.1f", vNum + 0.1);
+                        } catch (Exception e) {
+                            return "1.1";
+                        }
+                    }).orElse("1.1");
+                    Version_Info newVersion = new Version_Info();
+                    if(newVersion.getOrdNo() != null && !newVersion.getOrdNo().trim().isEmpty()){
+                        newVersion.setOrdNo(ordNo);
+                    }
+                    if(newVersion.getTag_version() != null && !newVersion.getTag_version().trim().isEmpty()){
+                        newVersion.setTag_version(newVer);
+                    }
+                    if(newVersion.getCREATE_DT() != null){
+                        newVersion.setCREATE_DT(new Date());
+                    }
+                    if(newVersion.getCREATE_ID() != null){
+                        newVersion.setCREATE_ID(dto.getUPDATE_ID());
+                    }
+                    if (Objects.equals(dto.getStatus(), "Y")) {
+                        newVersion.setStatus("Y");
+                    }
+                    versionInfoRepository.save(newVersion);
+
+                    VersionInfoLog versionInfoLog = new VersionInfoLog();
+                    versionInfoLog.setOrdNo(newVersion.getOrdNo());
+                    versionInfoLog.setTAG_VER(newVersion.getTag_version());
+                    versionInfoLog.setCREATE_ID(newVersion.getCREATE_ID());
+                    versionInfoLog.setCreateDt(newVersion.getCREATE_DT());
+                    versionInfoLog.setUPDATE_ID(newVersion.getUPDATE_ID());
+                    versionInfoLog.setUPDATE_DT(new Date());
+
+                    versionInfoLogRepository.save(versionInfoLog);
+
+                    if (Objects.equals(dto.getStatus(), "Y")) {
+                        versionInfoLog.setStatus("삭제");
+                    } else {
+                        versionInfoLog.setStatus("수정");
+                    }
                 }
             }
             return ResponseEntity.ok(setting);
@@ -197,16 +233,16 @@ public class TagService {
         }
     }
 
-    public ResponseEntity<?> getProdAsList(String tagNo, String filter) {
+    public ResponseEntity<?> getProdAsList(String ordNo, String filter) {
         try {
-            List<Prod_As> all = prodAsRepo.findAll();
-            List<Common_Info> commons = commonRepo.findAll();
+            List<Prod_As> all = prodAsRepository.findAll();
+            List<Common_Info> commons = commonInfoRepository.findAll();
             List<Map<String, Object>> result = new ArrayList<>();
             for (Prod_As as : all) {
-                if (tagNo.equals(as.getTagNo())) {
+                if (ordNo.equals(as.getOrdNo())) {
                     Map<String, Object> asMap = new HashMap<>();
                     asMap.put("id", as.getProd_as_id());
-                    asMap.put("tag_NO", as.getTagNo());
+                    asMap.put("tag_NO", as.getOrdNo());
                     asMap.put("as_Cnt", as.getAsCnt());
                     asMap.put("as_Doc", as.getAsDoc());
                     asMap.put("occr_Dt", as.getOccr_dt());
@@ -220,7 +256,7 @@ public class TagService {
                     asMap.put("update_Id", as.getUpdate_dt());
                     asMap.put("status", as.getStatus());
                     Common_Info common = commons.stream()
-                            .filter(c -> tagNo.equals(
+                            .filter(c -> ordNo.equals(
                                     (c.getMacAddr() != null ? c.getMacAddr().replace(":", "") : "") +
                                             (c.getFacCd() != null ? c.getFacCd() : "") +
                                             (c.getFacNo() != null ? c.getFacNo() : "")
@@ -237,10 +273,10 @@ public class TagService {
         }
     }
 
-    public ResponseEntity<?> createProdAs(String tagNo, Map<String, Object> dto) {
+    public ResponseEntity<?> createProdAs(String ordNo, Map<String, Object> dto) {
         try {
             Prod_As newAs = new Prod_As();
-            newAs.setTagNo(tagNo);
+            newAs.setOrdNo(ordNo);
             newAs.setAsDoc((String) dto.get("as_Doc"));
             newAs.setOccr_dt(parseDate((String) dto.get("occr_Dt")));
             newAs.setOcc_rrsn((String) dto.get("occr_RRsn"));
@@ -251,12 +287,12 @@ public class TagService {
             newAs.setCreate_id((String) dto.get("update_Id"));
             newAs.setUpdate_dt(new Date());
             newAs.setUpdate_id((String) dto.get("update_Id"));
-            newAs.setStatus("N");
-            List<Prod_As> existingAs = prodAsRepo.findAll().stream()
-                    .filter(as -> tagNo.equals(as.getTagNo()))
+            newAs.setStatus("Y");
+            List<Prod_As> existingAs = prodAsRepository.findAll().stream()
+                    .filter(as -> ordNo.equals(as.getOrdNo()))
                     .toList();
             newAs.setAsCnt((long) (existingAs.size() + 1));
-            Prod_As saved = prodAsRepo.save(newAs);
+            Prod_As saved = prodAsRepository.save(newAs);
 
             ProdAsLog prodAsLog = new ProdAsLog();
             prodAsLog.setAS_CNT(saved.getAsCnt());
@@ -271,9 +307,9 @@ public class TagService {
             prodAsLog.setUPDATE_DT(new Date());
             prodAsLog.setUPDATE_ID(saved.getUpdate_id());
             prodAsLog.setStatus("생성");
-            prodAsLog.setTagNo(saved.getTagNo());
+            prodAsLog.setOrdNo(saved.getOrdNo());
 
-            prodAsLogRepo.save(prodAsLog);
+            prodAsLogRepository.save(prodAsLog);
 
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
@@ -281,11 +317,11 @@ public class TagService {
         }
     }
 
-    public ResponseEntity<?> updateProdAs(String tagNo, Map<String, Object> dto) {
+    public ResponseEntity<?> updateProdAs(String ordNo, Map<String, Object> dto) {
         try {
             final Long asId = dto.get("id") != null ? Long.valueOf(dto.get("id").toString()) : null;
             if (asId != null) {
-                Optional<Prod_As> existingAs = prodAsRepo.findAll().stream()
+                Optional<Prod_As> existingAs = prodAsRepository.findAll().stream()
                         .filter(as -> asId.equals(as.getProd_as_id()))
                         .findFirst();
                 if (existingAs.isPresent()) {
@@ -298,7 +334,7 @@ public class TagService {
                     as.setDelivery_dt(parseDate((String) dto.get("delivery_Dt")));
                     as.setUpdate_dt(new Date());
                     as.setUpdate_id((String) dto.get("update_Id"));
-                    Prod_As saved = prodAsRepo.save(as);
+                    Prod_As saved = prodAsRepository.save(as);
 
                     ProdAsLog prodAsLog = new ProdAsLog();
                     prodAsLog.setAS_CNT(saved.getAsCnt());
@@ -312,14 +348,14 @@ public class TagService {
                     prodAsLog.setCREATE_ID(saved.getCreate_id());
                     prodAsLog.setUPDATE_DT(new Date());
                     prodAsLog.setUPDATE_ID(saved.getUpdate_id());
-                    if(Objects.equals(saved.getStatus(), "Y")){
+                    if(Objects.equals(saved.getStatus(), "N")){
                         prodAsLog.setStatus("삭제");
                     }else {
                         prodAsLog.setStatus("수정");
                     }
-                    prodAsLog.setTagNo(saved.getTagNo());
+                    prodAsLog.setOrdNo(saved.getOrdNo());
 
-                    prodAsLogRepo.save(prodAsLog);
+                    prodAsLogRepository.save(prodAsLog);
 
                     return ResponseEntity.ok(saved);
                 }
@@ -330,65 +366,26 @@ public class TagService {
         }
     }
 
-    public ResponseEntity<?> deleteProdAs(Long asId) {
+    public ResponseEntity<?> getVersionHistory(String ordNo) {
         try {
-            Optional<Prod_As> existingAs = prodAsRepo.findAll().stream()
-                    .filter(as -> asId.equals(as.getProd_as_id()))
-                    .findFirst();
-            if (existingAs.isPresent()) {
-                ProdAsLog log = new ProdAsLog();
-                log.setTagNo(existingAs.get().getTagNo());
-                log.setStatus("삭제");
-                log.setAS_CNT(existingAs.get().getAsCnt());
-                log.setAS_DOC(existingAs.get().getAsDoc());
-                log.setOCCR_DT(existingAs.get().getOccr_dt());
-                log.setOCCR_RSN(existingAs.get().getOcc_rrsn());
-                log.setCLOSE_DT(existingAs.get().getClose_dt());
-                log.setCLOSE_RSLT(existingAs.get().getClose_rslt());
-                log.setDELIVERY_DT(existingAs.get().getDelivery_dt());
-                log.setUPDATE_DT(new Date());
-                log.setUPDATE_ID(existingAs.get().getUpdate_id());
-
-                prodAsLogRepo.save(log);
-
-                prodAsRepo.delete(existingAs.get());
-                return ResponseEntity.ok("삭제 완료");
-            }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 AS 기록 없음");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
-    private Date parseDate(String dateStr) {
-        if (dateStr == null || dateStr.isEmpty()) return null;
-        try {
-            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateStr);
-        } catch (ParseException e) {
-            return new Date();
-        }
-    }
-
-    public ResponseEntity<?> getVersionHistory(String tagNo) {
-        try {
-            List<Version_Info> versions = versionRepo.findAll().stream()
-                    .filter(v -> tagNo.equals(v.getTagNo()))
+            List<Version_Info> versions = versionInfoRepository.findAll().stream()
+                    .filter(v -> ordNo.equals(v.getOrdNo()))
                     .toList();
-            List<Setting_Info> settings = settingRepo.findAll().stream()
-                    .filter(s -> tagNo.equals(s.getTagNo()))
+            List<Setting_Info> settings = settingInfoRepository.findAll().stream()
+                    .filter(s -> ordNo.equals(s.getOrdNo()))
                     .toList();
             List<Map<String, Object>> result = new ArrayList<>();
             for (Version_Info version : versions) {
                 Map<String, Object> versionData = new HashMap<>();
                 versionData.put("seq", version.getVersion_info_seq());
-                versionData.put("tag_No", version.getTagNo());
+                versionData.put("tag_No", version.getOrdNo());
                 versionData.put("tag_version", version.getTag_version());
                 versionData.put("create_Dt", version.getCREATE_DT());
                 versionData.put("create_Id", version.getCREATE_ID());
                 versionData.put("update_Dt", version.getUPDATE_DT());
                 versionData.put("update_Id", version.getUPDATE_ID());
                 Setting_Info setting = settings.stream()
-                        .filter(s -> s.getTagNo().equals(tagNo))
+                        .filter(s -> s.getOrdNo().equals(ordNo))
                         .findFirst().orElse(null);
                 if (setting != null) {
                     versionData.put("HW_VERSION", setting.getHW_version());
@@ -421,15 +418,15 @@ public class TagService {
         }
     }
 
-    public ResponseEntity<?> getCommonHistory(String tagNo) {
+    public ResponseEntity<?> getCommonHistory(String ordNo) {
         try {
-            List<Common_Info> all = commonRepo.findAll();
+            List<Common_Info> all = commonInfoRepository.findAll();
             List<Map<String, Object>> result = new ArrayList<>();
             for (Common_Info c : all) {
                 String composedTagNo = (c.getMacAddr() != null ? c.getMacAddr().replace(":", "") : "") +
                         (c.getFacCd() != null ? c.getFacCd() : "") +
                         (c.getFacNo() != null ? c.getFacNo() : "");
-                if (tagNo.equals(composedTagNo)) {
+                if (ordNo.equals(composedTagNo)) {
                     Map<String, Object> commonMap = new HashMap<>();
                     commonMap.put("mac_ADDR", c.getMacAddr());
                     commonMap.put("fac_CD", c.getFacCd());
@@ -457,7 +454,8 @@ public class TagService {
             newCommon.setCreate_id((String) dto.get("updateId"));
             newCommon.setUpdate_dt(new Date());
             newCommon.setUpdate_id((String) dto.get("updateId"));
-            Common_Info saved = commonRepo.save(newCommon);
+            newCommon.setStatus("Y");
+            Common_Info saved = commonInfoRepository.save(newCommon);
 
             CommonInfoLog commonInfoLog = new CommonInfoLog();
             commonInfoLog.setStatus("생성");
@@ -468,7 +466,7 @@ public class TagService {
             commonInfoLog.setCREATE_ID(saved.getCreate_id());
             commonInfoLog.setUPDATE_DT(saved.getUpdate_dt());
             commonInfoLog.setUPDATE_ID(saved.getUpdate_id());
-            commonLogRepo.save(commonInfoLog);
+            commonInfoLogRepository.save(commonInfoLog);
 
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
@@ -476,15 +474,15 @@ public class TagService {
         }
     }
 
-    public ResponseEntity<?> updateCommonInfo(String tagNo, Map<String, Object> dto) {
+    public ResponseEntity<?> updateCommonInfo(String ordNo, Map<String, Object> dto) {
         try {
-            List<Common_Info> all = commonRepo.findAll();
+            List<Common_Info> all = commonInfoRepository.findAll();
             Common_Info existing = null;
             for (Common_Info c : all) {
                 String composedTagNo = (c.getMacAddr() != null ? c.getMacAddr().replace(":", "") : "") +
                         (c.getFacCd() != null ? c.getFacCd() : "") +
                         (c.getFacNo() != null ? c.getFacNo() : "");
-                if (tagNo.equals(composedTagNo)) {
+                if (ordNo.equals(composedTagNo)) {
                     existing = c;
                     break;
                 }
@@ -495,7 +493,7 @@ public class TagService {
                 existing.setFacNo((String) dto.get("fac_No"));
                 existing.setUpdate_dt(new Date());
                 existing.setUpdate_id((String) dto.get("update_Id"));
-                Common_Info saved = commonRepo.save(existing);
+                Common_Info saved = commonInfoRepository.save(existing);
 
                 CommonInfoLog commonInfoLog = new CommonInfoLog();
                 commonInfoLog.setStatus("수정");
@@ -506,7 +504,7 @@ public class TagService {
                 commonInfoLog.setCREATE_ID(saved.getCreate_id());
                 commonInfoLog.setUPDATE_DT(saved.getUpdate_dt());
                 commonInfoLog.setUPDATE_ID(saved.getUpdate_id());
-                commonLogRepo.save(commonInfoLog);
+                commonInfoLogRepository.save(commonInfoLog);
 
                 return ResponseEntity.ok(saved);
             }
@@ -516,21 +514,22 @@ public class TagService {
         }
     }
 
-    public ResponseEntity<?> createVersionInfo(String tagNo, Map<String, Object> dto) {
+    public ResponseEntity<?> createVersionInfo(String ordNo, Map<String, Object> dto) {
         try {
             Version_Info newVersion = new Version_Info();
-            newVersion.setTagNo(tagNo);
+            newVersion.setOrdNo(ordNo);
             newVersion.setTag_version((String) dto.get("tag_Version"));
             newVersion.setCREATE_DT(new Date());
             newVersion.setCREATE_ID((String) dto.get("update_Id"));
             newVersion.setUPDATE_DT(new Date());
             newVersion.setUPDATE_ID((String) dto.get("update_Id"));
-            versionRepo.save(newVersion);
+            newVersion.setStatus("Y");
+            versionInfoRepository.save(newVersion);
 
-            Setting_Info setting = settingRepo.findAll().stream()
-                    .filter(s -> tagNo.equals(s.getTagNo()))
+            Setting_Info setting = settingInfoRepository.findAll().stream()
+                    .filter(s -> ordNo.equals(s.getOrdNo()))
                     .findFirst().orElse(new Setting_Info());
-            setting.setTagNo(tagNo);
+            setting.setOrdNo(ordNo);
             setting.setHW_version((String) dto.get("HW_VERSION"));
             setting.setFW_version((String) dto.get("FW_VERSION"));
             setting.setLED_SEC((String) dto.get("ledSec"));
@@ -557,9 +556,10 @@ public class TagService {
             setting.setUPDATE_DT(new Date());
             setting.setUPDATE_ID((String) dto.get("updateId"));
             setting.setStatus("생성");
-            settingRepo.save(setting);
+
+            settingInfoRepository.save(setting);
             Map<String, Object> result = new HashMap<>();
-            result.put("TAG_NO", newVersion.getTagNo());
+            result.put("ORD_NO", newVersion.getOrdNo());
             result.put("TAG_VER", newVersion.getTag_version());
             result.put("CREATE_DT", newVersion.getCREATE_DT());
             result.put("CREATE_ID", newVersion.getCREATE_ID());
@@ -571,45 +571,63 @@ public class TagService {
         }
     }
 
-    public ResponseEntity<?> updateVersionInfo(String tagNo, Map<String, Object> dto) {
+    public ResponseEntity<?> updateVersionInfo(String ordNo, Map<String, Object> dto) {
         try {
-            Setting_Info setting = settingRepo.findAll().stream()
-                    .filter(s -> tagNo.equals(s.getTagNo()))
-                    .findFirst().orElse(null);
-            if (setting != null) {
-                setting.setHW_version((String) dto.get("HW_VERSION"));
-                setting.setFW_version((String) dto.get("FW_VERSION"));
-                setting.setLED_SEC((String) dto.get("ledSec"));
-                setting.setRI_MS((String) dto.get("riMs"));
-                setting.setTX_POWER((String) dto.get("txPower"));
-                setting.setRANDOM_DV((String) dto.get("randomDv"));
-                setting.setRF_PROFILE((String) dto.get("rfProfile"));
-                setting.setCHANNEL((String) dto.get("channel"));
-                setting.setSLEEP_MODE((String) dto.get("sleepMode"));
-                setting.setSLEEP_TH_HOLD((String) dto.get("sleepThHold"));
-                setting.setSLEEP_INTERVAL((String) dto.get("sleepInterval"));
-                setting.setSLEEP_PERIOD((String) dto.get("sleepPeriod"));
-                setting.setBC_VER((String) dto.get("bcVer"));
-                setting.setBC_PERIOD((String) dto.get("bcPeriod"));
-                setting.setBC_SLEEP((String) dto.get("bcSleep"));
-                setting.setDEVICE_IP((String) dto.get("deviceIp"));
-                setting.setSERVER_IP((String) dto.get("serverIp"));
-                setting.setGATEWAY((String) dto.get("gateway"));
-                setting.setSUB_MASK((String) dto.get("subMask"));
-                setting.setTDMA((String) dto.get("tdma"));
-                setting.setPORT((String) dto.get("port"));
-                setting.setUPDATE_DT(new Date());
-                setting.setUPDATE_ID((String) dto.get("updateId"));
-                settingRepo.save(setting);
-                Map<String, Object> result = new HashMap<>();
-                result.put("TAG_NO", setting.getTagNo());
-                result.put("UPDATE_DT", setting.getUPDATE_DT());
-                result.put("UPDATE_ID", setting.getUPDATE_ID());
-                return ResponseEntity.ok(result);
+            Optional<Version_Info> existingVersion = versionInfoRepository.findAll().stream()
+                    .filter(v -> ordNo.equals(v.getOrdNo()))
+                    .max(Comparator.comparing(Version_Info::getTag_version));
+            if (existingVersion.isPresent()) {
+                Version_Info version = existingVersion.get();
+                version.setTag_version((String) dto.get("tag_Version"));
+                version.setUPDATE_DT(new Date());
+                version.setUPDATE_ID((String) dto.get("update_Id"));
+                versionInfoRepository.save(version);
+
+                VersionInfoLog versionInfoLog = new VersionInfoLog();
+                versionInfoLog.setOrdNo(version.getOrdNo());
+                versionInfoLog.setTAG_VER(version.getTag_version());
+                versionInfoLog.setCREATE_ID(version.getCREATE_ID());
+                versionInfoLog.setCreateDt(version.getCREATE_DT());
+                versionInfoLog.setUPDATE_ID(version.getUPDATE_ID());
+                versionInfoLog.setUPDATE_DT(new Date());
+                versionInfoLog.setStatus("수정");
+                versionInfoLogRepository.save(versionInfoLog);
+
+                return ResponseEntity.ok(version);
             }
             return ResponseEntity.ok(null);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    public ResponseEntity<?> getTagNumbers(String query) {
+        try {
+            List<Basic_Info> basics = basicInfoRepository.findAll();
+            List<String> tagNumbers = new ArrayList<>();
+            
+            for (Basic_Info basic : basics) {
+                String ordNo = basic.getOrdNo();
+                if (query == null || query.trim().isEmpty() || 
+                    ordNo.toLowerCase().contains(query.toLowerCase())) {
+                    tagNumbers.add(ordNo);
+                }
+            }
+            if (tagNumbers.size() > 20) {
+                tagNumbers = tagNumbers.subList(0, 20);
+            }
+            
+            return ResponseEntity.ok(tagNumbers);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+    private Date parseDate(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) return null;
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateStr);
+        } catch (ParseException e) {
+            return new Date();
         }
     }
 }

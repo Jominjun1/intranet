@@ -17,9 +17,8 @@ public class VersionInfoLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long logseq;
 
-    @Column(name="TAG_NO")
-    private String tagNo; // 스마트태그 번호
-    private String LogType; // 로그 타입
+    @Column(name="ORD_NO")
+    private String ordNo; // 스마트태그 번호
     private String TAG_VER; // 제품 번호
     private String DEL_RSN; // 스마트 태그 삭제 사유
     @Column(name="CREATE_DT")

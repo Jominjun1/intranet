@@ -22,7 +22,7 @@ public class TagController {
         this.tagService = tagService;
     }
 
-    // 스마트태그 재고 목록 조회 (TAG_NO 기준 매칭, 검색조건 포함)
+    // 스마트태그 재고 목록 조회 (ORD_NO 기준 매칭, 검색조건 포함)
     @GetMapping("/getTagList")
     public ResponseEntity<?> getTagInventoryList(@RequestParam(required = false) String macAddr, @RequestParam(required = false) String facCd,
             @RequestParam(required = false) String facNo, @RequestParam(required = false, defaultValue = "all") String delFilter) {
@@ -36,11 +36,11 @@ public class TagController {
     }
 
     // 처리단계 상세 조회
-    @GetMapping("/proc_step_{tagNo}")
-    public ResponseEntity<?> getProcStep(@PathVariable String tagNo) {
+    @GetMapping("/proc_step_{ordNo}")
+    public ResponseEntity<?> getProcStep(@PathVariable String ordNo) {
         try {
-            log.info("처리단계  상세 조회 요청 : {}" , tagNo);
-            return ResponseEntity.ok(tagService.getProcStep(tagNo));
+            log.info("처리단계  상세 조회 요청 : {}" , ordNo);
+            return ResponseEntity.ok(tagService.getProcStep(ordNo));
         } catch (Exception e) {
             log.info("에러 발생 : {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -48,23 +48,35 @@ public class TagController {
     }
 
     // 세팅정보(제품버전) 상세 조회 (최신)
-    @GetMapping("/setting_info_{tagNo}")
-    public ResponseEntity<?> getSettingInfo(@PathVariable String tagNo) {
+    @GetMapping("/setting_info_{ordNo}")
+    public ResponseEntity<?> getSettingInfo(@PathVariable String ordNo) {
         try {
-            log.info("세팅정보 상세 조회 요청 : {}" , tagNo);
-            return ResponseEntity.ok(tagService.getSettingInfo(tagNo));
+            log.info("세팅정보 상세 조회 요청 : {}" , ordNo);
+            return ResponseEntity.ok(tagService.getSettingInfo(ordNo));
         } catch (Exception e) {
             log.info("에러 발생 : {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    // 세팅정보 수정 (제품버전 0.1 증가)
-    @PutMapping("/update_setting_{tagNo}")
-    public ResponseEntity<?> updateSettingInfo(@PathVariable String tagNo, @RequestBody TagSettingDTO SettingDTO) {
+    // 최신 버전 정보 조회
+    @GetMapping("/latest_version_{ordNo}")
+    public ResponseEntity<?> getLatestVersionInfo(@PathVariable String ordNo) {
         try {
-            log.info("세팅정보 수정 요청 : {}" , tagNo);
-            return ResponseEntity.ok(tagService.updateSettingInfo(tagNo, SettingDTO));
+            log.info("최신 버전 정보 조회 요청 : {}" , ordNo);
+            return ResponseEntity.ok(tagService.getLatestVersionInfo(ordNo));
+        } catch (Exception e) {
+            log.info("에러 발생 : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    // 세팅정보 수정/삭제 (제품버전 0.1 증가)
+    @PutMapping("/update_setting_{ordNo}")
+    public ResponseEntity<?> updateSettingInfo(@PathVariable String ordNo, @RequestBody TagSettingDTO SettingDTO) {
+        try {
+            log.info("세팅정보 수정 요청 : {}" , ordNo);
+            return ResponseEntity.ok(tagService.updateSettingInfo(ordNo, SettingDTO));
         } catch (Exception e) {
             log.info("에러 발생 : {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -72,11 +84,11 @@ public class TagController {
     }
 
     // AS 이력 조회 (생성일 순으로 정렬, MAC주소 포함, 삭제여부 필터링)
-    @GetMapping("/prod_as_{tagNo}")
-    public ResponseEntity<?> getProdAsList(@PathVariable String tagNo, @RequestParam(required = false, defaultValue = "active") String filter) {
+    @GetMapping("/prod_as_{ordNo}")
+    public ResponseEntity<?> getProdAsList(@PathVariable String ordNo, @RequestParam(required = false, defaultValue = "active") String filter) {
         try{
-            log.info("AS 이력 조회 요청 : {}" , tagNo);
-            return ResponseEntity.ok(tagService.getProdAsList(tagNo, filter));
+            log.info("AS 이력 조회 요청 : {}" , ordNo);
+            return ResponseEntity.ok(tagService.getProdAsList(ordNo, filter));
         }catch (Exception e) {
             log.info("에러 발생 : {}" , e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -84,35 +96,23 @@ public class TagController {
     }
 
     // AS 등록
-    @PostMapping("/{tagNo}_as")
-    public ResponseEntity<?> createProdAs(@PathVariable String tagNo, @RequestBody Map<String, Object> dto) {
+    @PostMapping("/{ordNo}_as")
+    public ResponseEntity<?> createProdAs(@PathVariable String ordNo, @RequestBody Map<String, Object> dto) {
         try{
-            log.info("AS 등록 요청 : {}",  tagNo);
-            return ResponseEntity.ok(tagService.createProdAs(tagNo, dto));
+            log.info("AS 등록 요청 : {}",  ordNo);
+            return ResponseEntity.ok(tagService.createProdAs(ordNo, dto));
         }catch (Exception e) {
             log.info("에러 발생 : {}" , e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    // AS 수정 (기존 AS 기록 수정)
-    @PutMapping("/update_{tagNo}_as")
-    public ResponseEntity<?> updateProdAs(@PathVariable String tagNo, @RequestBody Map<String, Object> dto) {
+    // AS 수정/삭제 (기존 AS 기록 수정)
+    @PutMapping("/update_{ordNo}_as")
+    public ResponseEntity<?> updateProdAs(@PathVariable String ordNo, @RequestBody Map<String, Object> dto) {
         try{
-            log.info("AS 수정 요청 : {}" , tagNo);
-            return ResponseEntity.ok(tagService.updateProdAs(tagNo, dto));
-        }catch (Exception e) {
-            log.info("에러 발생 : {}" , e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
-    // AS 삭제
-    @DeleteMapping("/delete/{prodAsId}")
-    public ResponseEntity<?> deleteProdAs(@PathVariable Long prodAsId) {
-        try{
-            log.info("AS 삭제 요청 : {}" , prodAsId);
-            return ResponseEntity.ok(tagService.deleteProdAs(prodAsId));
+            log.info("AS 수정 요청 : {}" , ordNo);
+            return ResponseEntity.ok(tagService.updateProdAs(ordNo, dto));
         }catch (Exception e) {
             log.info("에러 발생 : {}" , e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -120,11 +120,11 @@ public class TagController {
     }
 
     // 제품버전 이력 전체 조회 (세팅정보 포함)
-    @GetMapping("/version-history")
-    public ResponseEntity<?> getVersionHistory(@PathVariable String tagNo) {
+    @GetMapping("/version-history/{ordNo}")
+    public ResponseEntity<?> getVersionHistory(@PathVariable String ordNo) {
         try{
-            log.info("제품 버전 이력 전체 조회 요청 : {}" , tagNo);
-            return ResponseEntity.ok(tagService.getVersionHistory(tagNo));
+            log.info("제품 버전 이력 전체 조회 요청 : {}" , ordNo);
+            return ResponseEntity.ok(tagService.getVersionHistory(ordNo));
         }catch (Exception e) {
             log.info("에러 발생 : {}" , e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -133,9 +133,9 @@ public class TagController {
 
     // 공통정보 이력 전체 조회 (MAC/공장코드/SN)
     @GetMapping("/common_history")
-    public ResponseEntity<?> getCommonHistory(@PathVariable String tagNo) {
+    public ResponseEntity<?> getCommonHistory(@PathVariable String ordNo) {
         try{
-            return ResponseEntity.ok(tagService.getCommonHistory(tagNo));
+            return ResponseEntity.ok(tagService.getCommonHistory(ordNo));
         }catch (Exception e) {
             log.info("에러 발생 : {}" , e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -153,11 +153,11 @@ public class TagController {
         }
     }
 
-    // 공통정보 수정
-    @PutMapping("/update/common_{tagNo}")
-    public ResponseEntity<?> updateCommonInfo(@PathVariable String tagNo, @RequestBody Map<String, Object> dto) {
+    // 공통정보 수정/삭제
+    @PutMapping("/update/common_{ordNo}")
+    public ResponseEntity<?> updateCommonInfo(@PathVariable String ordNo, @RequestBody Map<String, Object> dto) {
         try{
-            return ResponseEntity.ok(tagService.updateCommonInfo(tagNo, dto));
+            return ResponseEntity.ok(tagService.updateCommonInfo(ordNo, dto));
         }catch (Exception e) {
             log.info("에러 발생 : {}" , e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -165,21 +165,33 @@ public class TagController {
     }
 
     // 제품버전 등록
-    @PostMapping("/version_{tagNo}")
-    public ResponseEntity<?> createVersionInfo(@PathVariable String tagNo, @RequestBody Map<String, Object> dto) {
+    @PostMapping("/version_{ordNo}")
+    public ResponseEntity<?> createVersionInfo(@PathVariable String ordNo, @RequestBody Map<String, Object> dto) {
         try{
-            return ResponseEntity.ok(tagService.createVersionInfo(tagNo, dto));
+            return ResponseEntity.ok(tagService.createVersionInfo(ordNo, dto));
         }catch (Exception e) {
             log.info("에러 발생 : {}" , e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    // 제품버전 수정
-    @PutMapping("/update/version_{tagNo}")
-    public ResponseEntity<?> updateVersionInfo(@PathVariable String tagNo, @RequestBody Map<String, Object> dto) {
+    // 제품버전 수정/삭제
+    @PutMapping("/update/version_{ordNo}")
+    public ResponseEntity<?> updateVersionInfo(@PathVariable String ordNo, @RequestBody Map<String, Object> dto) {
         try{
-            return ResponseEntity.ok(tagService.updateVersionInfo(tagNo, dto));
+            return ResponseEntity.ok(tagService.updateVersionInfo(ordNo, dto));
+        }catch (Exception e) {
+            log.info("에러 발생 : {}" , e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    // 태그번호 자동완성
+    @GetMapping("/tag-numbers")
+    public ResponseEntity<?> getTagNumbers(@RequestParam(required = false) String query) {
+        try{
+            log.info("태그번호 자동완성 요청 : {}" , query);
+            return ResponseEntity.ok(tagService.getTagNumbers(query));
         }catch (Exception e) {
             log.info("에러 발생 : {}" , e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

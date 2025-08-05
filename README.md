@@ -161,19 +161,19 @@ GET /tags/getTagList?macAddr={mac_addr}&facCd={fac_cd}&facNo={fac_no}&delFilter=
 
 #### 처리단계 조회
 ```http
-GET /tags/proc_step_{tagNo}
+GET /tags/proc_step_{ordNo}
 ```
 
 ### 2.3 세팅정보 관리
 
 #### 세팅정보 조회 (최신)
 ```http
-GET /tags/setting_info_{tagNo}
+GET /tags/setting_info_{ordNo}
 ```
 
 #### 세팅정보 수정
 ```http
-PUT /tags/update_setting_{tagNo}
+PUT /tags/update_setting_{ordNo}
 Content-Type: application/json
 
 {
@@ -185,7 +185,7 @@ Content-Type: application/json
 
 #### AS 이력 조회
 ```http
-GET /tags/prod_as_{tagNo}?filter={filter}
+GET /tags/prod_as_{ordNo}?filter={filter}
 ```
 
 **파라미터:**
@@ -193,7 +193,7 @@ GET /tags/prod_as_{tagNo}?filter={filter}
 
 #### AS 등록
 ```http
-POST /tags/{tagNo}_as
+POST /tags/{ordNo}_as
 Content-Type: application/json
 
 {
@@ -204,7 +204,7 @@ Content-Type: application/json
 
 #### AS 수정
 ```http
-PUT /tags/update_{tagNo}_as
+PUT /tags/update_{ordNo}_as
 Content-Type: application/json
 
 {
@@ -223,12 +223,12 @@ DELETE /tags/delete/{prodAsId}
 
 #### 버전 이력 조회
 ```http
-GET /tags/version-history/{tagNo}
+GET /tags/version-history/{ordNo}
 ```
 
 #### 버전 등록
 ```http
-POST /tags/version_{tagNo}
+POST /tags/version_{ordNo}
 Content-Type: application/json
 
 {
@@ -239,7 +239,7 @@ Content-Type: application/json
 
 #### 버전 수정
 ```http
-PUT /tags/update/version_{tagNo}
+PUT /tags/update/version_{ordNo}
 Content-Type: application/json
 
 {
@@ -252,7 +252,7 @@ Content-Type: application/json
 
 #### 공통정보 이력 조회
 ```http
-GET /tags/common_history/{tagNo}
+GET /tags/common_history/{ordNo}
 ```
 
 #### 공통정보 등록
@@ -270,7 +270,7 @@ Content-Type: application/json
 
 #### 공통정보 수정
 ```http
-PUT /tags/update/common_{tagNo}
+PUT /tags/update/common_{ordNo}
 Content-Type: application/json
 
 {

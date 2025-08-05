@@ -16,9 +16,8 @@ public class SettingInfoLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long logseq;
 
-    @Column(name="TAG_NO")
-    private String tagNo; // 스마트 태그 번호
-    private String LogType; // 로그 타입
+    @Column(name="ORD_NO")
+    private String ordNo; // 스마트 태그 번호
     private String HW_VER; // 하드웨어 버전
     private String FW_VER; // 펌웨어 버전
     private String LED_SEC; // LED ON 주기

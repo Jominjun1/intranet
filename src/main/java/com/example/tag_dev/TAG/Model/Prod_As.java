@@ -19,8 +19,8 @@ public class Prod_As {
     @Column(name="seq")
     private Long prod_as_id;
 
-    @Column(name="TAG_NO")
-    private String tagNo; // 스마트 태그 번호
+    @Column(name="ORD_NO")
+    private String ordNo; // 스마트 태그 번호
     @Column(name="AS_CNT")
     private Long asCnt; // AS 횟수
     @Column(name="AS_DOC")

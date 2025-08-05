@@ -19,8 +19,10 @@ public class Basic_Info {
     @Column(name="seq")
     private Long basic_info_seq;
 
-    @Column(name="TAG_NO")
-    private String tagNo;  // 스마트태그 번호
+    @Column(name="ORD_NO")
+    private String ordNo;  // 스마트태그 번호
+
+
     @Column(name="TAG_TYPE")
     private String tagType; // 스마트 태그 타입
     @Column(name="ERP_CODE")

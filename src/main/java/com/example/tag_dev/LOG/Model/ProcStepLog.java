@@ -17,8 +17,8 @@ public class ProcStepLog {
     @Column(name="seq")
     private Long logseq;
 
-    @Column(name ="TAG_NO")
-    private String tagNo;  // 스마트태그 번호
+    @Column(name ="ORD_NO")
+    private String ordNo;  // 스마트태그 번호
     private Date RECEIPT_DT; // 입고일
     private Date DELIVERY_DT; // 납품일
     private Date LAB_INSP_DT; // 연구소 검수일

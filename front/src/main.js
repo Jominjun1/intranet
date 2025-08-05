@@ -5,6 +5,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import axios from 'axios'
+import router from './router'
 
 // axios 기본 설정
 axios.defaults.baseURL = 'http://localhost:8080'
@@ -40,6 +41,7 @@ axios.interceptors.response.use(
 
 const app = createApp(App)
 app.use(ElementPlus)
+app.use(router)
 
 // Element Plus 아이콘 등록
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

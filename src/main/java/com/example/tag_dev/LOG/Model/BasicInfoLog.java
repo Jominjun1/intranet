@@ -17,8 +17,8 @@ public class BasicInfoLog {
     @Column(name="seq")
     private Long log_seq;
 
-    @Column(name="TAG_NO")
-    private String tagNo;  // 스마트태그 번호
+    @Column(name="ORD_NO")
+    private String ordNo;  // 스마트태그 번호
     @Column(name="tagType")
     private String tagType; // 스마트 태그 타입
     private String Status;

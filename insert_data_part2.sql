@@ -1,5 +1,5 @@
 -- TB_TAG_PROC_STEP 데이터 (30개) - 백엔드 모델에 맞게 컬럼명 수정
-INSERT INTO TB_TAG_PROC_STEP (seq, TAG_NO, Receipt_dt, Delivery_dt, Lab_insp_dt, Lab_insp_desc, Tech_inst_dt, Tech_inst_desc, Create_dt, Create_id, Update_dt, Update_id, Status) VALUES
+INSERT INTO TB_TAG_PROC_STEP (seq, ORD_NO, Receipt_dt, Delivery_dt, Lab_insp_dt, Lab_insp_desc, Tech_inst_dt, Tech_inst_desc, Create_dt, Create_id, Update_dt, Update_id, Status) VALUES
 (1, 'AABBCCDDEE01FAC001001', '2024-01-20 09:00:00', '2024-01-25 15:00:00', '2024-01-22 10:00:00', '정상', '2024-01-23 14:00:00', '정상', '2024-01-15 09:30:00', 'EMP001', '2024-01-15 09:30:00', 'EMP001', 'N'),
 (2, 'AABBCCDDEE02FAC001002', '2024-01-20 10:00:00', '2024-01-25 16:00:00', '2024-01-22 11:00:00', '정상', '2024-01-23 15:00:00', '정상', '2024-01-15 10:15:00', 'EMP002', '2024-01-15 10:15:00', 'EMP002', 'N'),
 (3, 'AABBCCDDEE03FAC002001', '2024-01-21 09:00:00', '2024-01-26 15:00:00', '2024-01-23 10:00:00', '정상', '2024-01-24 14:00:00', '정상', '2024-01-15 11:00:00', 'EMP003', '2024-01-15 11:00:00', 'EMP003', 'N'),
@@ -32,7 +32,7 @@ INSERT INTO TB_TAG_PROC_STEP (seq, TAG_NO, Receipt_dt, Delivery_dt, Lab_insp_dt,
 (30, 'AABBCCDDEE1EFAC015002', '2024-02-03 10:00:00', '2024-02-08 16:00:00', '2024-02-05 11:00:00', '정상', '2024-02-06 15:00:00', '정상', '2024-01-17 15:45:00', 'EMP030', '2024-01-17 15:45:00', 'EMP030', 'N');
 
 -- TB_TAG_PROD_AS 데이터 (30개) - 백엔드 모델에 맞게 컬럼명 수정
-INSERT INTO TB_TAG_PROD_AS (seq, TAG_NO, AS_CNT, AS_DOC, Occr_dt, Occ_rrsn, Close_dt, Close_rslt, Delivery_dt, Create_dt, Create_id, Update_dt, Update_id, Status) VALUES
+INSERT INTO TB_TAG_PROD_AS (seq, ORD_NO, AS_CNT, AS_DOC, Occr_dt, Occ_rrsn, Close_dt, Close_rslt, Delivery_dt, Create_dt, Create_id, Update_dt, Update_id, Status) VALUES
 (1, 'AABBCCDDEE01FAC001001', 0, NULL, NULL, NULL, NULL, NULL, '2024-01-25 15:00:00', '2024-01-15 09:30:00', 'EMP001', '2024-01-15 09:30:00', 'EMP001', 'N'),
 (2, 'AABBCCDDEE02FAC001002', 1, 'AS2024001', '2024-02-15 10:00:00', '통신 불량', '2024-02-16 15:00:00', '교체 완료', '2024-01-25 16:00:00', '2024-01-15 10:15:00', 'EMP002', '2024-01-15 10:15:00', 'EMP002', 'N'),
 (3, 'AABBCCDDEE03FAC002001', 0, NULL, NULL, NULL, NULL, NULL, '2024-01-26 15:00:00', '2024-01-15 11:00:00', 'EMP003', '2024-01-15 11:00:00', 'EMP003', 'N'),

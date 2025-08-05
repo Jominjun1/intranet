@@ -32,18 +32,20 @@
           <el-input v-model="searchDeptCd" placeholder="부서코드 입력" clearable />
         </el-form-item>
         <el-form-item label="권한">
-          <el-select v-model="searchAcl" placeholder="권한 선택">
-            <el-option label="전체" value="" />
-            <el-option label="관리자" value="2" />
-            <el-option label="일반사용자" value="1" />
-            <el-option label="잠금" value="0" />
+          <el-select v-model="searchAcl" placeholder="권한 선택" clearable style="width: 150px;">
+            <el-option label="전체" :value="''" />
+            <el-option label="운영자" :value="'4'" />
+            <el-option label="시스템관리자" :value="'3'" />
+            <el-option label="관리자" :value="'2'" />
+            <el-option label="일반사용자" :value="'1'" />
+            <el-option label="잠금" :value="'0'" />
           </el-select>
         </el-form-item>
         <el-form-item label="상태">
-          <el-select v-model="searchStat" placeholder="상태 선택">
+          <el-select v-model="searchStat" placeholder="상태 선택" clearable style="width: 150px;">
             <el-option label="전체" value="" />
             <el-option label="활성" value="ACTIVE" />
-            <el-option label="활성" value="PENDING" />
+            <el-option label="대기" value="PENDING" />
             <el-option label="잠금" value="LOCK" />
             <el-option label="비활성" value="INACTIVE" />
           </el-select>
@@ -61,34 +63,54 @@
 
     <!-- 테이블 영역 -->
     <div class="table-section">
-      <el-table :data="paginatedData" style="width:100%" v-loading="loading">
-        <el-table-column prop="user_id" label="사용자ID" width="100" />
-        <el-table-column prop="user_name" label="이름" width="120" />
-        <el-table-column prop="login_id" label="로그인ID" width="120" />
-        <el-table-column prop="user_email" label="이메일" width="200" />
-        <el-table-column prop="user_phone_num" label="전화번호" width="130" />
-        <el-table-column prop="dept_cd" label="부서코드" width="100" />
-        <el-table-column prop="user_job" label="직책" width="100" />
-        <el-table-column prop="user_acl" label="권한" width="100">
+      <el-table :data="paginatedData" style="width:100%" v-loading="loading" :key="tableKey">
+        <el-table-column prop="userId" label="사용자ID" width="80" />
+        <el-table-column prop="userName" label="이름" width="100" />
+        <el-table-column prop="loginId" label="로그인ID" width="100" />
+        <el-table-column prop="userEmail" label="이메일" width="180" />
+        <el-table-column prop="userPhoneNum" label="전화번호" width="120" />
+        <el-table-column prop="dept_cd" label="부서코드" width="80" />
+        <el-table-column prop="user_job" label="직책" width="80" />
+        <el-table-column prop="user_acl" label="권한" width="80">
           <template #default="{ row }">
             <el-tag :type="getAclType(row.user_acl)">
               {{ getAclText(row.user_acl) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="user_stat" label="상태" width="100">
+        <el-table-column prop="user_stat" label="상태" width="80">
           <template #default="{ row }">
             <el-tag :type="getStatusType(row.user_stat)">
               {{ getStatusLabel(row.user_stat) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="hire_dt" label="입사일" width="120">
+        <el-table-column prop="hire_dt" label="입사일" width="100">
           <template #default="{ row }">
             {{ formatDate(row.hire_dt) }}
           </template>
         </el-table-column>
-        <el-table-column label="작업" width="150">
+        <el-table-column prop="change_password_dt" label="비밀번호 변경일" width="160">
+          <template #default="{ row }">
+            {{ formatDateTime(row.change_password_dt) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="login_dt" label="로그인일시" width="160">
+          <template #default="{ row }">
+            {{ formatDateTime(row.login_dt) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="update_dt" label="수정일시" width="160">
+          <template #default="{ row }">
+            {{ formatDateTime(row.update_dt) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="update_id" label="수정한사람" width="100">
+          <template #default="{ row }">
+            {{ row.update_id || '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="작업" width="120">
           <template #default="{ row }">
             <el-button size="small" @click="editUser(row)">수정</el-button>
             <el-button size="small" type="danger" @click="deleteUser(row)">삭제</el-button>
@@ -167,7 +189,7 @@
 
     <!-- 사용자 등록/수정 모달 -->
     <el-dialog v-model="showAddUserForm" :title="isEditMode ? '사용자 수정' : '사용자 등록'" width="600px">
-      <el-form :model="userForm" :rules="userRules" ref="userFormRef" label-width="120">
+      <el-form :model="userForm" ref="userFormRef" label-width="120">
         <el-form-item label="이름" prop="user_name">
           <el-input v-model="userForm.user_name" placeholder="이름을 입력하세요" />
         </el-form-item>
@@ -175,7 +197,7 @@
           <el-input v-model="userForm.user_en_name" placeholder="영문이름을 입력하세요" />
         </el-form-item>
         <el-form-item label="로그인ID" prop="login_id">
-          <el-input v-model="userForm.login_id" placeholder="로그인ID를 입력하세요" :disabled="isEditMode" />
+          <el-input v-model="userForm.login_id" placeholder="로그인ID를 입력하세요"/>
         </el-form-item>
         <el-form-item label="비밀번호" prop="password" v-if="!isEditMode">
           <el-input v-model="userForm.password" type="password" placeholder="비밀번호를 입력하세요" />
@@ -262,6 +284,7 @@ const showAddUserForm = ref(false)
 const isEditMode = ref(false)
 const userFormRef = ref()
 const showHelp = ref(false)
+const tableKey = ref(0)
 
 // 검색 및 페이지네이션 상태
 const searchName = ref('')
@@ -282,10 +305,10 @@ const paginatedData = computed(() => {
 // 필터링된 데이터
 const filteredData = computed(() => {
   return users.value.filter(user => {
-    const matchesName = searchName.value ? user.user_name?.includes(searchName.value) : true
-    const matchesLoginId = searchLoginId.value ? user.login_id?.includes(searchLoginId.value) : true
+    const matchesName = searchName.value ? user.userName?.includes(searchName.value) : true
+    const matchesLoginId = searchLoginId.value ? user.loginId?.includes(searchLoginId.value) : true
     const matchesDeptCd = searchDeptCd.value ? user.dept_cd?.includes(searchDeptCd.value) : true
-    const matchesAcl = searchAcl.value ? parseInt(user.user_acl)?.toString() === searchAcl.value : true
+    const matchesAcl = searchAcl.value ? user.user_acl === searchAcl.value : true
     const matchesStat = searchStat.value ? user.user_stat === searchStat.value : true
     return matchesName && matchesLoginId && matchesDeptCd && matchesAcl && matchesStat
   })
@@ -305,16 +328,6 @@ const userForm = ref({
   user_stat: 'ACTIVE',
   hire_dt: null
 })
-
-// 유효성 검사 규칙
-const userRules = computed(() => ({
-  user_name: [{ required: true, message: '이름을 입력하세요', trigger: 'blur' }],
-  login_id: [{ required: true, message: '로그인ID를 입력하세요', trigger: 'blur' }],
-  password: isEditMode.value ? [] : [{ required: true, message: '비밀번호를 입력하세요', trigger: 'blur' }],
-  user_email: [{ required: true, message: '이메일을 입력하세요', trigger: 'blur' }],
-  user_acl: [{ required: true, message: '권한을 선택하세요', trigger: 'change' }],
-  user_stat: [{ required: true, message: '상태를 선택하세요', trigger: 'change' }]
-}))
 
 // 권한별 라벨과 타입
 const getAclText = (acl) => {
@@ -375,6 +388,24 @@ const formatDate = (dateString) => {
   }
 }
 
+// 날짜시간 포맷팅
+const formatDateTime = (dateString) => {
+  if (!dateString) return '-'
+  try {
+    const date = new Date(dateString)
+    return date.toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    })
+  } catch (e) {
+    return dateString
+  }
+}
+
 // 사용자 목록 조회
 async function loadUsers() {
   loading.value = true
@@ -386,14 +417,19 @@ async function loadUsers() {
     }
     const response = await axios.get('/Admin/all-user' , { headers: { Authorization: `Bearer ${token}`}})
     console.log("서버 응답 데이터:", response.data)
+    
+    // 원본 데이터 그대로 사용 (매핑 제거)
     users.value = response.data.body || []
     
     // 사용자 데이터 디버깅
     if (users.value.length > 0) {
-          console.log("첫 번째 사용자 데이터:", users.value[0])
-    console.log("hire_dt 값:", users.value[0].hire_dt, "타입:", typeof users.value[0].hire_dt)
-    console.log("모든 키:", Object.keys(users.value[0]))
+      console.log("첫 번째 사용자 데이터:", users.value[0])
+      console.log("hire_dt 값:", users.value[0].hire_dt, "타입:", typeof users.value[0].hire_dt)
+      console.log("모든 키:", Object.keys(users.value[0]))
     }
+    
+    // 테이블 키 업데이트로 강제 재렌더링
+    tableKey.value++
     
 
   } catch (error) {
@@ -402,6 +438,11 @@ async function loadUsers() {
   } finally {
     loading.value = false
   }
+}
+
+// 권한 선택 변경 이벤트
+function onAclChange(value) {
+  console.log('권한 선택 변경:', value, '타입:', typeof value)
 }
 
 // 검색 및 페이지네이션 로직
@@ -660,6 +701,51 @@ onMounted(() => {
 
 :deep(.el-table) {
   table-layout: fixed !important;
+  width: 100% !important;
+}
+
+:deep(.el-table__header-wrapper) {
+  width: 100% !important;
+}
+
+:deep(.el-table__header) {
+  width: 100% !important;
+}
+
+:deep(.el-table__body-wrapper) {
+  width: 100% !important;
+}
+
+:deep(.el-table__row) {
+  width: 100% !important;
+}
+
+:deep(.el-scrollbar__view) {
+  width: 100% !important;
+}
+
+:deep(.el-table__body) {
+  width: 100% !important;
+}
+
+:deep(.el-table__inner-wrapper) {
+  width: 100% !important;
+}
+
+:deep(.el-table__fixed) {
+  width: 100% !important;
+}
+
+:deep(.el-table__fixed-right) {
+  width: 100% !important;
+}
+
+:deep(.el-table__fixed-header-wrapper) {
+  width: 100% !important;
+}
+
+:deep(.el-table__fixed-body-wrapper) {
+  width: 100% !important;
 }
 
 :deep(.el-table__body-wrapper) {
@@ -691,6 +777,21 @@ onMounted(() => {
 
 :deep(.el-table td .cell) {
   text-align: center !important;
+}
+
+/* 테이블 컨테이너 반응형 */
+.table-section {
+  margin-top: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-x: auto; /* 가로 스크롤 추가 */
+  width: 100%;
+}
+
+/* 테이블 최소 너비 설정 */
+:deep(.el-table) {
+  min-width: 1200px; /* 테이블 최소 너비 */
 }
 
 .pagination-section {

@@ -1,5 +1,7 @@
 <template>
   <div class="tag-management-page">
+
+    
     <!-- 헤더 -->
     <Header 
       :active-menu="activeMenu" 
@@ -8,62 +10,167 @@
       @user-command="handleUserCommand"
     />
     
-    <!-- 서브메뉴 네비게이션 -->
-    <div class="submenu-navigation" v-if="currentSubMenu">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item>태그 관리</el-breadcrumb-item>
-        <el-breadcrumb-item>{{ getSubMenuTitle(currentSubMenu) }}</el-breadcrumb-item>
-      </el-breadcrumb>
-      <el-button @click="backToMain" type="text" :icon="ArrowLeft">
-        메인으로 돌아가기
-      </el-button>
-    </div>
+
     
     <!-- 서브메뉴별 컨텐츠 -->
     <div v-if="currentSubMenu === 'tag-proc-step'" class="submenu-content">
       <h2>처리단계 조회</h2>
-      <p>태그 번호를 입력하여 처리단계 정보를 조회하세요.</p>
-      <el-form :inline="true" class="search-form">
-        <el-form-item label="태그번호">
-          <el-input v-model="searchTagNo" placeholder="태그번호 입력" style="width: 300px" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="searchProcStep">조회</el-button>
-        </el-form-item>
-      </el-form>
-      <div v-if="procStepData" class="result-section">
-        <el-descriptions :column="2" border>
-          <el-descriptions-item label="태그번호">{{ procStepData.tagNo }}</el-descriptions-item>
-          <el-descriptions-item label="입고일">{{ formatDate(procStepData.receipt_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="납품일">{{ formatDate(procStepData.delivery_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="연구소 검수일">{{ formatDate(procStepData.lab_INSP_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="연구소 검수소견">{{ procStepData.lab_INSP_DESC }}</el-descriptions-item>
-          <el-descriptions-item label="융합기술팀 검수일">{{ formatDate(procStepData.tech_INSP_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="융합기술팀 검수소견">{{ procStepData.tech_INSP_DESC }}</el-descriptions-item>
-          <el-descriptions-item label="생성일">{{ formatDate(procStepData.create_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="생성자">{{ procStepData.create_ID }}</el-descriptions-item>
-          <el-descriptions-item label="수정일">{{ formatDate(procStepData.update_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="수정자">{{ procStepData.update_ID }}</el-descriptions-item>
-        </el-descriptions>
+      <p>태그 정보를 검색하여 처리단계 정보를 조회하세요.</p>
+      
+      <!-- 태그 검색 폼 -->
+      <div class="search-section">
+        <div class="search-header">
+          <h3>🔍 태그 검색</h3>
+          <el-button type="text" @click="showSearchHelp = !showSearchHelp">
+            <el-icon><QuestionFilled /></el-icon>
+            검색 도움말
+          </el-button>
+        </div>
+        
+        <el-form :inline="true" class="search-form">
+          <el-form-item label="태그번호">
+            <el-input v-model="searchTagNo" placeholder="전체 태그번호 입력 (예: AABBCCDDEE01FAC001001)" clearable style="width: 300px;" />
+          </el-form-item>
+          <el-form-item label="MAC주소">
+            <el-input v-model="searchMac" placeholder="MAC주소 입력" clearable />
+          </el-form-item>
+          <el-form-item label="시리얼번호">
+            <el-input v-model="searchSn" placeholder="시리얼번호 입력" clearable />
+          </el-form-item>
+          <el-form-item label="공장코드">
+            <el-input v-model="searchFacCd" placeholder="공장코드 입력" clearable />
+          </el-form-item>
+          <el-form-item label="삭제여부">
+            <el-select 
+              v-model="searchDelFilter" 
+              placeholder="삭제여부 선택"
+              style="width: 150px;"
+              clearable
+            >
+              <el-option 
+                v-for="option in delFilterOptions" 
+                :key="option.value"
+                :label="option.label" 
+                :value="option.value" 
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="doSearch">태그 검색</el-button>
+            <el-button @click="resetSearch">초기화</el-button>
+          </el-form-item>
+        </el-form>
       </div>
+      
+             <!-- 태그 검색 결과 테이블 -->
+       <div v-if="tableData.length > 0">
+         <h3>검색된 태그 목록</h3>
+         <el-table :data="tableData" style="width:100%" v-loading="loading">
+           <el-table-column prop="tag_No" label="태그번호" width="150" />
+           <el-table-column prop="mac_Addr" label="MAC주소" width="150" />
+           <el-table-column prop="fac_Cd" label="공장코드" width="100" />
+           <el-table-column prop="fac_No" label="시리얼번호" width="120" />
+           <el-table-column prop="Status" label="삭제여부" width="100">
+             <template #default="{ row }">
+               <el-tag :type="row.Status === 'Y' ? 'danger' : 'success'">
+                 {{ row.Status === 'Y' ? '삭제됨' : '사용중' }}
+               </el-tag>
+             </template>
+           </el-table-column>
+         </el-table>
+         
+         <!-- 검색 결과가 여러 개일 때 안내 메시지 -->
+         <div v-if="tableData.length > 1" class="info-message">
+           <el-alert
+             title="검색 결과가 여러 개입니다"
+             description="더 구체적인 검색 조건을 입력하여 하나의 태그만 검색되도록 해주세요."
+             type="info"
+             :closable="false"
+             show-icon
+           />
+         </div>
+       </div>
+       
+       <!-- 처리단계 조회 결과 -->
+       <div v-if="procStepData" class="result-section">
+         <h3>처리단계 정보</h3>
+         <el-descriptions :column="2" border>
+           <el-descriptions-item label="태그번호">{{ procStepData.ordNo }}</el-descriptions-item>
+           <el-descriptions-item label="입고일">{{ formatDate(procStepData.receipt_DT) }}</el-descriptions-item>
+           <el-descriptions-item label="납품일">{{ formatDate(procStepData.delivery_DT) }}</el-descriptions-item>
+           <el-descriptions-item label="연구소 검수일">{{ formatDate(procStepData.lab_INSP_DT) }}</el-descriptions-item>
+           <el-descriptions-item label="연구소 검수소견">{{ procStepData.lab_INSP_DESC }}</el-descriptions-item>
+           <el-descriptions-item label="융합기술팀 검수일">{{ formatDate(procStepData.tech_INSP_DT) }}</el-descriptions-item>
+           <el-descriptions-item label="융합기술팀 검수소견">{{ procStepData.tech_INSP_DESC }}</el-descriptions-item>
+           <el-descriptions-item label="생성일">{{ formatDate(procStepData.create_DT) }}</el-descriptions-item>
+           <el-descriptions-item label="생성자">{{ procStepData.create_ID }}</el-descriptions-item>
+           <el-descriptions-item label="수정일">{{ formatDate(procStepData.update_DT) }}</el-descriptions-item>
+           <el-descriptions-item label="수정자">{{ procStepData.update_ID }}</el-descriptions-item>
+         </el-descriptions>
+       </div>
     </div>
     
     <div v-else-if="currentSubMenu === 'tag-setting'" class="submenu-content">
       <h2>세팅정보 조회</h2>
-      <p>태그 번호를 입력하여 세팅정보를 조회하세요.</p>
-      <el-form :inline="true" class="search-form">
-        <el-form-item label="태그번호">
-          <el-input v-model="searchTagNo" placeholder="태그번호 입력" style="width: 300px" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="searchSettingInfo">조회</el-button>
-        </el-form-item>
-      </el-form>
+      <p>태그번호를 입력하여 세팅정보를 조회하세요.</p>
+      
+      <!-- 태그번호 검색 섹션 -->
+      <div class="direct-search-section">
+        <h3>🔍 태그번호 검색</h3>
+        <el-form :inline="true" class="direct-search-form">
+          <el-form-item label="태그번호">
+            <el-input 
+              v-model="searchTagNo" 
+              placeholder="태그번호 일부 입력 (예: AABB)"
+              clearable 
+              style="width: 350px;"
+              @keyup.enter="searchTagNumbers"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="success" @click="searchTagNumbers">검색</el-button>
+            <el-button @click="clearTagSearch">초기화</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      
+      <!-- 태그번호 검색 결과 -->
+      <div v-if="tagNumberList.length > 0" class="tag-search-results">
+        <h3>검색된 태그번호 목록 (총 {{ totalTagCount }}개)</h3>
+        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber">
+          <el-table-column prop="tag_No" label="태그번호" width="300" align="center" />
+          <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" />
+          <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" />
+          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" />
+          <el-table-column label="작업" width="120" align="center">
+            <template #default="{ row }">
+              <el-button size="small" type="primary" @click.stop="selectTagNumber(row)">선택</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        
+        <!-- 페이지네이션 -->
+        <div class="pagination-wrapper">
+          <el-pagination
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[5, 10, 20]"
+            :total="tagNumberList.length"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
+      </div>
+      
+      <!-- 세팅정보 조회 결과 -->
       <div v-if="settingInfoData" class="result-section">
+        <h3>세팅정보</h3>
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="태그번호">{{ settingInfoData.tagNo }}</el-descriptions-item>
-          <el-descriptions-item label="하드웨어버전">{{ settingInfoData.hw_VER }}</el-descriptions-item>
-          <el-descriptions-item label="펌웨어버전">{{ settingInfoData.fw_VER }}</el-descriptions-item>
+          <el-descriptions-item label="시퀀스">{{ settingInfoData.setting_info_seq }}</el-descriptions-item>
+          <el-descriptions-item label="태그번호">{{ settingInfoData.ordNo }}</el-descriptions-item>
+          <el-descriptions-item label="하드웨어버전">{{ settingInfoData.hw_version }}</el-descriptions-item>
+          <el-descriptions-item label="펌웨어버전">{{ settingInfoData.fw_version }}</el-descriptions-item>
           <el-descriptions-item label="LED ON 주기">{{ settingInfoData.led_SEC }}</el-descriptions-item>
           <el-descriptions-item label="송신주기">{{ settingInfoData.ri_MS }}</el-descriptions-item>
           <el-descriptions-item label="신호 강도">{{ settingInfoData.tx_POWER }}</el-descriptions-item>
@@ -83,6 +190,11 @@
           <el-descriptions-item label="서브넷 마스크">{{ settingInfoData.sub_MASK }}</el-descriptions-item>
           <el-descriptions-item label="TDMA">{{ settingInfoData.tdma }}</el-descriptions-item>
           <el-descriptions-item label="포트 번호">{{ settingInfoData.port }}</el-descriptions-item>
+          <el-descriptions-item label="삭제 여부">
+            <el-tag :type="settingInfoData.status === 'Y' ? 'danger' : 'success'">
+              {{ settingInfoData.status === 'Y' ? '삭제됨' : '사용중' }}
+            </el-tag>
+          </el-descriptions-item>
           <el-descriptions-item label="생성일">{{ formatDate(settingInfoData.create_DT) }}</el-descriptions-item>
           <el-descriptions-item label="생성자">{{ settingInfoData.create_ID }}</el-descriptions-item>
           <el-descriptions-item label="수정일">{{ formatDate(settingInfoData.update_DT) }}</el-descriptions-item>
@@ -93,42 +205,152 @@
     
     <div v-else-if="currentSubMenu === 'tag-version'" class="submenu-content">
       <h2>버전 이력 조회</h2>
-      <p>태그 번호를 입력하여 버전 이력을 조회하세요.</p>
-      <el-form :inline="true" class="search-form">
-        <el-form-item label="태그번호">
-          <el-input v-model="searchTagNo" placeholder="태그번호 입력" style="width: 300px" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="searchVersionHistory">조회</el-button>
-        </el-form-item>
-      </el-form>
-      <div v-if="versionHistoryData.length > 0" class="result-section">
-        <el-table :data="versionHistoryData" style="width: 100%">
-          <el-table-column prop="TAG_VER" label="버전" width="100" />
-          <el-table-column prop="HW_VER" label="하드웨어버전" width="120" />
-          <el-table-column prop="FW_VER" label="펌웨어버전" width="120" />
-          <el-table-column prop="CREATE_DT" label="생성일" width="120">
+      <p>태그번호를 입력하여 버전 이력을 조회하세요.</p>
+      
+      <!-- 태그번호 검색 섹션 -->
+      <div class="direct-search-section">
+        <h3>🔍 태그번호 검색</h3>
+        <el-form :inline="true" class="direct-search-form">
+          <el-form-item label="태그번호">
+            <el-input 
+              v-model="searchTagNo" 
+              placeholder="태그번호 일부 입력 (예: AABB)"
+              clearable 
+              style="width: 350px;"
+              @keyup.enter="searchTagNumbers"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="success" @click="searchTagNumbers">검색</el-button>
+            <el-button @click="clearTagSearch">초기화</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      
+      <!-- 태그번호 검색 결과 -->
+      <div v-if="tagNumberList.length > 0" class="tag-search-results">
+        <h3>검색된 태그번호 목록 (총 {{ totalTagCount }}개)</h3>
+        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber">
+          <el-table-column prop="tag_No" label="태그번호" width="300" align="center" />
+          <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" />
+          <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" />
+          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" />
+          <el-table-column label="작업" width="120" align="center">
             <template #default="{ row }">
-              {{ formatDate(row.CREATE_DT) }}
+              <el-button size="small" type="primary" @click.stop="selectTagNumber(row)">선택</el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="CREATE_ID" label="생성자" width="100" />
+        </el-table>
+        
+        <!-- 페이지네이션 -->
+        <div class="pagination-wrapper">
+          <el-pagination
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[5, 10, 20]"
+            :total="tagNumberList.length"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
+      </div>
+      
+      <!-- 버전 이력 조회 결과 -->
+      <div v-if="versionHistoryData && versionHistoryData.length > 0" class="result-section">
+        <h3>버전 이력</h3>
+        <el-table :data="versionHistoryData || []" style="width: 100%">
+          <el-table-column prop="tag_version" label="버전" width="100" />
+          <el-table-column prop="HW_VERSION" label="하드웨어버전" width="120" />
+          <el-table-column prop="FW_VERSION" label="펌웨어버전" width="120" />
+          <el-table-column prop="create_Dt" label="생성일" width="120">
+            <template #default="{ row }">
+              {{ formatDate(row.create_Dt) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="create_Id" label="생성자" width="100" />
         </el-table>
       </div>
     </div>
     
     <div v-else-if="currentSubMenu === 'tag-common'" class="submenu-content">
       <h2>공통정보 조회</h2>
-      <p>태그 번호를 입력하여 공통정보를 조회하세요.</p>
-      <el-form :inline="true" class="search-form">
-        <el-form-item label="태그번호">
-          <el-input v-model="searchTagNo" placeholder="태그번호 입력" style="width: 300px" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="searchCommonHistory">조회</el-button>
-        </el-form-item>
-      </el-form>
+      <p>태그 정보를 검색하여 공통정보를 조회하세요.</p>
+      
+      <!-- 태그 검색 폼 -->
+      <div class="search-section">
+        <div class="search-header">
+          <h3>🔍 태그 검색</h3>
+          <el-button type="text" @click="showSearchHelp = !showSearchHelp">
+            <el-icon><QuestionFilled /></el-icon>
+            검색 도움말
+          </el-button>
+        </div>
+        
+        <el-form :inline="true" class="search-form">
+          <el-form-item label="MAC주소">
+            <el-input v-model="searchMac" placeholder="MAC주소 입력" clearable />
+          </el-form-item>
+          <el-form-item label="시리얼번호">
+            <el-input v-model="searchSn" placeholder="시리얼번호 입력" clearable />
+          </el-form-item>
+          <el-form-item label="공장코드">
+            <el-input v-model="searchFacCd" placeholder="공장코드 입력" clearable />
+          </el-form-item>
+          <el-form-item label="삭제여부">
+            <el-select 
+              v-model="searchDelFilter" 
+              placeholder="삭제여부 선택"
+              style="width: 150px;"
+              clearable
+            >
+              <el-option 
+                v-for="option in delFilterOptions" 
+                :key="option.value"
+                :label="option.label" 
+                :value="option.value" 
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="doSearch">태그 검색</el-button>
+            <el-button @click="resetSearch">초기화</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      
+      <!-- 태그 검색 결과 테이블 -->
+      <div v-if="tableData.length > 0">
+        <h3>검색된 태그 목록</h3>
+        <el-table :data="tableData" style="width:100%" v-loading="loading">
+          <el-table-column prop="tag_No" label="태그번호" width="150" />
+          <el-table-column prop="mac_Addr" label="MAC주소" width="150" />
+          <el-table-column prop="fac_Cd" label="공장코드" width="100" />
+          <el-table-column prop="fac_No" label="시리얼번호" width="120" />
+          <el-table-column prop="Status" label="삭제여부" width="100">
+            <template #default="{ row }">
+              <el-tag :type="row.Status === 'Y' ? 'danger' : 'success'">
+                {{ row.Status === 'Y' ? '삭제됨' : '사용중' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+        </el-table>
+        
+        <!-- 검색 결과가 여러 개일 때 안내 메시지 -->
+        <div v-if="tableData.length > 1" class="info-message">
+          <el-alert
+            title="검색 결과가 여러 개입니다"
+            description="더 구체적인 검색 조건을 입력하여 하나의 태그만 검색되도록 해주세요."
+            type="info"
+            :closable="false"
+            show-icon
+          />
+        </div>
+      </div>
+      
+      <!-- 공통정보 조회 결과 -->
       <div v-if="commonHistoryData.length > 0" class="result-section">
+        <h3>공통정보</h3>
         <el-table :data="commonHistoryData" style="width: 100%">
           <el-table-column prop="mac_ADDR" label="MAC주소" width="150" />
           <el-table-column prop="fac_CD" label="공장코드" width="100" />
@@ -145,16 +367,82 @@
     
     <div v-else-if="currentSubMenu === 'tag-as'" class="submenu-content">
       <h2>AS 이력 조회</h2>
-      <p>태그 번호를 입력하여 AS 이력을 조회하세요.</p>
-      <el-form :inline="true" class="search-form">
-        <el-form-item label="태그번호">
-          <el-input v-model="searchTagNo" placeholder="태그번호 입력" style="width: 300px" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="searchAsInfo">조회</el-button>
-        </el-form-item>
-      </el-form>
+      <p>태그 정보를 검색하여 AS 이력을 조회하세요.</p>
+      
+      <!-- 태그 검색 폼 -->
+      <div class="search-section">
+        <div class="search-header">
+          <h3>🔍 태그 검색</h3>
+          <el-button type="text" @click="showSearchHelp = !showSearchHelp">
+            <el-icon><QuestionFilled /></el-icon>
+            검색 도움말
+          </el-button>
+        </div>
+        
+        <el-form :inline="true" class="search-form">
+          <el-form-item label="MAC주소">
+            <el-input v-model="searchMac" placeholder="MAC주소 입력" clearable />
+          </el-form-item>
+          <el-form-item label="시리얼번호">
+            <el-input v-model="searchSn" placeholder="시리얼번호 입력" clearable />
+          </el-form-item>
+          <el-form-item label="공장코드">
+            <el-input v-model="searchFacCd" placeholder="공장코드 입력" clearable />
+          </el-form-item>
+          <el-form-item label="삭제여부">
+            <el-select 
+              v-model="searchDelFilter" 
+              placeholder="삭제여부 선택"
+              style="width: 150px;"
+              clearable
+            >
+              <el-option 
+                v-for="option in delFilterOptions" 
+                :key="option.value"
+                :label="option.label" 
+                :value="option.value" 
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="doSearch">태그 검색</el-button>
+            <el-button @click="resetSearch">초기화</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      
+      <!-- 태그 검색 결과 테이블 -->
+      <div v-if="tableData.length > 0">
+        <h3>검색된 태그 목록</h3>
+        <el-table :data="tableData" style="width:100%" v-loading="loading">
+          <el-table-column prop="tag_No" label="태그번호" width="150" />
+          <el-table-column prop="mac_Addr" label="MAC주소" width="150" />
+          <el-table-column prop="fac_Cd" label="공장코드" width="100" />
+          <el-table-column prop="fac_No" label="시리얼번호" width="120" />
+          <el-table-column prop="Status" label="삭제여부" width="100">
+            <template #default="{ row }">
+              <el-tag :type="row.Status === 'Y' ? 'danger' : 'success'">
+                {{ row.Status === 'Y' ? '삭제됨' : '사용중' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+        </el-table>
+        
+        <!-- 검색 결과가 여러 개일 때 안내 메시지 -->
+        <div v-if="tableData.length > 1" class="info-message">
+          <el-alert
+            title="검색 결과가 여러 개입니다"
+            description="더 구체적인 검색 조건을 입력하여 하나의 태그만 검색되도록 해주세요."
+            type="info"
+            :closable="false"
+            show-icon
+          />
+        </div>
+      </div>
+      
+      <!-- AS이력 조회 결과 -->
       <div v-if="asInfoData && asInfoData.length > 0" class="result-section">
+        <h3>AS 이력</h3>
         <el-table :data="asInfoData" style="width: 100%">
           <el-table-column prop="as_CNT" label="AS 횟수" width="80" align="center" />
           <el-table-column prop="mac_ADDR" label="MAC주소" width="150" align="center" />
@@ -181,105 +469,111 @@
     </div>
     
     <!-- 메인 검색 영역 (기본 화면) -->
-    <div v-else class="search-section">
-      <div class="search-header">
-        <h3>태그 검색</h3>
-        <el-button 
-          type="info" 
-          :icon="QuestionFilled" 
-          circle 
-          size="small"
-          @click="showSearchHelp = true"
-          title="검색 도움말"
-        />
-      </div>
-      <el-form :inline="true" class="search-form">
-        <el-form-item label="MAC주소">
-          <el-input v-model="searchMac" placeholder="MAC주소 입력" clearable />
-        </el-form-item>
-        <el-form-item label="시리얼번호">
-          <el-input v-model="searchSn" placeholder="시리얼번호 입력" clearable />
-        </el-form-item>
-        <el-form-item label="공장코드">
-          <el-input v-model="searchFacCd" placeholder="공장코드 입력" clearable />
-        </el-form-item>
-        <el-form-item label="삭제여부">
-          <el-select 
-            v-model="searchDelFilter" 
-            placeholder="삭제여부 선택"
-            style="width: 100%"
-            clearable
-          >
-            <el-option 
-              v-for="option in delFilterOptions" 
-              :key="option.value"
-              :label="option.label" 
-              :value="option.value" 
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="doSearch">검색</el-button>
-          <el-button @click="resetSearch">초기화</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-
-    <!-- 테이블 영역 -->
-    <div class="table-section">
-      <el-table :data="paginatedData" style="width:100%" v-loading="loading">
-        <el-table-column prop="tag_No" label="태그번호" width="150" />
-        <el-table-column prop="mac_Addr" label="MAC주소" width="150" />
-        <el-table-column prop="fac_Cd" label="공장코드" width="100" />
-        <el-table-column prop="fac_No" label="시리얼번호" width="120" />
-        <el-table-column prop="tag_Version" label="제품버전" width="100" />
-        <el-table-column prop="tag_Type" label="태그타입" width="100" />
-        <el-table-column prop="erp_Code" label="ERP코드" width="120" />
-        <el-table-column prop="Mng_Category" label="관리카테고리" width="120" />
-        <el-table-column prop="Lot" label="LOT번호" width="120" />
-        <el-table-column prop="Prod_order" label="생산지시" width="120" />
-        <el-table-column prop="Project_code" label="프로젝트코드" width="120" />
-        <el-table-column prop="Project_manager" label="프로젝트매니저" width="120" />
-        <el-table-column prop="Mac_duple_yn" label="MAC중복여부" width="120" />
-        <el-table-column prop="as_Cnt" label="AS횟수" width="80" />
-        <el-table-column prop="Status" label="삭제여부" width="100">
-          <template #default="{ row }">
-            <el-tag :type="row.Status === 'Y' ? 'danger' : 'success'">
-              {{ row.Status === 'Y' ? '삭제됨' : '사용중' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="작업" width="250" align="right">
-          <template #default="{ row }">
-            <el-button size="small" @click="showProcStep(row.tag_No)">처리단계</el-button>
-            <el-button size="small" @click="showSettingInfo(row.tag_No)">세팅정보</el-button>
-            <el-button size="small" @click="showVersionHistory(row.tag_No)">버전이력</el-button>
-            <el-button size="small" @click="showCommonHistory(row.tag_No)">공통정보</el-button>
-            <el-button size="small" @click="showAsInfo(row.tag_No)">AS이력</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+    <div v-else-if="!currentSubMenu || currentSubMenu === null" class="submenu-content">
+      <h2>태그 검색</h2>
+      <p>태그 정보를 검색하여 상세 정보를 조회하세요.</p>
       
-      <!-- 페이지네이션 -->
-      <div class="pagination-section" v-if="tableData.length > 0">
-        <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="tableData.length"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+      <div class="search-section">
+        <div class="search-header">
+          <h3>🔍 태그 검색</h3>
+          <el-button type="text" @click="showSearchHelp = !showSearchHelp">
+            <el-icon><QuestionFilled /></el-icon>
+            검색 도움말
+          </el-button>
+        </div>
+        <el-form :inline="true" class="search-form">
+          <el-form-item label="태그번호">
+            <el-input v-model="searchTagNo" placeholder="전체 태그번호 입력 (예: AABBCCDDEE01FAC001001)" clearable style="width: 300px;" />
+          </el-form-item>
+          <el-form-item label="MAC주소">
+            <el-input v-model="searchMac" placeholder="MAC주소 입력" clearable />
+          </el-form-item>
+          <el-form-item label="시리얼번호">
+            <el-input v-model="searchSn" placeholder="시리얼번호 입력" clearable />
+          </el-form-item>
+          <el-form-item label="공장코드">
+            <el-input v-model="searchFacCd" placeholder="공장코드 입력" clearable />
+          </el-form-item>
+          <el-form-item label="삭제여부">
+            <el-select 
+              v-model="searchDelFilter" 
+              placeholder="삭제여부 선택"
+              style="width: 150px;"
+              clearable
+            >
+              <el-option 
+                v-for="option in delFilterOptions" 
+                :key="option.value"
+                :label="option.label" 
+                :value="option.value" 
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="doSearch">태그 검색</el-button>
+            <el-button @click="resetSearch">초기화</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      
+      <!-- 태그 검색 결과 테이블 -->
+      <div v-if="tableData.length > 0">
+        <h3>검색된 태그 목록</h3>
+        <el-table :data="tableData" style="width:100%" v-loading="loading">
+          <el-table-column prop="tag_No" label="태그번호" width="150" align="center" />
+          <el-table-column prop="mac_Addr" label="MAC주소" width="150" align="center" />
+          <el-table-column prop="fac_Cd" label="공장코드" width="100" align="center" />
+          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" />
+          <el-table-column prop="tag_Version" label="제품버전" width="100" align="center" />
+          <el-table-column prop="tag_Type" label="태그타입" width="100" align="center" />
+          <el-table-column prop="erp_Code" label="ERP코드" width="120" align="center" />
+          <el-table-column prop="Mng_Category" label="관리카테고리" width="120" align="center" />
+          <el-table-column prop="Lot" label="LOT번호" width="120" align="center" />
+          <el-table-column prop="Prod_order" label="생산지시" width="120" align="center" />
+          <el-table-column prop="Project_code" label="프로젝트코드" width="120" align="center" />
+          <el-table-column prop="Project_manager" label="프로젝트매니저" width="120" align="center" />
+          <el-table-column prop="Mac_duple_yn" label="MAC중복여부" width="120" align="center" />
+          <el-table-column prop="as_Cnt" label="AS횟수" width="80" align="center" />
+          <el-table-column prop="Status" label="삭제여부" width="100" align="center">
+            <template #default="{ row }">
+              <el-tag :type="row.Status === 'Y' ? 'danger' : 'success'">
+                {{ row.Status === 'Y' ? '삭제됨' : '사용중' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="작업" width="250" align="center">
+            <template #default="{ row }">
+              <el-button size="small" @click="showProcStep(row.tag_No)">처리단계</el-button>
+              <el-button size="small" @click="showSettingInfo(row.tag_No)">세팅정보</el-button>
+              <el-button size="small" @click="showVersionHistory(row.tag_No)">버전이력</el-button>
+              <el-button size="small" @click="showCommonHistory(row.tag_No)">공통정보</el-button>
+              <el-button size="small" @click="showAsInfo(row.tag_No)">AS이력</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        
+        <!-- 페이지네이션 -->
+        <div class="pagination-section" v-if="tableData.length > 0">
+          <el-pagination
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="tableData.length"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
       </div>
     </div>
 
+   
     <!-- 모달들 -->
     <!-- 처리단계 모달 -->
     <el-dialog v-model="procStepVisible" title="처리단계 정보" width="600">
       <div v-if="procStepData">
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="태그번호">{{ procStepData.tagNo }}</el-descriptions-item>
+          <el-descriptions-item label="태그번호">{{ procStepData.ordNo }}</el-descriptions-item>
           <el-descriptions-item label="입고일">{{ formatDate(procStepData.receipt_DT) }}</el-descriptions-item>
           <el-descriptions-item label="납품일">{{ formatDate(procStepData.delivery_DT) }}</el-descriptions-item>
           <el-descriptions-item label="연구소 검수일">{{ formatDate(procStepData.lab_INSP_DT) }}</el-descriptions-item>
@@ -304,7 +598,7 @@
           <el-button type="primary" @click="editSettingInfo">세팅정보 수정</el-button>
         </div>
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="태그번호">{{ settingInfoData.tagNo }}</el-descriptions-item>
+          <el-descriptions-item label="태그번호">{{ settingInfoData.ordNo }}</el-descriptions-item>
           <el-descriptions-item label="하드웨어버전">{{ settingInfoData.hw_VER }}</el-descriptions-item>
           <el-descriptions-item label="펌웨어버전">{{ settingInfoData.fw_VER }}</el-descriptions-item>
           <el-descriptions-item label="LED ON 주기">{{ settingInfoData.led_SEC }}</el-descriptions-item>
@@ -342,7 +636,7 @@
       <div class="version-actions" v-if="userAcl >= 2">
         <el-button type="primary" @click="addNewVersion">새 버전 등록</el-button>
       </div>
-      <el-table :data="versionHistoryData" style="width: 100%">
+      <el-table :data="versionHistoryData || []" style="width: 100%">
         <el-table-column prop="TAG_VER" label="버전" width="100" />
         <el-table-column prop="HW_VER" label="하드웨어버전" width="120" />
         <el-table-column prop="FW_VER" label="펌웨어버전" width="120" />
@@ -500,7 +794,7 @@
     <div class="search-help-sidebar" :class="{ 'show': showSearchHelp }">
       <div class="sidebar-header">
         <h3>🔍 검색 도움말</h3>
-        <el-button type="link"
+        <el-button type="text"
           :icon="Close" 
           @click="showSearchHelp = false"
           class="close-btn"
@@ -542,10 +836,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { QuestionFilled, Close, ArrowLeft } from '@element-plus/icons-vue'
+import { QuestionFilled, Close } from '@element-plus/icons-vue'
 import Header from './Header.vue'
 
 
@@ -558,11 +853,23 @@ const props = defineProps({
   activeMenu: {
     type: String,
     default: 'tag-management'
+  },
+  ordNo: {
+    type: String,
+    default: null
+  },
+  subMenu: {
+    type: String,
+    default: null
   }
 })
 
 // Emits
 const emit = defineEmits(['menu-select', 'user-command'])
+
+// 라우터 설정
+const router = useRouter()
+const route = useRoute()
 
 // 사용자 정보
 const userInfo = computed(() => props.userInfo)
@@ -595,24 +902,17 @@ const loading = ref(false)
 
 // 페이지네이션 상태
 const currentPage = ref(1)
-const pageSize = ref(20)
+const pageSize = ref(10)
+const totalTagCount = ref(0)
 
 // 서브메뉴 관련 상태
 const currentSubMenu = ref(null)
-const searchTagNo = ref('')
 
-// 서브메뉴 제목 매핑
-const getSubMenuTitle = (subMenu) => {
-  const titles = {
-    'tag-search': '태그 검색',
-    'tag-proc-step': '처리단계 조회',
-    'tag-setting': '세팅정보 조회',
-    'tag-version': '버전 이력 조회',
-    'tag-common': '공통정보 조회',
-    'tag-as': 'AS 이력 조회'
-  }
-  return titles[subMenu] || '알 수 없음'
-}
+
+const searchTagNo = ref('')
+const tagNumberList = ref([])
+
+
 
 const filteredData = computed(() => {
   if (!Array.isArray(tableData.value)) {
@@ -646,16 +946,41 @@ function handleCurrentChange(page) {
 
 async function doSearch() {
   console.log('검색 시작:', { 
+    searchTagNo: searchTagNo.value,
     searchMac: searchMac.value, 
     searchSn: searchSn.value, 
     searchFacCd: searchFacCd.value,
     searchDelFilter: searchDelFilter.value 
   })
   
+  // 태그번호 전체가 입력된 경우 자동으로 분해
+  let macAddr = searchMac.value.trim()
+  let facCd = searchFacCd.value.trim()
+  let facNo = searchSn.value.trim()
+  
+  // 태그번호 전체가 입력된 경우 (예: AABBCCDDEE01FAC001001)
+  if (searchTagNo.value && searchTagNo.value.trim()) {
+    const ordNo = searchTagNo.value.trim()
+    if (ordNo.length >= 20) {
+      // MAC주소 부분 (12자리)
+      macAddr = ordNo.substring(0, 12)
+      // 공장코드 부분 (6자리)
+      facCd = ordNo.substring(12, 18)
+      // 시리얼번호 부분 (나머지)
+      facNo = ordNo.substring(18)
+      
+      console.log('태그번호 분해:', { macAddr, facCd, facNo })
+    } else {
+      // 20자 미만이면 MAC주소 검색에 사용
+      macAddr = ordNo
+    }
+  }
+  
   // 검색 조건이 없으면 경고 메시지 표시
-  const hasSearchCondition = (searchMac.value && searchMac.value.trim()) || 
-                           (searchFacCd.value && searchFacCd.value.trim()) || 
-                           (searchSn.value && searchSn.value.trim())
+  const hasSearchCondition = (searchTagNo.value && searchTagNo.value.trim()) || 
+                           (macAddr && macAddr.trim()) || 
+                           (facCd && facCd.trim()) || 
+                           (facNo && facNo.trim())
   
   if (!hasSearchCondition) {
     ElMessage.warning('검색 조건을 하나 이상 입력해주세요.')
@@ -666,14 +991,14 @@ async function doSearch() {
   try {
     // 빈 문자열이 아닌 경우에만 파라미터에 포함
     const params = {}
-    if (searchMac.value && searchMac.value.trim()) {
-      params.macAddr = searchMac.value.trim()
+    if (macAddr && macAddr.trim()) {
+      params.macAddr = macAddr.trim()
     }
-    if (searchFacCd.value && searchFacCd.value.trim()) {
-      params.facCd = searchFacCd.value.trim()
+    if (facCd && facCd.trim()) {
+      params.facCd = facCd.trim()
     }
-    if (searchSn.value && searchSn.value.trim()) {
-      params.facNo = searchSn.value.trim()
+    if (facNo && facNo.trim()) {
+      params.facNo = facNo.trim()
     }
     if (searchDelFilter.value && searchDelFilter.value !== 'all') {
       params.delFilter = searchDelFilter.value
@@ -699,6 +1024,19 @@ async function doSearch() {
     console.log('검색 결과:', responseData)
     console.log('결과 개수:', tableData.value.length)
     
+    // 검색 결과가 있으면 첫 번째 태그의 태그번호를 저장
+    if (tableData.value.length > 0 && tableData.value[0].ordNo) {
+      const ordNo = tableData.value[0].ordNo
+      sessionStorage.setItem('currentTagNo', ordNo)
+      console.log('현재 태그번호 저장:', ordNo)
+      
+      // 검색 결과가 하나의 태그만 나오면 자동으로 해당 서브메뉴의 상세 정보 로드
+      if (tableData.value.length === 1 && currentSubMenu.value) {
+        console.log('단일 태그 검색 결과, 상세 정보 자동 로드:', currentSubMenu.value)
+        loadDetailDataBySubMenu(ordNo, currentSubMenu.value)
+      }
+    }
+    
     if (tableData.value.length === 0) {
       ElMessage.info('검색 결과가 없습니다.')
     }
@@ -712,13 +1050,17 @@ async function doSearch() {
 }
 
 function resetSearch() {
+  searchTagNo.value = ''
   searchMac.value = ''
   searchSn.value = ''
   searchFacCd.value = ''
   searchDelFilter.value = 'all'
   tableData.value = []
+  tagNumberList.value = []
+  commonHistoryData.value = []
+  versionHistoryData.value = []
+  asInfoData.value = []
   currentPage.value = 1 // 초기화 시 첫 페이지로 이동
-  ElMessage.info('검색 조건이 초기화되었습니다. 검색 조건을 입력하고 검색해주세요.')
 }
 
 // 헤더 이벤트 핸들러
@@ -737,6 +1079,11 @@ const settingInfoVisible = ref(false)
 const settingInfoData = ref(null)
 const versionHistoryVisible = ref(false)
 const versionHistoryData = ref([])
+
+// versionHistoryData를 안전하게 초기화하는 함수
+function resetVersionHistoryData() {
+  versionHistoryData.value = []
+}
 const commonHistoryVisible = ref(false)
 const commonHistoryData = ref([])
 const asInfoVisible = ref(false)
@@ -773,24 +1120,200 @@ const formatDate = (dateString) => {
   }
 }
 
-// 서브메뉴 관련 함수들
-function backToMain() {
-  currentSubMenu.value = null
-  searchTagNo.value = ''
-  sessionStorage.removeItem('tagSubMenu')
+
+
+// 라우터 변경 감지
+watch(() => route.name, (newRouteName) => {
+  console.log('라우터 변경 감지:', newRouteName)
+  updateSubMenu(newRouteName, route.params.ordNo)
+}, { immediate: true })
+
+// 라우터 파라미터 변경 감지
+watch(() => route.params.ordNo, (newTagNo) => {
+  console.log('라우터 파라미터 변경 감지:', newTagNo)
+  updateSubMenu(route.name, newTagNo)
+}, { immediate: true })
+
+// props.subMenu 변경 감지
+watch(() => props.subMenu, (newSubMenu) => {
+  console.log('props.subMenu 변경 감지:', newSubMenu)
+  if (newSubMenu) {
+    currentSubMenu.value = newSubMenu
+  }
+}, { immediate: true })
+
+// 서브메뉴 업데이트 함수
+function updateSubMenu(routeName, routeTagNo) {
+  console.log('updateSubMenu 호출됨:', routeName, routeTagNo)
+  console.log('현재 currentSubMenu 값:', currentSubMenu.value)
+  console.log('props.subMenu:', props.subMenu)
+  
+  // 기존 서브메뉴 저장
+  const previousSubMenu = currentSubMenu.value
+  
+  if (routeTagNo) {
+    searchTagNo.value = routeTagNo
+    console.log('라우터에서 태그번호 설정됨:', routeTagNo)
+  }
+  
+  // props로 전달된 subMenu가 있으면 우선 처리
+  if (props.subMenu) {
+    console.log('props.subMenu로 서브메뉴 설정:', props.subMenu)
+    currentSubMenu.value = props.subMenu
+  } else {
+    // 라우터 이름에 따라 서브메뉴 설정
+    if (routeName === 'TagManagement') {
+      // 기본 태그관리 페이지 (태그 검색)
+      console.log('기본 태그관리 페이지 설정')
+      currentSubMenu.value = null
+    } else if (routeName === 'TagProcStep' || routeName === 'TagProcStepSearch') {
+      console.log('TagProcStep 서브메뉴 설정')
+      currentSubMenu.value = 'tag-proc-step'
+      if (routeTagNo) {
+        loadProcStepData(routeTagNo)
+      }
+    } else if (routeName === 'TagSetting' || routeName === 'TagSettingSearch') {
+      console.log('TagSetting 서브메뉴 설정')
+      currentSubMenu.value = 'tag-setting'
+      if (routeTagNo) {
+        loadSettingData(routeTagNo)
+      }
+    } else if (routeName === 'TagVersion' || routeName === 'TagVersionSearch') {
+      console.log('TagVersion 서브메뉴 설정')
+      currentSubMenu.value = 'tag-version'
+      if (routeTagNo) {
+        loadVersionData(routeTagNo)
+      }
+    } else if (routeName === 'TagCommon' || routeName === 'TagCommonSearch') {
+      console.log('TagCommon 서브메뉴 설정')
+      currentSubMenu.value = 'tag-common'
+      if (routeTagNo) {
+        loadCommonData(routeTagNo)
+      }
+    } else if (routeName === 'TagAs' || routeName === 'TagAsSearch') {
+      console.log('TagAs 서브메뉴 설정')
+      currentSubMenu.value = 'tag-as'
+      if (routeTagNo) {
+        loadAsData(routeTagNo)
+      }
+    } else {
+      // 기본 태그관리 페이지
+      console.log('기본 태그관리 페이지 설정')
+      currentSubMenu.value = null
+    }
+  }
+  
+  // 서브메뉴가 변경된 경우 검색 조건 초기화
+  if (previousSubMenu !== currentSubMenu.value) {
+    console.log('서브메뉴 변경됨, 검색 조건 초기화:', previousSubMenu, '→', currentSubMenu.value)
+    resetSearch()
+  }
+  
+  console.log('설정 후 currentSubMenu 값:', currentSubMenu.value)
 }
 
 // 서브메뉴 초기화
 onMounted(() => {
   console.log('TagManagement onMounted 실행됨')
-  const subMenu = sessionStorage.getItem('tagSubMenu')
-  console.log('sessionStorage에서 가져온 서브메뉴:', subMenu)
-  if (subMenu) {
-    currentSubMenu.value = subMenu
-    console.log('currentSubMenu 설정됨:', subMenu)
-    sessionStorage.removeItem('tagSubMenu')
+  console.log('현재 route.name:', route.name)
+  console.log('현재 route.path:', route.path)
+  console.log('현재 props.subMenu:', props.subMenu)
+  
+  // 초기 상태 설정
+  if (!props.subMenu && route.name === 'TagManagement') {
+    console.log('기본 태그관리 페이지로 초기화')
+    currentSubMenu.value = null
   }
 })
+
+// 데이터 로드 함수들
+async function loadProcStepData(ordNo) {
+  if (!ordNo) return
+  try {
+    const res = await axios.get(`/tags/proc_step_${ordNo}`)
+    procStepData.value = res.data.body || res.data
+  } catch (error) {
+    console.error('처리단계 조회 오류:', error)
+    ElMessage.error('처리단계 정보를 불러오는 중 오류가 발생했습니다.')
+  }
+}
+
+async function loadSettingData(ordNo) {
+  if (!ordNo) return
+  try {
+    const res = await axios.get(`/tags/setting_info_${ordNo}`)
+    settingInfoData.value = res.data.body || res.data
+  } catch (error) {
+    console.error('세팅정보 조회 오류:', error)
+    ElMessage.error('세팅정보를 불러오는 중 오류가 발생했습니다.')
+  }
+}
+
+async function loadVersionData(ordNo) {
+  if (!ordNo) return
+  try {
+    const res = await axios.get(`/tags/version-history/${ordNo}`)
+    versionHistoryData.value = res.data.body || res.data || []
+  } catch (error) {
+    console.error('버전 이력 조회 오류:', error)
+    ElMessage.error('버전 이력을 불러오는 중 오류가 발생했습니다.')
+  }
+}
+
+async function loadCommonData(ordNo) {
+  if (!ordNo) return
+  try {
+    const res = await axios.get(`/tags/common_history/${ordNo}`)
+    commonHistoryData.value = res.data.body || res.data || []
+  } catch (error) {
+    console.error('공통정보 조회 오류:', error)
+    ElMessage.error('공통정보를 불러오는 중 오류가 발생했습니다.')
+  }
+}
+
+async function loadAsData(ordNo) {
+  if (!ordNo) return
+  try {
+    const res = await axios.get(`/tags/prod_as_${ordNo}`)
+    const data = res.data.body || res.data
+    if (Array.isArray(data)) {
+      asInfoData.value = data.map((item, index) => ({
+        ...item,
+        seq: index + 1
+      }))
+    } else {
+      asInfoData.value = [data]
+    }
+  } catch (error) {
+    console.error('AS 이력 조회 오류:', error)
+    ElMessage.error('AS 이력을 불러오는 중 오류가 발생했습니다.')
+  }
+}
+
+// 서브메뉴에 따른 상세 정보 로드 함수
+async function loadDetailDataBySubMenu(ordNo, subMenu) {
+  console.log('loadDetailDataBySubMenu 호출:', ordNo, subMenu)
+  
+  switch (subMenu) {
+    case 'tag-proc-step':
+      await loadProcStepData(ordNo)
+      break
+    case 'tag-setting':
+      await loadSettingData(ordNo)
+      break
+    case 'tag-version':
+      await loadVersionData(ordNo)
+      break
+    case 'tag-common':
+      await loadCommonData(ordNo)
+      break
+    case 'tag-as':
+      await loadAsData(ordNo)
+      break
+    default:
+      console.log('알 수 없는 서브메뉴:', subMenu)
+  }
+}
 
 // 서브메뉴별 검색 함수들
 async function searchProcStep() {
@@ -835,16 +1358,99 @@ async function searchVersionHistory() {
     return
   }
   try {
+    console.log('버전 이력 조회 시작:', searchTagNo.value.trim())
     const res = await axios.get(`/tags/version-history/${searchTagNo.value.trim()}`)
+    console.log('버전 이력 응답:', res.data)
     versionHistoryData.value = res.data.body || res.data || []
+    console.log('설정된 versionHistoryData:', versionHistoryData.value)
+    console.log('데이터 길이:', versionHistoryData.value.length)
+    
     if (!versionHistoryData.value || versionHistoryData.value.length === 0) {
       ElMessage.warning('해당 태그의 버전 이력이 없습니다.')
-    }
+    } /* else {
+      ElMessage.success(`버전 이력 ${versionHistoryData.value.length}건을 찾았습니다.`)
+    } */
   } catch (error) {
     console.error('버전 이력 조회 오류:', error)
     ElMessage.error('버전 이력을 불러오는 중 오류가 발생했습니다.')
   }
 }
+
+// 태그번호 검색 함수
+async function searchTagNumbers() {
+  if (!searchTagNo.value.trim()) {
+    ElMessage.warning('태그번호를 입력해주세요.')
+    return
+  }
+  
+  try {
+    const res = await axios.get('/tags/tag-numbers', {
+      params: { query: searchTagNo.value.trim() }
+    })
+    const tagNumbers = res.data.body || res.data || []
+    
+    // 태그번호 목록을 상세 정보와 함께 가져오기
+    const detailedList = []
+    for (const ordNo of tagNumbers) {
+      // MAC주소, 공장코드, 시리얼번호 추출
+      const macAddr = ordNo.substring(0, 12)
+      const facCd = ordNo.substring(12, 18)
+      const facNo = ordNo.substring(18)
+      
+      detailedList.push({
+        tag_No: ordNo,
+        mac_Addr: macAddr,
+        fac_Cd: facCd,
+        fac_No: facNo
+      })
+    }
+    
+    tagNumberList.value = detailedList
+    totalTagCount.value = detailedList.length
+    
+    if (tagNumberList.value.length === 0) {
+      ElMessage.info('검색 결과가 없습니다.')
+    }
+  } catch (error) {
+    console.error('태그번호 검색 오류:', error)
+    ElMessage.error('검색 중 오류가 발생했습니다.')
+  }
+}
+
+// 태그번호 선택 함수
+function selectTagNumber(row) {
+  console.log('selectTagNumber 호출됨:', row)
+  searchTagNo.value = row.tag_No
+  tagNumberList.value = [] // 검색 결과 숨기기
+  
+  console.log('현재 서브메뉴:', currentSubMenu.value)
+  
+  // 현재 서브메뉴에 따라 해당 정보 조회
+  if (currentSubMenu.value === 'tag-setting') {
+    console.log('세팅정보 조회 호출')
+    searchSettingInfo()
+  } else if (currentSubMenu.value === 'tag-version') {
+    console.log('버전 이력 조회 호출')
+    searchVersionHistory()
+  }
+}
+
+// 태그 검색 초기화 함수
+function clearTagSearch() {
+  searchTagNo.value = ''
+  tagNumberList.value = []
+  totalTagCount.value = 0
+  resetVersionHistoryData()
+}
+
+// 페이지네이션된 태그 목록
+const paginatedTagList = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  return tagNumberList.value.slice(start, end)
+})
+
+
 
 async function searchCommonHistory() {
   if (!searchTagNo.value.trim()) {
@@ -889,48 +1495,22 @@ async function searchAsInfo() {
 }
 
 // 이벤트 핸들러
-async function showProcStep(tagNo) {
-  try {
-    const res = await axios.get(`/tags/proc_step_${tagNo}`)
-    console.log('처리단계 응답 데이터:', res.data)
-    procStepData.value = res.data.body || res.data
-    procStepVisible.value = true
-  } catch (error) {
-    console.error('처리단계 조회 오류:', error)
-    ElMessage.error('처리단계 정보를 불러오는 중 오류가 발생했습니다.')
-  }
+async function showProcStep(ordNo) {
+  console.log('showProcStep 호출됨, ordNo:', ordNo)
+  // 라우터를 사용해서 URL 변경
+  router.push(`/tag-management/proc-step/${ordNo}`)
 }
 
-async function showVersionHistory(tagNo) {
-  try {
-    const res = await axios.get(`/tags/version-history/${tagNo}`)
-    versionHistoryData.value = res.data.body || res.data || []
-    versionHistoryVisible.value = true
-  } catch (error) {
-    ElMessage.error('버전 이력을 불러오는 중 오류가 발생했습니다.')
-  }
+async function showVersionHistory(ordNo) {
+  router.push(`/tag-management/version/${ordNo}`)
 }
 
-async function showCommonHistory(tagNo) {
-  try {
-    const res = await axios.get(`/tags/common_history/${tagNo}`)
-    commonHistoryData.value = res.data.body || res.data || []
-    commonHistoryVisible.value = true
-  } catch (error) {
-    ElMessage.error('공통정보 이력을 불러오는 중 오류가 발생했습니다.')
-  }
+async function showCommonHistory(ordNo) {
+  router.push(`/tag-management/common/${ordNo}`)
 }
 
-async function showSettingInfo(tagNo) {
-  try {
-    const res = await axios.get(`/tags/setting_info_${tagNo}`)
-    console.log('세팅정보 응답 데이터:', res.data)
-    settingInfoData.value = res.data.body || res.data
-    settingInfoVisible.value = true
-  } catch (error) {
-    console.error('세팅정보 조회 오류:', error)
-    ElMessage.error('세팅정보를 불러오는 중 오류가 발생했습니다.')
-  }
+async function showSettingInfo(ordNo) {
+  router.push(`/tag-management/setting/${ordNo}`)
 }
 
 function editSettingInfo() {
@@ -938,25 +1518,8 @@ function editSettingInfo() {
   ElMessage.info('세팅정보 수정 기능은 개발 중입니다.')
 }
 
-async function showAsInfo(tagNo) {
-  currentTagNo.value = tagNo
-  try {
-    const res = await axios.get(`/tags/prod_as_${tagNo}`)
-    const data = res.data.body || res.data
-    // 데이터가 배열인지 확인하고 처리
-    if (Array.isArray(data)) {
-      asInfoData.value = data.map((item, index) => ({
-        ...item,
-        seq: index + 1
-      }))
-    } else {
-      asInfoData.value = [data]
-    }
-    asInfoVisible.value = true
-  } catch (error) {
-    console.error('AS 이력 조회 오류:', error)
-    ElMessage.error('AS 이력을 불러오는 중 오류가 발생했습니다.')
-  }
+async function showAsInfo(ordNo) {
+  router.push(`/tag-management/as/${ordNo}`)
 }
 
 // AS 관련 함수들
@@ -992,7 +1555,7 @@ function formatDateForInput(dateString) {
 async function saveAs() {
   try {
     const formData = {
-      tagNo: currentTagNo.value,
+      ordNo: currentTagNo.value,
       asDoc: asForm.value.asDoc,
       occrDt: asForm.value.occrDt,
       occrRsn: asForm.value.occrRsn,
@@ -1269,13 +1832,7 @@ onMounted(() => {
   color: #409eff;
 }
 
-.table-section {
-  margin-top: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
+
 
 .pagination-section {
   display: flex;
@@ -1291,68 +1848,41 @@ onMounted(() => {
   gap: 10px;
 }
 
-/* 테이블 헤더 중앙 정렬 */
-:deep(.el-table th) {
-  text-align: center !important;
-}
-
-:deep(.el-table th .cell) {
-  text-align: center !important;
-}
-
-:deep(.el-table__header-wrapper .el-table__header th) {
-  text-align: center !important;
-}
-
-:deep(.el-table__header-wrapper .el-table__header th .cell) {
-  text-align: center !important;
-}
-
+/* 테이블 스타일 조정 */
 :deep(.el-table) {
   table-layout: fixed !important;
 }
 
-:deep(.el-table__body-wrapper) {
-  text-align: center !important;
-}
-
-:deep(.el-table__header-wrapper) {
-  text-align: center !important;
-}
-
 :deep(.el-table th) {
-  text-align: center !important;
   padding: 8px 0 !important;
 }
 
 :deep(.el-table td) {
-  text-align: center !important;
   padding: 8px 0 !important;
 }
 
 :deep(.el-table .cell) {
-  text-align: center !important;
   padding: 8px 0 !important;
 }
 
-:deep(.el-table td) {
+/* el-scrollbar 영역 내 테이블 정렬 */
+:deep(.el-scrollbar .el-table th) {
   text-align: center !important;
 }
 
-:deep(.el-table td .cell) {
+:deep(.el-scrollbar .el-table th .cell) {
   text-align: center !important;
 }
 
-/* 서브메뉴 관련 스타일 */
-.submenu-navigation {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 32px;
-  background: white;
-  border-bottom: 1px solid #eee;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+:deep(.el-scrollbar .el-table td) {
+  text-align: center !important;
 }
+
+:deep(.el-scrollbar .el-table td .cell) {
+  text-align: center !important;
+}
+
+
 
 .submenu-content {
   padding: 32px;
@@ -1381,16 +1911,58 @@ onMounted(() => {
   border: 1px solid #e9ecef;
 }
 
-:deep(.el-breadcrumb) {
-  font-size: 0.9rem;
+
+
+/* 안내 메시지 스타일 */
+.info-message {
+  margin-top: 20px;
 }
 
-:deep(.el-breadcrumb__item) {
-  color: #666;
+.info-message .el-alert {
+  border-radius: 8px;
 }
 
-:deep(.el-breadcrumb__item:last-child) {
-  color: #409eff;
+/* 직접 검색 섹션 스타일 */
+.direct-search-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.direct-search-section h3 {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
   font-weight: 600;
+}
+
+.direct-search-form {
+  margin-bottom: 0;
+}
+
+/* 태그 검색 결과 스타일 */
+.tag-search-results {
+  margin-top: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.tag-search-results h3 {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.pagination-wrapper {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  padding: 15px 0;
+  border-top: 1px solid #e9ecef;
 }
 </style> 

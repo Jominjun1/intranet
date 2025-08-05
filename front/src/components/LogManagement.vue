@@ -23,7 +23,7 @@
       </div>
       <el-form :inline="true" class="search-form">
         <el-form-item label="로그 타입">
-          <el-select v-model="selectedLogType" placeholder="로그 타입 선택" @change="loadLogs">
+          <el-select v-model="selectedLogType" placeholder="로그 타입 선택" @change="loadLogs" style="width: 200px;">
             <el-option label="사용자 로그" value="user" />
             <el-option label="태그 기본정보 로그" value="basic" />
             <el-option label="태그 공통정보 로그" value="common" />
@@ -94,7 +94,7 @@
         <!-- 태그 기본정보 로그 -->
         <template v-else-if="selectedLogType === 'basic'">
           <el-table-column prop="logId" label="로그 ID" width="80" />
-          <el-table-column prop="tagNo" label="태그 번호" width="200" />
+          <el-table-column prop="ordNo" label="태그 번호" width="200" />
           <el-table-column prop="tagType" label="태그 타입" width="120" />
           <el-table-column prop="erpCd" label="ERP 코드" width="120" />
           <el-table-column prop="mngCtg" label="관리 카테고리" width="120" />
@@ -119,7 +119,7 @@
         <!-- 태그 공통정보 로그 -->
         <template v-else-if="selectedLogType === 'common'">
           <el-table-column prop="logId" label="로그 ID" width="80" />
-          <el-table-column prop="tagNo" label="태그 번호" width="200" />
+          <el-table-column prop="ordNo" label="태그 번호" width="200" />
           <el-table-column prop="macAddr" label="MAC 주소" width="160" />
           <el-table-column prop="facCd" label="공장 코드" width="120" />
           <el-table-column prop="facNo" label="공장 번호" width="120" />
@@ -139,7 +139,7 @@
         <!-- 태그 설정정보 로그 -->
         <template v-else-if="selectedLogType === 'setting'">
           <el-table-column prop="logId" label="로그 ID" width="80" />
-          <el-table-column prop="tagNo" label="태그 번호" width="200" />
+          <el-table-column prop="ordNo" label="태그 번호" width="200" />
           <el-table-column prop="settingType" label="설정 타입" width="120" />
           <el-table-column prop="settingValue" label="설정 값" width="200" />
           <el-table-column prop="reg_dt" label="등록일시" width="160">
@@ -158,7 +158,7 @@
         <!-- 태그 프로세스 로그 -->
         <template v-else-if="selectedLogType === 'proc'">
           <el-table-column prop="logId" label="로그 ID" width="80" />
-          <el-table-column prop="tagNo" label="태그 번호" width="200" />
+          <el-table-column prop="ordNo" label="태그 번호" width="200" />
           <el-table-column prop="procStep" label="프로세스 단계" width="120" />
           <el-table-column prop="procStatus" label="프로세스 상태" width="120" />
           <el-table-column prop="procResult" label="프로세스 결과" width="200" />
@@ -178,7 +178,7 @@
         <!-- 태그 AS 로그 -->
         <template v-else-if="selectedLogType === 'prod'">
           <el-table-column prop="logId" label="로그 ID" width="80" />
-          <el-table-column prop="tagNo" label="태그 번호" width="200" />
+          <el-table-column prop="ordNo" label="태그 번호" width="200" />
           <el-table-column prop="asCnt" label="AS 횟수" width="100" />
           <el-table-column prop="asDoc" label="AS 문서" width="200" />
           <el-table-column prop="occrDt" label="발생일시" width="160">
@@ -214,7 +214,7 @@
         <!-- 태그 버전 로그 -->
         <template v-else-if="selectedLogType === 'version'">
           <el-table-column prop="logId" label="로그 ID" width="80" />
-          <el-table-column prop="tagNo" label="태그 번호" width="200" />
+          <el-table-column prop="ordNo" label="태그 번호" width="200" />
           <el-table-column prop="tagVer" label="태그 버전" width="120" />
           <el-table-column prop="reg_dt" label="등록일시" width="160">
             <template #default="scope">

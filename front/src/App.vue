@@ -1,16 +1,17 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import LoginForm from './components/LoginForm.vue'
 import Header from './components/Header.vue'
 import { ElMessage } from 'element-plus'
-import TagManagement from './components/TagManagement.vue'
-import UserManagement from './components/UserManagement.vue'
-import LogManagement from './components/LogManagement.vue'
 import './css/App.css'
+
+// 라우터 설정
+const router = useRouter()
+const route = useRoute()
 
 // 상태 관리
 const isLoggedIn = ref(false)
-const activeMenu = ref('tag-management')
 const userInfo = ref({})
 const userAcl = computed(() => parseInt(userInfo.value.user_acl || '0'))
 
@@ -32,20 +33,40 @@ function handleLoginSuccess(userData) {
   }
   userInfo.value = userData
   isLoggedIn.value = true
-  activeMenu.value = 'tag-management'
+  router.push('/tag-management')
 }
 
 function handleMenuSelect(key) {
   console.log('App.vue handleMenuSelect 호출됨:', key)
-  // 태그 관리 관련 메뉴들은 모두 TagManagement 컴포넌트로 라우팅
-  if (key.startsWith('tag-')) {
-    console.log('태그 서브메뉴 선택됨:', key)
-    activeMenu.value = 'tag-management'
-    // TagManagement 컴포넌트에 서브메뉴 정보 전달
-    sessionStorage.setItem('tagSubMenu', key)
-    console.log('sessionStorage에 저장됨:', key)
-  } else {
-    activeMenu.value = key
+  // 라우터를 사용해서 페이지 이동
+  switch (key) {
+    case 'tag-management':
+    case 'tag-search':
+      router.push('/tag-management')
+      break
+    case 'user-management':
+      router.push('/user-management')
+      break
+    case 'log-management':
+      router.push('/log-management')
+      break
+    default:
+      if (key.startsWith('tag-')) {
+        // 태그 서브메뉴는 태그 검색처럼 바로 해당 페이지로 이동
+        const subMenuMap = {
+          'tag-proc-step': 'proc-step',
+          'tag-setting': 'setting',
+          'tag-version': 'version',
+          'tag-common': 'common',
+          'tag-as': 'as'
+        }
+        const subPath = subMenuMap[key]
+        if (subPath) {
+          const targetUrl = `/tag-management/${subPath}`
+          console.log('라우터 이동:', targetUrl)
+          router.push(targetUrl)
+        }
+      }
   }
 }
 
@@ -68,7 +89,7 @@ function logout() {
   sessionStorage.removeItem('user_info')
   isLoggedIn.value = false
   userInfo.value = {}
-  activeMenu.value = 'tag-management'
+  router.push('/tag-management')
   ElMessage.success('로그아웃되었습니다.')
 }
 
@@ -124,35 +145,11 @@ onUnmounted(() => {
 <template>
   <LoginForm v-if="!isLoggedIn" @login-success="handleLoginSuccess"/>
   <div v-else class="app-container">
-    <TagManagement v-if="activeMenu === 'tag-management'" 
+    <router-view 
       :user-info="userInfo" 
-      :active-menu="activeMenu"
+      :active-menu="route.name"
       @menu-select="handleMenuSelect"
       @user-command="handleUserCommand"
     />
-    <UserManagement v-else-if="activeMenu === 'user-management'" 
-      :user-info="userInfo" 
-      :active-menu="activeMenu"
-      @menu-select="handleMenuSelect"
-      @user-command="handleUserCommand"
-    />
-    <LogManagement v-else-if="activeMenu === 'log-management'" 
-      :user-info="userInfo" 
-      :active-menu="activeMenu"
-      @menu-select="handleMenuSelect"
-      @user-command="handleUserCommand"
-    />
-    <div v-else-if="activeMenu === 'admin'" class="admin-page">
-      <Header 
-        :active-menu="activeMenu" 
-        :user-info="userInfo"
-        @menu-select="handleMenuSelect"
-        @user-command="handleUserCommand"
-      />
-      <div class="admin-content">
-        <h2>관리자 페이지</h2>
-        <p>관리자 기능은 추후 구현 예정입니다.</p>
-      </div>
-    </div>
   </div>
 </template>

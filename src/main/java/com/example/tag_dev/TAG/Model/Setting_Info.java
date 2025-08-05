@@ -20,8 +20,8 @@ public class Setting_Info {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long setting_info_seq;
 
-    @Column(name="TAG_NO")
-    private String tagNo; // 스마트 태그 번호
+    @Column(name="ORD_NO")
+    private String ordNo; // 스마트 태그 번호
     private String HW_version; // 하드웨어 버전
     private String FW_version; // 펌웨어 버전
     private String LED_SEC; // LED ON 주기
