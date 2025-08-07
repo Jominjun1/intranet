@@ -24,10 +24,13 @@ public class LogController {
     }
 
     @GetMapping("/getLog")
-    public ResponseEntity<?> getLog(@RequestParam String type ) {
+    public ResponseEntity<?> getLog(
+            @RequestParam String type,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
         try{
-            log.info("로그 조회 요청");
-            return ResponseEntity.ok(logService.searchLog(type));
+            log.info("로그 조회 요청 - 타입: {}, 시작일: {}, 종료일: {}", type, startDate, endDate);
+            return ResponseEntity.ok(logService.searchLog(type, startDate, endDate));
         } catch (Exception e) {
             log.info("에러 발생 : {}" , e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

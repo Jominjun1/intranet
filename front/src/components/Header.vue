@@ -12,17 +12,17 @@
           trigger="hover"
         >
           <span class="dropdown-trigger">
-            태그 관리
+            스마트태그
             <el-icon class="dropdown-icon"><ArrowDown /></el-icon>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item command="tag-search">🔍 태그 검색</el-dropdown-item>
-              <el-dropdown-item command="tag-proc-step">📋 처리단계 조회</el-dropdown-item>
-              <el-dropdown-item command="tag-setting">⚙️ 세팅정보 조회</el-dropdown-item>
-              <el-dropdown-item command="tag-version">📈 버전 이력 조회</el-dropdown-item>
-              <el-dropdown-item command="tag-common">🏷️ 공통정보 조회</el-dropdown-item>
-              <el-dropdown-item command="tag-as">🔧 AS 이력 조회</el-dropdown-item>
+              <el-dropdown-item command="tag-proc-step">📋 처리단계 관리</el-dropdown-item>
+              <el-dropdown-item command="tag-setting">⚙️ 세팅정보 관리</el-dropdown-item>
+              <el-dropdown-item command="tag-version">📈 버전 이력 관리</el-dropdown-item>
+              <el-dropdown-item command="tag-common">🏷️ 공통정보 관리</el-dropdown-item>
+              <el-dropdown-item command="tag-as">🔧 AS 이력 관리</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>

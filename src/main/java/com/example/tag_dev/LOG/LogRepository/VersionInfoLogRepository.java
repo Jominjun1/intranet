@@ -8,9 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
+import java.util.List;
 
 public interface VersionInfoLogRepository extends JpaRepository<VersionInfoLog, Long> {
     
     @Query("SELECT v FROM VersionInfoLog v WHERE v.createDt BETWEEN :startDate AND :endDate")
-    Page<VersionInfoLog> findByRegDtBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate, Pageable pageable);
+    Page<VersionInfoLog> findByCreateDtBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate, Pageable pageable);
+    
+    @Query("SELECT v FROM VersionInfoLog v WHERE v.createDt BETWEEN :startDate AND :endDate")
+    List<VersionInfoLog> findByCreateDtBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }

@@ -20,8 +20,8 @@ public class Basic_Info {
     private Long basic_info_seq;
 
     @Column(name="ORD_NO")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String ordNo;  // 스마트태그 번호
-
 
     @Column(name="TAG_TYPE")
     private String tagType; // 스마트 태그 타입

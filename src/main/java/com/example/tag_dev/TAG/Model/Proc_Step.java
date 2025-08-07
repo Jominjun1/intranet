@@ -22,6 +22,8 @@ public class Proc_Step {
 
     @Column(name ="ORD_NO")
     private String ordNo;  // 스마트태그 번호
+    private String order_cp; // 발주사(의뢰)
+    private String order_re; // 받은사람
     private Date Receipt_dt; // 입고일
     private Date Delivery_dt; // 납품일
     private Date Lab_insp_dt; // 연구소 검수일

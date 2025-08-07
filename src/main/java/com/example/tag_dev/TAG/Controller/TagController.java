@@ -132,9 +132,10 @@ public class TagController {
     }
 
     // 공통정보 이력 전체 조회 (MAC/공장코드/SN)
-    @GetMapping("/common_history")
+    @GetMapping("/common_history_{ordNo}")
     public ResponseEntity<?> getCommonHistory(@PathVariable String ordNo) {
         try{
+            log.info("공통 정보 이력 조회 요청 : {}" , ordNo);
             return ResponseEntity.ok(tagService.getCommonHistory(ordNo));
         }catch (Exception e) {
             log.info("에러 발생 : {}" , e.getMessage());

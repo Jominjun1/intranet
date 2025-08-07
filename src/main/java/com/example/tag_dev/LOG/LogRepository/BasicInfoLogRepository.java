@@ -8,9 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
+import java.util.List;
 
 public interface BasicInfoLogRepository extends JpaRepository<BasicInfoLog, Long> {
     
     @Query("SELECT b FROM BasicInfoLog b WHERE b.createDt BETWEEN :startDate AND :endDate")
-    Page<BasicInfoLog> findByRegDtBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate, Pageable pageable);
+    List<BasicInfoLog> findByCreateDtBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }

@@ -8,9 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
+import java.util.List;
 
 public interface ProdAsLogRepository extends JpaRepository<ProdAsLog, Long> {
     
     @Query("SELECT p FROM ProdAsLog p WHERE p.createDt BETWEEN :startDate AND :endDate")
-    Page<ProdAsLog> findByRegDtBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate, Pageable pageable);
+    Page<ProdAsLog> findByCreateDtBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate, Pageable pageable);
+    
+    @Query("SELECT p FROM ProdAsLog p WHERE p.createDt BETWEEN :startDate AND :endDate")
+    List<ProdAsLog> findByCreateDtBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }

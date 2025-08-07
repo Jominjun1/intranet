@@ -56,7 +56,6 @@ public class TagService {
             // 검색 조건이 없으면 빈 배열 반환
             boolean hasSearchCondition = (macAddr != null && !macAddr.trim().isEmpty()) ||
                     (facCd != null && !facCd.trim().isEmpty()) ||
-
                     (facNo != null && !facNo.trim().isEmpty());
 
             if (!hasSearchCondition) {
@@ -85,6 +84,17 @@ public class TagService {
                     // common이 null이어도 검색 조건이 없으면 포함
                     continue;
                 }
+                
+                // Status 필터링 적용
+                String status = basic.getStatus();
+                if (delFilter != null && !delFilter.trim().isEmpty()) {
+                    if ("active".equals(delFilter) && "Y".equals(status)) {
+                        continue; // 삭제된 항목 제외
+                    } else if ("deleted".equals(delFilter) && !"Y".equals(status)) {
+                        continue; // 삭제된 항목만
+                    }
+                }
+                
                 Map<String, Object> row = new HashMap<>();
                 row.put("tag_No", basic.getOrdNo());
                 row.put("tag_Type", basic.getTagType());
@@ -95,6 +105,7 @@ public class TagService {
                 row.put("Project_code", basic.getProject_code());
                 row.put("Project_manager", basic.getProject_manager());
                 row.put("Mac_duple_yn", basic.getMac_duple_yn());
+                row.put("Status", status); // Status 추가
 
                 // common 정보가 있으면 추가
                 row.put("mac_Addr", common.getMacAddr());
@@ -238,23 +249,33 @@ public class TagService {
             List<Prod_As> all = prodAsRepository.findAll();
             List<Common_Info> commons = commonInfoRepository.findAll();
             List<Map<String, Object>> result = new ArrayList<>();
+            
             for (Prod_As as : all) {
                 if (ordNo.equals(as.getOrdNo())) {
+                    // 필터링 로직 적용
+                    if ("active".equals(filter) && "Y".equals(as.getStatus())) {
+                        continue; // 삭제된 항목 제외
+                    } else if ("deleted".equals(filter) && !"Y".equals(as.getStatus())) {
+                        continue; // 삭제된 항목만
+                    }
+                    
                     Map<String, Object> asMap = new HashMap<>();
                     asMap.put("id", as.getProd_as_id());
                     asMap.put("tag_NO", as.getOrdNo());
                     asMap.put("as_Cnt", as.getAsCnt());
                     asMap.put("as_Doc", as.getAsDoc());
                     asMap.put("occr_Dt", as.getOccr_dt());
-                    asMap.put("occr_RRsn", as.getOcc_rrsn());
+                    asMap.put("occr_RSN", as.getOcc_rrsn());
                     asMap.put("close_Dt", as.getClose_dt());
-                    asMap.put("close_Rslt", as.getClose_rslt());
-                    asMap.put("deliveryDt", as.getDelivery_dt());
-                    asMap.put("create_Dt", as.getCreate_dt());
-                    asMap.put("create_Id", as.getCreate_id());
-                    asMap.put("update_Dt", as.getUpdate_dt());
-                    asMap.put("update_Id", as.getUpdate_dt());
-                    asMap.put("status", as.getStatus());
+                    asMap.put("close_RSLT", as.getClose_rslt());
+                    asMap.put("delivery_DT", as.getDelivery_dt());
+                    asMap.put("create_DT", as.getCreate_dt());
+                    asMap.put("create_ID", as.getCreate_id());
+                    asMap.put("update_DT", as.getUpdate_dt());
+                    asMap.put("update_ID", as.getUpdate_id());
+                    asMap.put("del_YN", as.getStatus());
+                    
+                    // MAC 주소 정보 추가
                     Common_Info common = commons.stream()
                             .filter(c -> ordNo.equals(
                                     (c.getMacAddr() != null ? c.getMacAddr().replace(":", "") : "") +
@@ -266,7 +287,17 @@ public class TagService {
                     result.add(asMap);
                 }
             }
-            result.sort(Comparator.comparing(m -> (Date) m.get("create_Dt")));
+            
+            // 생성일 기준으로 정렬 (최신순)
+            result.sort((a, b) -> {
+                Date dateA = (Date) a.get("create_DT");
+                Date dateB = (Date) b.get("create_DT");
+                if (dateA == null && dateB == null) return 0;
+                if (dateA == null) return 1;
+                if (dateB == null) return -1;
+                return dateB.compareTo(dateA);
+            });
+            
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

@@ -7,10 +7,8 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import axios from 'axios'
 import router from './router'
 
-// axios 기본 설정
-axios.defaults.baseURL = 'http://localhost:8080'
 
-// 요청 인터셉터 - JWT 토큰 자동 추가
+axios.defaults.baseURL = 'http://localhost:8080'
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('jwt_token')
@@ -24,7 +22,6 @@ axios.interceptors.request.use(
   }
 )
 
-// 응답 인터셉터 -401에러 시 로그아웃 처리
 axios.interceptors.response.use(
   (response) => {
     return response
@@ -43,7 +40,6 @@ const app = createApp(App)
 app.use(ElementPlus)
 app.use(router)
 
-// Element Plus 아이콘 등록
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
