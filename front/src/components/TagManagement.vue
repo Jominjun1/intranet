@@ -1,26 +1,14 @@
 <template>
   <div class="tag-management-page">
-
-    
-    <!-- 헤더 -->
-    <Header 
-      :active-menu="activeMenu" 
-      :user-info="userInfo"
-      @menu-select="handleMenuSelect"
-      @user-command="handleUserCommand"
-    />
-    
-
-    
     <!-- 서브메뉴별 컨텐츠 -->
     <div v-if="currentSubMenu === 'tag-proc-step'" class="submenu-content">
-              <h2>처리단계 관리</h2>
-        <p>태그 정보를 검색하여 처리단계 정보를 관리하세요.</p>
+      <h2>처리단계 관리</h2>
+      <p>태그 정보를 검색하여 처리단계 정보를 관리하세요.</p>
       
       <!-- 태그 검색 폼 -->
       <div class="search-section">
         <div class="search-header">
-          <h3>🔍 태그 검색</h3>
+          <h3>🔍 태그 목록</h3>
           <el-button type="text" @click="showSearchHelp = !showSearchHelp">
             <el-icon><QuestionFilled /></el-icon>
             검색 도움말
@@ -62,63 +50,63 @@
         </el-form>
       </div>
       
-             <!-- 태그 검색 결과 테이블 -->
-       <div v-if="tableData.length > 0">
-         <h3>검색된 태그 목록</h3>
-         <el-table :data="tableData" style="width:100%" v-loading="loading">
-           <el-table-column prop="tag_No" label="태그번호" width="150" />
-           <el-table-column prop="mac_Addr" label="MAC주소" width="150" />
-           <el-table-column prop="fac_Cd" label="공장코드" width="100" />
-           <el-table-column prop="fac_No" label="시리얼번호" width="120" />
-           <el-table-column prop="Status" label="삭제여부" width="100">
-             <template #default="{ row }">
-               <el-tag :type="row.Status === 'Y' ? 'danger' : 'success'">
-                 {{ row.Status === 'Y' ? '삭제됨' : '사용중' }}
-               </el-tag>
-             </template>
-           </el-table-column>
-         </el-table>
-         
-         <!-- 검색 결과가 여러 개일 때 안내 메시지 -->
-         <div v-if="tableData.length > 1" class="info-message">
-           <el-alert
-             title="검색 결과가 여러 개입니다"
-             description="더 구체적인 검색 조건을 입력하여 하나의 태그만 검색되도록 해주세요."
-             type="info"
-             :closable="false"
-             show-icon
-           />
-         </div>
-       </div>
-       
-       <!-- 처리단계 조회 결과 -->
-       <div v-if="procStepData" class="result-section">
-         <div class="result-header">
-           <h3>처리단계 정보</h3>
-           <div class="action-buttons" v-if="userAcl >= 2">
-             <el-button type="primary" @click="editProcStep">수정</el-button>
-             <el-button type="danger" @click="deleteProcStep">삭제</el-button>
-           </div>
-         </div>
-         <el-descriptions :column="2" border>
-           <el-descriptions-item label="태그번호">{{ procStepData.ordNo }}</el-descriptions-item>
-           <el-descriptions-item label="입고일">{{ formatDate(procStepData.receipt_DT) }}</el-descriptions-item>
-           <el-descriptions-item label="납품일">{{ formatDate(procStepData.delivery_DT) }}</el-descriptions-item>
-           <el-descriptions-item label="연구소 검수일">{{ formatDate(procStepData.lab_INSP_DT) }}</el-descriptions-item>
-           <el-descriptions-item label="연구소 검수소견">{{ procStepData.lab_INSP_DESC }}</el-descriptions-item>
-           <el-descriptions-item label="융합기술팀 검수일">{{ formatDate(procStepData.tech_INSP_DT) }}</el-descriptions-item>
-           <el-descriptions-item label="융합기술팀 검수소견">{{ procStepData.tech_INSP_DESC }}</el-descriptions-item>
-           <el-descriptions-item label="생성일">{{ formatDate(procStepData.create_DT) }}</el-descriptions-item>
-           <el-descriptions-item label="생성자">{{ procStepData.create_ID }}</el-descriptions-item>
-           <el-descriptions-item label="수정일">{{ formatDate(procStepData.update_DT) }}</el-descriptions-item>
-           <el-descriptions-item label="수정자">{{ procStepData.update_ID }}</el-descriptions-item>
-         </el-descriptions>
-       </div>
+      <!-- 태그 검색 결과 테이블 -->
+      <div v-if="tableData.length > 0">
+        <h3>검색된 태그 목록</h3>
+        <el-table :data="tableData" style="width:100%" v-loading="loading">
+          <el-table-column prop="tag_No" label="태그번호" width="150" />
+          <el-table-column prop="mac_Addr" label="MAC주소" width="150" />
+          <el-table-column prop="fac_Cd" label="공장코드" width="100" />
+          <el-table-column prop="fac_No" label="시리얼번호" width="120" />
+          <el-table-column prop="Status" label="삭제여부" width="100">
+            <template #default="{ row }">
+              <el-tag :type="row.Status === 'Y' ? 'danger' : 'success'">
+                {{ row.Status === 'Y' ? '삭제됨' : '사용중' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+        </el-table>
+        
+        <!-- 검색 결과가 여러 개일 때 안내 메시지 -->
+        <div v-if="tableData.length > 1" class="info-message">
+          <el-alert
+            title="검색 결과가 여러 개입니다"
+            description="더 구체적인 검색 조건을 입력하여 하나의 태그만 검색되도록 해주세요."
+            type="info"
+            :closable="false"
+            show-icon
+          />
+        </div>
+      </div>
+      
+      <!-- 처리단계 조회 결과 -->
+      <div v-if="procStepData" class="result-section">
+        <div class="result-header">
+          <h3>처리단계 정보</h3>
+          <div class="action-buttons" v-if="userAcl >= 2">
+            <el-button type="primary" @click="editProcStep">수정</el-button>
+            <el-button type="danger" @click="deleteProcStep">삭제</el-button>
+          </div>
+        </div>
+        <el-descriptions :column="2" border>
+          <el-descriptions-item label="태그번호">{{ procStepData.ordNo }}</el-descriptions-item>
+          <el-descriptions-item label="입고일">{{ formatDate(procStepData.receipt_DT) }}</el-descriptions-item>
+          <el-descriptions-item label="납품일">{{ formatDate(procStepData.delivery_DT) }}</el-descriptions-item>
+          <el-descriptions-item label="연구소 검수일">{{ formatDate(procStepData.lab_INSP_DT) }}</el-descriptions-item>
+          <el-descriptions-item label="연구소 검수소견">{{ procStepData.lab_INSP_DESC }}</el-descriptions-item>
+          <el-descriptions-item label="융합기술팀 검수일">{{ formatDate(procStepData.tech_INSP_DT) }}</el-descriptions-item>
+          <el-descriptions-item label="융합기술팀 검수소견">{{ procStepData.tech_INSP_DESC }}</el-descriptions-item>
+          <el-descriptions-item label="생성일">{{ formatDate(procStepData.create_DT) }}</el-descriptions-item>
+          <el-descriptions-item label="생성자">{{ procStepData.create_ID }}</el-descriptions-item>
+          <el-descriptions-item label="수정일">{{ formatDate(procStepData.update_DT) }}</el-descriptions-item>
+          <el-descriptions-item label="수정자">{{ procStepData.update_ID }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
     </div>
     
     <div v-else-if="currentSubMenu === 'tag-setting'" class="submenu-content">
-              <h2>세팅정보 관리</h2>
-        <p>태그번호를 입력하여 세팅정보를 관리하세요.</p>
+      <h2>세팅정보 관리</h2>
+      <p>태그번호를 입력하여 세팅정보를 관리하세요.</p>
       
       <!-- 태그번호 검색 섹션 -->
       <div class="direct-search-section">
@@ -174,50 +162,285 @@
         <div class="result-header">
           <h3>세팅정보</h3>
           <div class="action-buttons" v-if="userAcl >= 2">
-            <el-button type="primary" @click="editSettingInfo">수정</el-button>
+            <el-button 
+              :type="isEditMode ? 'success' : 'primary'" 
+              @click="toggleEditMode"
+            >
+              {{ isEditMode ? '저장' : '수정모드' }}
+            </el-button>
+            <el-button 
+              v-if="isEditMode" 
+              type="warning" 
+              @click="cancelEdit"
+            >
+              취소
+            </el-button>
             <el-button type="danger" @click="deleteSettingInfo">삭제</el-button>
           </div>
         </div>
-        <el-descriptions :column="2" border>
-          <el-descriptions-item label="시퀀스">{{ settingInfoData.setting_info_seq }}</el-descriptions-item>
-          <el-descriptions-item label="태그번호">{{ settingInfoData.ordNo }}</el-descriptions-item>
-          <el-descriptions-item label="하드웨어버전">{{ settingInfoData.hw_version }}</el-descriptions-item>
-          <el-descriptions-item label="펌웨어버전">{{ settingInfoData.fw_version }}</el-descriptions-item>
-          <el-descriptions-item label="LED ON 주기">{{ settingInfoData.led_SEC }}</el-descriptions-item>
-          <el-descriptions-item label="송신주기">{{ settingInfoData.ri_MS }}</el-descriptions-item>
-          <el-descriptions-item label="신호 강도">{{ settingInfoData.tx_POWER }}</el-descriptions-item>
-          <el-descriptions-item label="송신 방식">{{ settingInfoData.random_DV }}</el-descriptions-item>
-          <el-descriptions-item label="RF 프로파일">{{ settingInfoData.rf_PROFILE }}</el-descriptions-item>
-          <el-descriptions-item label="통신 채널">{{ settingInfoData.channel }}</el-descriptions-item>
-          <el-descriptions-item label="슬립모드">{{ settingInfoData.sleep_MODE }}</el-descriptions-item>
-          <el-descriptions-item label="슬립모드 강도">{{ settingInfoData.sleep_TH_HOLD }}</el-descriptions-item>
-          <el-descriptions-item label="RISM">{{ settingInfoData.sleep_INTERVAL }}</el-descriptions-item>
-          <el-descriptions-item label="슬립모드 진입시간">{{ settingInfoData.sleep_PERIOD }}</el-descriptions-item>
-          <el-descriptions-item label="Back Channel 버전">{{ settingInfoData.bc_VER }}</el-descriptions-item>
-          <el-descriptions-item label="Back Channel 주기">{{ settingInfoData.bc_PERIOD }}</el-descriptions-item>
-          <el-descriptions-item label="BC Sleep 주기">{{ settingInfoData.bc_SLEEP }}</el-descriptions-item>
-          <el-descriptions-item label="디바이스 IP">{{ settingInfoData.device_IP }}</el-descriptions-item>
-          <el-descriptions-item label="서버 IP">{{ settingInfoData.server_IP }}</el-descriptions-item>
-          <el-descriptions-item label="게이트웨이">{{ settingInfoData.gateway }}</el-descriptions-item>
-          <el-descriptions-item label="서브넷 마스크">{{ settingInfoData.sub_MASK }}</el-descriptions-item>
-          <el-descriptions-item label="TDMA">{{ settingInfoData.tdma }}</el-descriptions-item>
-          <el-descriptions-item label="포트 번호">{{ settingInfoData.port }}</el-descriptions-item>
-          <el-descriptions-item label="삭제 여부">
-            <el-tag :type="settingInfoData.status === 'Y' ? 'danger' : 'success'">
-              {{ settingInfoData.status === 'Y' ? '삭제됨' : '사용중' }}
-            </el-tag>
+        
+        <!-- 편집 모드 안내 메시지 -->
+        <div v-if="isEditMode" class="edit-mode-notice">
+          <el-icon><InfoFilled /></el-icon>
+          편집 모드가 활성화되었습니다. 값을 수정한 후 저장 버튼을 클릭하세요.
+        </div>
+        
+        <!-- 편집 가능한 전표형식 -->
+        <el-descriptions 
+          :column="2" 
+          border 
+          :class="{ 'editable-descriptions': isEditMode }"
+        >
+          <el-descriptions-item label="시퀀스">
+            <span>{{ settingInfoData[0]?.setting_info_seq }}</span>
           </el-descriptions-item>
-          <el-descriptions-item label="생성일">{{ formatDate(settingInfoData.create_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="생성자">{{ settingInfoData.create_ID }}</el-descriptions-item>
-          <el-descriptions-item label="수정일">{{ formatDate(settingInfoData.update_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="수정자">{{ settingInfoData.update_ID }}</el-descriptions-item>
+          
+          <el-descriptions-item label="태그번호">
+            <span>{{ settingInfoData[0]?.ordNo }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="하드웨어버전">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].hw_version" 
+              size="small"
+              placeholder="하드웨어 버전 (예: 1.2)"
+            />
+            <span v-else>{{ getVersionDisplay(settingInfoData[0]?.hw_version) }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="펌웨어버전">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].fw_version" 
+              size="small"
+              placeholder="펌웨어 버전 (예: 2.1)"
+            />
+            <span v-else>{{ getVersionDisplay(settingInfoData[0]?.fw_version) }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="LED ON 주기">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].led_SEC" 
+              size="small"
+              placeholder="LED 주기"
+            />
+            <span v-else>{{ settingInfoData[0]?.led_SEC }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="송신주기">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].ri_MS" 
+              size="small"
+              placeholder="송신주기"
+            />
+            <span v-else>{{ settingInfoData[0]?.ri_MS }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="신호 강도">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].tx_POWER" 
+              size="small"
+              placeholder="신호 강도"
+            />
+            <span v-else>{{ settingInfoData[0]?.tx_POWER }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="송신 방식">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].random_DV" 
+              size="small"
+              placeholder="송신 방식"
+            />
+            <span v-else>{{ settingInfoData[0]?.random_DV }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="RF 프로파일">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].rf_PROFILE" 
+              size="small"
+              placeholder="RF 프로파일"
+            />
+            <span v-else>{{ settingInfoData[0]?.rf_PROFILE }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="채널">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].channel" 
+              size="small"
+              placeholder="채널"
+            />
+            <span v-else>{{ settingInfoData[0]?.channel }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="서버 IP">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].server_IP" 
+              size="small"
+              placeholder="서버 IP"
+            />
+            <span v-else>{{ settingInfoData[0]?.server_IP }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="디바이스 IP">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].device_IP" 
+              size="small"
+              placeholder="디바이스 IP"
+            />
+            <span v-else>{{ settingInfoData[0]?.device_IP }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="게이트웨이">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].gateway" 
+              size="small"
+              placeholder="게이트웨이"
+            />
+            <span v-else>{{ settingInfoData[0]?.gateway }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="서브넷 마스크">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].sub_MASK" 
+              size="small"
+              placeholder="서브넷 마스크"
+            />
+            <span v-else>{{ settingInfoData[0]?.sub_MASK }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="포트">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].port" 
+              size="small"
+              placeholder="포트"
+            />
+            <span v-else>{{ settingInfoData[0]?.port }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="BC 버전">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].bc_VER" 
+              size="small"
+              placeholder="BC 버전 (예: 1.0)"
+            />
+            <span v-else>{{ getVersionDisplay(settingInfoData[0]?.bc_VER) }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="BC 주기">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].bc_PERIOD" 
+              size="small"
+              placeholder="BC 주기"
+            />
+            <span v-else>{{ settingInfoData[0]?.bc_PERIOD }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="BC 슬립">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].bc_SLEEP" 
+              size="small"
+              placeholder="BC 슬립"
+            />
+            <span v-else>{{ settingInfoData[0]?.bc_SLEEP }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="슬립 모드">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].sleep_MODE" 
+              size="small"
+              placeholder="슬립 모드"
+            />
+            <span v-else>{{ settingInfoData[0]?.sleep_MODE }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="슬립 주기">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].sleep_PERIOD" 
+              size="small"
+              placeholder="슬립 주기"
+            />
+            <span v-else>{{ settingInfoData[0]?.sleep_PERIOD }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="슬립 간격">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].sleep_INTERVAL" 
+              size="small"
+              placeholder="슬립 간격"
+            />
+            <span v-else>{{ settingInfoData[0]?.sleep_INTERVAL }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="슬립 임계값">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].sleep_TH_HOLD" 
+              size="small"
+              placeholder="슬립 임계값"
+            />
+            <span v-else>{{ settingInfoData[0]?.sleep_TH_HOLD }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="TDMA">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].tdma" 
+              size="small"
+              placeholder="TDMA"
+            />
+            <span v-else>{{ settingInfoData[0]?.tdma }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="상태">
+            <el-input 
+              v-if="isEditMode" 
+              v-model="settingInfoData[0].status" 
+              size="small"
+              placeholder="상태"
+            />
+            <span v-else>{{ settingInfoData[0]?.status }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="생성일">
+            <span>{{ formatDate(settingInfoData[0]?.create_DT) }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="생성자">
+            <span>{{ settingInfoData[0]?.create_ID }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="수정일">
+            <span>{{ formatDate(settingInfoData[0]?.update_DT) }}</span>
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="수정자">
+            <span>{{ settingInfoData[0]?.update_ID }}</span>
+          </el-descriptions-item>
         </el-descriptions>
       </div>
     </div>
     
     <div v-else-if="currentSubMenu === 'tag-version'" class="submenu-content">
-              <h2>버전 이력 관리</h2>
-        <p>태그번호를 입력하여 버전 이력을 관리하세요.</p>
+      <h2>버전 이력 관리</h2>
+      <p>태그번호를 입력하여 버전 이력을 관리하세요.</p>
       
       <!-- 태그번호 검색 섹션 -->
       <div class="direct-search-section">
@@ -291,8 +514,8 @@
     </div>
     
     <div v-else-if="currentSubMenu === 'tag-common'" class="submenu-content">
-              <h2>공통정보 관리</h2>
-        <p>태그번호를 입력하여 공통정보를 관리하세요.</p>
+      <h2>공통정보 관리</h2>
+      <p>태그번호를 입력하여 공통정보를 관리하세요.</p>
       
       <!-- 태그번호 검색 섹션 -->
       <div class="direct-search-section">
@@ -386,8 +609,8 @@
     </div>
     
     <div v-else-if="currentSubMenu === 'tag-as'" class="submenu-content">
-              <h2>AS 이력 관리</h2>
-        <p>태그번호를 입력하여 AS 이력을 관리하세요.</p>
+      <h2>AS 이력 관리</h2>
+      <p>태그번호를 입력하여 AS 이력을 관리하세요.</p>
       
       <!-- 태그번호 검색 섹션 -->
       <div class="direct-search-section">
@@ -610,32 +833,32 @@
           <el-button type="primary" @click="editSettingInfo">세팅정보 수정</el-button>
         </div>
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="태그번호">{{ settingInfoData.ordNo }}</el-descriptions-item>
-          <el-descriptions-item label="하드웨어버전">{{ settingInfoData.hw_VER }}</el-descriptions-item>
-          <el-descriptions-item label="펌웨어버전">{{ settingInfoData.fw_VER }}</el-descriptions-item>
-          <el-descriptions-item label="LED ON 주기">{{ settingInfoData.led_SEC }}</el-descriptions-item>
-          <el-descriptions-item label="송신주기">{{ settingInfoData.ri_MS }}</el-descriptions-item>
-          <el-descriptions-item label="신호 강도">{{ settingInfoData.tx_POWER }}</el-descriptions-item>
-          <el-descriptions-item label="송신 방식">{{ settingInfoData.random_DV }}</el-descriptions-item>
-          <el-descriptions-item label="RF 프로파일">{{ settingInfoData.rf_PROFILE }}</el-descriptions-item>
-          <el-descriptions-item label="통신 채널">{{ settingInfoData.channel }}</el-descriptions-item>
-          <el-descriptions-item label="슬립모드">{{ settingInfoData.sleep_MODE }}</el-descriptions-item>
-          <el-descriptions-item label="슬립모드 강도">{{ settingInfoData.sleep_TH_HOLD }}</el-descriptions-item>
-          <el-descriptions-item label="RISM">{{ settingInfoData.sleep_INTERVAL }}</el-descriptions-item>
-          <el-descriptions-item label="슬립모드 진입시간">{{ settingInfoData.sleep_PERIOD }}</el-descriptions-item>
-          <el-descriptions-item label="Back Channel 버전">{{ settingInfoData.bc_VER }}</el-descriptions-item>
-          <el-descriptions-item label="Back Channel 주기">{{ settingInfoData.bc_PERIOD }}</el-descriptions-item>
-          <el-descriptions-item label="BC Sleep 주기">{{ settingInfoData.bc_SLEEP }}</el-descriptions-item>
-          <el-descriptions-item label="디바이스 IP">{{ settingInfoData.device_IP }}</el-descriptions-item>
-          <el-descriptions-item label="서버 IP">{{ settingInfoData.server_IP }}</el-descriptions-item>
-          <el-descriptions-item label="게이트웨이">{{ settingInfoData.gateway }}</el-descriptions-item>
-          <el-descriptions-item label="서브넷 마스크">{{ settingInfoData.sub_MASK }}</el-descriptions-item>
-          <el-descriptions-item label="TDMA">{{ settingInfoData.tdma }}</el-descriptions-item>
-          <el-descriptions-item label="포트 번호">{{ settingInfoData.port }}</el-descriptions-item>
-          <el-descriptions-item label="생성일">{{ formatDate(settingInfoData.create_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="생성자">{{ settingInfoData.create_ID }}</el-descriptions-item>
-          <el-descriptions-item label="수정일">{{ formatDate(settingInfoData.update_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="수정자">{{ settingInfoData.update_ID }}</el-descriptions-item>
+          <el-descriptions-item label="태그번호">{{ settingInfoData[0]?.ordNo }}</el-descriptions-item>
+          <el-descriptions-item label="하드웨어버전">{{ settingInfoData[0]?.hw_version }}</el-descriptions-item>
+          <el-descriptions-item label="펌웨어버전">{{ settingInfoData[0]?.fw_version }}</el-descriptions-item>
+          <el-descriptions-item label="LED ON 주기">{{ settingInfoData[0]?.led_SEC }}</el-descriptions-item>
+          <el-descriptions-item label="송신주기">{{ settingInfoData[0]?.ri_MS }}</el-descriptions-item>
+          <el-descriptions-item label="신호 강도">{{ settingInfoData[0]?.tx_POWER }}</el-descriptions-item>
+          <el-descriptions-item label="송신 방식">{{ settingInfoData[0]?.random_DV }}</el-descriptions-item>
+          <el-descriptions-item label="RF 프로파일">{{ settingInfoData[0]?.rf_PROFILE }}</el-descriptions-item>
+          <el-descriptions-item label="통신 채널">{{ settingInfoData[0]?.channel }}</el-descriptions-item>
+          <el-descriptions-item label="슬립모드">{{ settingInfoData[0]?.sleep_MODE }}</el-descriptions-item>
+          <el-descriptions-item label="슬립모드 강도">{{ settingInfoData[0]?.sleep_TH_HOLD }}</el-descriptions-item>
+          <el-descriptions-item label="RISM">{{ settingInfoData[0]?.sleep_INTERVAL }}</el-descriptions-item>
+          <el-descriptions-item label="슬립모드 진입시간">{{ settingInfoData[0]?.sleep_PERIOD }}</el-descriptions-item>
+          <el-descriptions-item label="Back Channel 버전">{{ settingInfoData[0]?.bc_VER }}</el-descriptions-item>
+          <el-descriptions-item label="Back Channel 주기">{{ settingInfoData[0]?.bc_PERIOD }}</el-descriptions-item>
+          <el-descriptions-item label="BC Sleep 주기">{{ settingInfoData[0]?.bc_SLEEP }}</el-descriptions-item>
+          <el-descriptions-item label="디바이스 IP">{{ settingInfoData[0]?.device_IP }}</el-descriptions-item>
+          <el-descriptions-item label="서버 IP">{{ settingInfoData[0]?.server_IP }}</el-descriptions-item>
+          <el-descriptions-item label="게이트웨이">{{ settingInfoData[0]?.gateway }}</el-descriptions-item>
+          <el-descriptions-item label="서브넷 마스크">{{ settingInfoData[0]?.sub_MASK }}</el-descriptions-item>
+          <el-descriptions-item label="TDMA">{{ settingInfoData[0]?.tdma }}</el-descriptions-item>
+          <el-descriptions-item label="포트 번호">{{ settingInfoData[0]?.port }}</el-descriptions-item>
+          <el-descriptions-item label="생성일">{{ formatDate(settingInfoData[0]?.create_DT) }}</el-descriptions-item>
+          <el-descriptions-item label="생성자">{{ settingInfoData[0]?.create_ID }}</el-descriptions-item>
+          <el-descriptions-item label="수정일">{{ formatDate(settingInfoData[0]?.update_DT) }}</el-descriptions-item>
+          <el-descriptions-item label="수정자">{{ settingInfoData[0]?.update_ID }}</el-descriptions-item>
         </el-descriptions>
       </div>
       <div v-else>
@@ -852,8 +1075,7 @@ import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { QuestionFilled, Close } from '@element-plus/icons-vue'
-import Header from './Header.vue'
+import { QuestionFilled, Close, InfoFilled } from '@element-plus/icons-vue'
 
 
 // Props
@@ -918,8 +1140,11 @@ const pageSize = ref(10)
 const totalTagCount = ref(0)
 
 // 서브메뉴 관련 상태
-const currentSubMenu = ref(null)
+const currentSubMenu = ref('tag-proc-step')
 
+// 세팅정보 편집 모드 상태
+const isEditMode = ref(false)
+const originalSettingData = ref(null)
 
 const searchTagNo = ref('')
 const tagNumberList = ref([])
@@ -1017,7 +1242,10 @@ async function doSearch() {
     }
     
     console.log('API 요청 파라미터:', params)
-    const res = await axios.get('/tags/getTagList', { params })
+    const res = await axios.get('/api/tags/getTagList', { params })
+    
+    console.log('API 응답 전체:', res)
+    console.log('API 응답 데이터:', res.data)
     
     // API 응답 구조에 맞게 데이터 추출
     let responseData = res.data
@@ -1108,7 +1336,6 @@ const asInfoVisible = ref(false)
 const asInfoData = ref(null)
 const showSearchHelp = ref(false)
 const showAsForm = ref(false)
-const isEditMode = ref(false)
 const currentTagNo = ref(null)
 const asForm = ref({
   id: null,
@@ -1162,84 +1389,62 @@ watch(() => props.subMenu, (newSubMenu) => {
 
 // 서브메뉴 업데이트 함수
 function updateSubMenu(routeName, routeTagNo) {
-  console.log('updateSubMenu 호출됨:', routeName, routeTagNo)
-  console.log('현재 currentSubMenu 값:', currentSubMenu.value)
-  console.log('props.subMenu:', props.subMenu)
-  
   // 기존 서브메뉴 저장
   const previousSubMenu = currentSubMenu.value
   
   if (routeTagNo) {
     searchTagNo.value = routeTagNo
-    console.log('라우터에서 태그번호 설정됨:', routeTagNo)
   }
   
   // props로 전달된 subMenu가 있으면 우선 처리
   if (props.subMenu) {
-    console.log('props.subMenu로 서브메뉴 설정:', props.subMenu)
     currentSubMenu.value = props.subMenu
   } else {
     // 라우터 이름에 따라 서브메뉴 설정
     if (routeName === 'TagManagement') {
       // 기본 태그관리 페이지 (태그 검색)
-      console.log('기본 태그관리 페이지 설정')
       currentSubMenu.value = null
     } else if (routeName === 'TagProcStep' || routeName === 'TagProcStepSearch') {
-      console.log('TagProcStep 서브메뉴 설정')
       currentSubMenu.value = 'tag-proc-step'
       if (routeTagNo) {
         loadProcStepData(routeTagNo)
       }
     } else if (routeName === 'TagSetting' || routeName === 'TagSettingSearch') {
-      console.log('TagSetting 서브메뉴 설정')
       currentSubMenu.value = 'tag-setting'
       if (routeTagNo) {
         loadSettingData(routeTagNo)
       }
     } else if (routeName === 'TagVersion' || routeName === 'TagVersionSearch') {
-      console.log('TagVersion 서브메뉴 설정')
       currentSubMenu.value = 'tag-version'
       if (routeTagNo) {
         loadVersionData(routeTagNo)
       }
     } else if (routeName === 'TagCommon' || routeName === 'TagCommonSearch') {
-      console.log('TagCommon 서브메뉴 설정')
       currentSubMenu.value = 'tag-common'
       if (routeTagNo) {
         loadCommonData(routeTagNo)
       }
     } else if (routeName === 'TagAs' || routeName === 'TagAsSearch') {
-      console.log('TagAs 서브메뉴 설정')
       currentSubMenu.value = 'tag-as'
       if (routeTagNo) {
         loadAsData(routeTagNo)
       }
     } else {
       // 기본 태그관리 페이지
-      console.log('기본 태그관리 페이지 설정')
       currentSubMenu.value = null
     }
   }
   
   // 서브메뉴가 변경된 경우 검색 조건 초기화
   if (previousSubMenu !== currentSubMenu.value) {
-    console.log('서브메뉴 변경됨, 검색 조건 초기화:', previousSubMenu, '→', currentSubMenu.value)
     resetSearch()
   }
-  
-  console.log('설정 후 currentSubMenu 값:', currentSubMenu.value)
 }
 
 // 서브메뉴 초기화
 onMounted(() => {
-  console.log('TagManagement onMounted 실행됨')
-  console.log('현재 route.name:', route.name)
-  console.log('현재 route.path:', route.path)
-  console.log('현재 props.subMenu:', props.subMenu)
-  
   // 초기 상태 설정
   if (!props.subMenu && route.name === 'TagManagement') {
-    console.log('기본 태그관리 페이지로 초기화')
     currentSubMenu.value = null
   }
 })
@@ -1248,7 +1453,7 @@ onMounted(() => {
 async function loadProcStepData(ordNo) {
   if (!ordNo) return
   try {
-    const res = await axios.get(`/tags/proc_step_${ordNo}`)
+    const res = await axios.get(`/api/tags/proc_step_${ordNo}`)
     procStepData.value = res.data.body || res.data
   } catch (error) {
     console.error('처리단계 조회 오류:', error)
@@ -1259,18 +1464,37 @@ async function loadProcStepData(ordNo) {
 async function loadSettingData(ordNo) {
   if (!ordNo) return
   try {
-    const res = await axios.get(`/tags/setting_info_${ordNo}`)
-    settingInfoData.value = res.data.body || res.data
+    console.log('세팅정보 조회 시작:', ordNo)
+    const res = await axios.get(`/api/tags/setting_info_${ordNo}`)
+    console.log('세팅정보 응답:', res.data)
+    
+    // API 응답 구조에 맞게 데이터 추출
+    let responseData = res.data
+    
+    // 응답이 래핑된 경우 body에서 추출
+    if (responseData && typeof responseData === 'object' && responseData.body !== undefined) {
+      responseData = responseData.body
+      console.log('body에서 추출된 세팅정보:', responseData)
+    }
+    
+    // 배열이 아닌 경우 배열로 변환
+    if (responseData && !Array.isArray(responseData)) {
+      responseData = [responseData]
+    }
+    
+    settingInfoData.value = responseData || []
+    console.log('설정된 세팅정보 데이터:', settingInfoData.value)
   } catch (error) {
     console.error('세팅정보 조회 오류:', error)
     ElMessage.error('세팅정보를 불러오는 중 오류가 발생했습니다.')
+    settingInfoData.value = []
   }
 }
 
 async function loadVersionData(ordNo) {
   if (!ordNo) return
   try {
-    const res = await axios.get(`/tags/version-history/${ordNo}`)
+    const res = await axios.get(`/api/tags/version-history/${ordNo}`)
     versionHistoryData.value = res.data.body || res.data || []
   } catch (error) {
     console.error('버전 이력 조회 오류:', error)
@@ -1282,7 +1506,7 @@ async function loadCommonData(ordNo) {
   if (!ordNo) return
   try {
     console.log('공통정보 조회 시작:', ordNo)
-    const res = await axios.get(`/tags/common_history_${ordNo}`)
+    const res = await axios.get(`/api/tags/common_history_${ordNo}`)
     console.log('공통정보 응답:', res.data)
     
     let data = res.data.body || res.data
@@ -1302,7 +1526,7 @@ async function loadCommonData(ordNo) {
 async function loadAsData(ordNo) {
   if (!ordNo) return
   try {
-    const res = await axios.get(`/tags/prod_as_${ordNo}`)
+    const res = await axios.get(`/api/tags/prod_as_${ordNo}`)
     const data = res.data.body || res.data
     if (Array.isArray(data)) {
       asInfoData.value = data
@@ -1348,7 +1572,7 @@ async function searchProcStep() {
     return
   }
   try {
-    const res = await axios.get(`/tags/proc_step_${searchTagNo.value.trim()}`)
+    const res = await axios.get(`/api/tags/proc_step_${searchTagNo.value.trim()}`)
     console.log('처리단계 응답 데이터:', res.data)
     procStepData.value = res.data.body || res.data
     if (!procStepData.value) {
@@ -1366,12 +1590,15 @@ async function searchSettingInfo() {
     return
   }
   try {
-    const res = await axios.get(`/tags/setting_info_${searchTagNo.value.trim()}`)
+    const res = await axios.get(`/api/tags/setting_info_${searchTagNo.value.trim()}`)
     console.log('세팅정보 응답 데이터:', res.data)
     settingInfoData.value = res.data.body || res.data
     if (!settingInfoData.value) {
       ElMessage.warning('해당 태그의 세팅정보가 없습니다.')
     }
+    // 편집 모드 초기화
+    isEditMode.value = false
+    originalSettingData.value = null
   } catch (error) {
     console.error('세팅정보 조회 오류:', error)
     ElMessage.error('세팅정보를 불러오는 중 오류가 발생했습니다.')
@@ -1445,24 +1672,17 @@ async function searchTagNumbers() {
 
 // 태그번호 선택 함수
 function selectTagNumber(row) {
-  console.log('selectTagNumber 호출됨:', row)
   searchTagNo.value = row.tag_No
   tagNumberList.value = [] // 검색 결과 숨기기
   
-  console.log('현재 서브메뉴:', currentSubMenu.value)
-  
   // 현재 서브메뉴에 따라 해당 정보 조회
   if (currentSubMenu.value === 'tag-setting') {
-    console.log('세팅정보 조회 호출')
     searchSettingInfo()
   } else if (currentSubMenu.value === 'tag-version') {
-    console.log('버전 이력 조회 호출')
     searchVersionHistory()
   } else if (currentSubMenu.value === 'tag-common') {
-    console.log('공통정보 조회 호출')
     searchCommonHistory()
   } else if (currentSubMenu.value === 'tag-as') {
-    console.log('AS 이력 조회 호출')
     searchAsInfo()
   }
 }
@@ -1490,9 +1710,7 @@ async function searchCommonHistory() {
     return
   }
   try {
-    console.log('공통정보 검색 시작:', searchTagNo.value.trim())
     const res = await axios.get(`/tags/common_history_${searchTagNo.value.trim()}`)
-    console.log('공통정보 검색 응답:', res.data)
     
     let data = res.data.body || res.data
     if (data && !Array.isArray(data)) {
@@ -1503,7 +1721,6 @@ async function searchCommonHistory() {
     if (!commonHistoryData.value || commonHistoryData.value.length === 0) {
       ElMessage.warning('해당 태그의 공통정보가 없습니다.')
     }
-    console.log('설정된 공통정보 데이터:', commonHistoryData.value)
   } catch (error) {
     console.error('공통정보 조회 오류:', error)
     ElMessage.error('공통정보를 불러오는 중 오류가 발생했습니다.')
@@ -1527,7 +1744,6 @@ async function searchAsInfo() {
     if (!asInfoData.value || asInfoData.value.length === 0) {
       ElMessage.warning('해당 태그의 AS 이력이 없습니다.')
     }
-    console.log('AS 이력 검색 결과:', asInfoData.value)
   } catch (error) {
     console.error('AS 이력 조회 오류:', error)
     ElMessage.error('AS 이력을 불러오는 중 오류가 발생했습니다.')
@@ -1559,7 +1775,6 @@ async function loadAsForFirstTag() {
 
 // 이벤트 핸들러
 async function showProcStep(ordNo) {
-  console.log('showProcStep 호출됨, ordNo:', ordNo)
   // 라우터를 사용해서 URL 변경
   router.push(`/tag-management/proc-step/${ordNo}`)
 }
@@ -1763,10 +1978,13 @@ async function deleteAs(row) {
   }
   
   try {
-    await ElMessageBox.confirm('정말 삭제하시겠습니까?', '확인', {     confirmButtonText: '삭제',     cancelButtonText: '취소',     type: 'warning'
+    await ElMessageBox.confirm('정말 삭제하시겠습니까?', '확인', {
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+      type: 'warning'
     })
     
-    await axios.delete(`/tags/delete/${row.id}`)
+    await axios.delete(`/tags/delete_as/${row.id}`)
     
     const res = await axios.get(`/tags/prod_as_${currentTagNo.value}`)
     const data = res.data.body || res.data
@@ -1875,8 +2093,6 @@ function deleteVersion(row) {
   })
 }
 
-
-
 // 로그아웃
 function logout() {
   sessionStorage.removeItem('jwt_token')
@@ -1898,6 +2114,142 @@ onMounted(() => {
   
   // 초기에는 검색하지 않음 - 사용자가 검색 조건을 입력해야 함
 })
+
+function toggleEditMode() {
+  if (isEditMode.value) {
+    // 저장 모드일 때
+    saveSettingInfo()
+  } else {
+    // 편집 모드로 전환할 때
+    startEditMode()
+  }
+}
+
+function startEditMode() {
+  // 원본 데이터 백업
+  originalSettingData.value = JSON.parse(JSON.stringify(settingInfoData.value))
+  isEditMode.value = true
+  ElMessage.info('편집 모드가 활성화되었습니다. 값을 수정한 후 저장 버튼을 클릭하세요.')
+}
+
+function cancelEdit() {
+  // 원본 데이터로 복원
+  if (originalSettingData.value) {
+    settingInfoData.value = JSON.parse(JSON.stringify(originalSettingData.value))
+  }
+  isEditMode.value = false
+  originalSettingData.value = null
+  ElMessage.info('편집이 취소되었습니다.')
+}
+
+async function saveSettingInfo() {
+  try {
+    // null 값을 빈 문자열로 변환하는 헬퍼 함수
+    const convertNullToEmpty = (value) => value === null || value === undefined ? '' : value
+    
+    // 전송할 데이터 준비
+    const requestData = {
+      HW_VER: convertNullToEmpty(settingInfoData.value.hw_version),
+      FW_VER: convertNullToEmpty(settingInfoData.value.fw_version),
+      LED_SEC: convertNullToEmpty(settingInfoData.value.led_SEC),
+      RI_MS: convertNullToEmpty(settingInfoData.value.ri_MS),
+      TX_POWER: convertNullToEmpty(settingInfoData.value.tx_POWER),
+      RANDOM_DV: convertNullToEmpty(settingInfoData.value.random_DV),
+      RF_PROFILE: convertNullToEmpty(settingInfoData.value.rf_PROFILE),
+      CHANNEL: convertNullToEmpty(settingInfoData.value.channel),
+      SLEEP_MODE: convertNullToEmpty(settingInfoData.value.sleep_MODE),
+      SLEEP_TH_HOLD: convertNullToEmpty(settingInfoData.value.sleep_TH_HOLD),
+      SLEEP_INTERVAL: convertNullToEmpty(settingInfoData.value.sleep_INTERVAL),
+      SLEEP_PERIOD: convertNullToEmpty(settingInfoData.value.sleep_PERIOD),
+      BC_VER: convertNullToEmpty(settingInfoData.value.bc_VER),
+      BC_PERIOD: convertNullToEmpty(settingInfoData.value.bc_PERIOD),
+      BC_SLEEP: convertNullToEmpty(settingInfoData.value.bc_SLEEP),
+      DEVICE_IP: convertNullToEmpty(settingInfoData.value.device_IP),
+      SERVER_IP: convertNullToEmpty(settingInfoData.value.server_IP),
+      GATEWAY: convertNullToEmpty(settingInfoData.value.gateway),
+      SUB_MASK: convertNullToEmpty(settingInfoData.value.sub_MASK),
+      TDMA: convertNullToEmpty(settingInfoData.value.tdma),
+      PORT: convertNullToEmpty(settingInfoData.value.port)
+    }
+    
+    // JWT 토큰을 헤더에 포함
+    const token = sessionStorage.getItem('jwt_token')
+    const headers = {
+      'Authorization': token
+    }
+    
+    // 수정된 데이터로 API 호출
+    const res = await axios.put(`/tags/update_setting_${settingInfoData.value.ordNo}`, requestData, { headers })
+    
+    // 백엔드 응답 구조에 맞게 성공 체크
+    if (res.data.statusCode === 'OK' || res.data.statusCodeValue === 200 || res.status === 200) {
+      ElMessage.success('세팅정보가 성공적으로 수정되었습니다.')
+      // 편집 모드 종료
+      isEditMode.value = false
+      originalSettingData.value = null
+      // 최신 데이터 다시 로드
+      await loadSettingData(settingInfoData.value.ordNo)
+    } else {
+      ElMessage.error('세팅정보 수정에 실패했습니다.')
+      console.error('수정 실패 응답:', res.data)
+    }
+  } catch (error) {
+    console.error('세팅정보 수정 오류:', error)
+    ElMessage.error('세팅정보 수정 중 오류가 발생했습니다.')
+  }
+}
+
+// null 값 처리를 위한 헬퍼 함수
+function getDisplayValue(value) {
+  return value || '-'
+}
+
+// 버전 필드에 "v" 접두사를 추가하는 헬퍼 함수
+function getVersionDisplay(value) {
+  if (!value || value === '-') return '-'
+  // 이미 "v"로 시작하면 그대로 반환, 아니면 "v" 추가
+  return value.startsWith('v') ? value : `v${value}`
+}
+
+// 사이드바 메뉴 선택 처리 함수
+function handleSidebarMenuSelect(menuKey) {
+  console.log('사이드바 메뉴 선택:', menuKey)
+  
+  // 서브메뉴 설정
+  switch (menuKey) {
+    case 'tag-search':
+    case 'tag-proc-step':
+      currentSubMenu.value = 'tag-proc-step'
+      break
+    case 'tag-setting':
+      currentSubMenu.value = 'tag-setting'
+      break
+    case 'tag-version':
+      currentSubMenu.value = 'tag-version'
+      break
+    case 'tag-common':
+      currentSubMenu.value = 'tag-common'
+      break
+    case 'tag-as':
+      currentSubMenu.value = 'tag-as'
+      break
+    default:
+      currentSubMenu.value = 'tag-proc-step'
+  }
+  
+  // 검색 조건 초기화
+  resetSearch()
+  
+  // 기존 데이터 초기화
+  tableData.value = []
+  procStepData.value = null
+  settingInfoData.value = []
+  versionHistoryData.value = []
+  commonHistoryData.value = []
+  asInfoData.value = []
+}
+
+
 </script>
 
 <style scoped>
@@ -2016,8 +2368,6 @@ onMounted(() => {
   color: #409eff;
 }
 
-
-
 .pagination-section {
   display: flex;
   justify-content: center;
@@ -2066,8 +2416,6 @@ onMounted(() => {
   text-align: center !important;
 }
 
-
-
 .submenu-content {
   padding: 32px;
   background: white;
@@ -2115,8 +2463,6 @@ onMounted(() => {
   display: flex;
   gap: 10px;
 }
-
-
 
 /* 안내 메시지 스타일 */
 .info-message {
@@ -2170,4 +2516,104 @@ onMounted(() => {
   padding: 15px 0;
   border-top: 1px solid #e9ecef;
 }
-</style> 
+
+:deep(.editable-row) {
+  background-color: #f5f7fa;
+}
+
+/* 편집 가능한 테이블 스타일 */
+:deep(.editable-row .el-input) {
+  width: 100%;
+}
+
+:deep(.editable-row .el-input__inner) {
+  border: 1px solid #409eff;
+  background-color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+:deep(.editable-row .el-input__inner:focus) {
+  border-color: #409eff;
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+/* 편집 모드일 때 테이블 행 스타일 */
+:deep(.editable-row td) {
+  background-color: #f0f9ff !important;
+  border-color: #b3d8ff !important;
+}
+
+:deep(.editable-row td:hover) {
+  background-color: #e6f3ff !important;
+}
+
+/* 편집 불가능한 필드 스타일 */
+:deep(.editable-row .readonly-field) {
+  background-color: #f5f5f5;
+  color: #666;
+  font-style: italic;
+}
+
+/* 액션 버튼 스타일 */
+.action-buttons .el-button {
+  margin-left: 8px;
+}
+
+.action-buttons .el-button:first-child {
+  margin-left: 0;
+}
+
+/* 테이블 스크롤 스타일 */
+:deep(.el-table) {
+  overflow-x: auto;
+}
+
+:deep(.el-table__body-wrapper) {
+  overflow-x: auto;
+}
+
+/* 편집 모드 안내 메시지 */
+.edit-mode-notice {
+  margin-bottom: 15px;
+  padding: 10px 15px;
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 6px;
+  color: #1890ff;
+  font-size: 14px;
+}
+
+.edit-mode-notice .el-icon {
+  margin-right: 8px;
+  color: #1890ff;
+}
+
+:deep(.editable-descriptions) {
+  background-color: #f5f7fa;
+}
+
+:deep(.editable-descriptions .el-input) {
+  width: 100%;
+}
+
+:deep(.editable-descriptions .el-input__inner) {
+  border: 1px solid #409eff;
+  background-color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+:deep(.editable-descriptions .el-input__inner:focus) {
+  border-color: #409eff;
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+:deep(.editable-descriptions .el-descriptions-item) {
+  padding: 8px 0 !important;
+}
+
+:deep(.editable-descriptions .el-descriptions-item .label) {
+  font-weight: bold;
+}
+</style>

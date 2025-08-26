@@ -12,12 +12,16 @@ import com.example.tag_dev.LOG.Model.UserLog;
 import com.example.tag_dev.LOG.LogRepository.UserLogRepository;
 import com.example.tag_dev.USER.Repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.beans.PropertyDescriptor;
 import java.util.*;
 
 @Service
@@ -169,72 +173,59 @@ public class UserService {
         }
 
         Optional<User> userOpt = userRepository.findById(Long.parseLong(userId));
-
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            boolean isUpdated = false;
-
-            if (userDto.getUser_name() != null && !userDto.getUser_name().isEmpty()) {
-                user.setUserName(user.getUserName());
-                isUpdated = true;
-            }
-            if (userDto.getUser_en_name() != null && !userDto.getUser_en_name().isEmpty()) {
-                user.setUser_en_name(user.getUser_en_name());
-                isUpdated = true;
-            }
-            if (userDto.getUser_email() != null && !userDto.getUser_email().isEmpty()) {
-                user.setUserEmail(user.getUserEmail());
-                isUpdated = true;
-            }
-            if (userDto.getUser_phone_num() != null && !userDto.getUser_phone_num().isEmpty()) {
-                user.setUserPhoneNum(user.getUserPhoneNum());
-                isUpdated = true;
-            }
-            if (userDto.getDept_cd() != null && !userDto.getDept_cd().isEmpty()) {
-                user.setDept_cd(user.getDept_cd());
-                isUpdated = true;
-            }
-            if (userDto.getUser_job() != null && !userDto.getUser_job().isEmpty()) {
-                user.setUser_job(user.getUser_job());
-                isUpdated = true;
-            }
-            if (userDto.getUser_stat() != null && !userDto.getUser_stat().isEmpty()) {
-                user.setUser_stat(user.getUser_stat());
-                isUpdated = true;
-            }
-            if (userDto.getHire_dt() != null) {
-                user.setHire_dt(user.getHire_dt());
-                isUpdated = true;
-            }
-            if( userDto.getStatus() != null && !userDto.getStatus().isEmpty()){
-                user.setStatus(user.getStatus());
-                isUpdated = true;
-            }
-
-            if (isUpdated) {
-                user.setUpdate_dt(new Date());
-                Long updateUserId = jwtTokenProvider.extractUserId((jwtToken));
-                user.setUpdate_id(updateUserId);
-                userRepository.save(user);
-
-                UserLog userLog = new UserLog();
-                userLog.setLoginId(user.getLoginId());
-                userLog.setUpdate_dt(new Date());
-                userLog.setUpdate_id(jwtTokenProvider.extractUserId((jwtToken)));
-                if(user.getStatus().equals("Y")){
-                    userLog.setStatus("삭제");
-                }else {
-                    userLog.setStatus("정보수정");
-                }
-                userLogRepository.save(userLog);
-
-                return ResponseEntity.ok("사용자 정보 수정 완료");
-            } else {
-                return ResponseEntity.ok("수정할 내용 없음");
-            }
-        } else {
+        if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 없음");
         }
+
+        User user = userOpt.get();
+        
+        // DTO의 null이 아닌 값들만 User 엔티티에 복사
+        BeanUtils.copyProperties(userDto, user, getNullPropertyNames(userDto));
+        
+        // 업데이트 정보 설정
+        user.setUpdate_dt(new Date());
+        Long updateUserId = jwtTokenProvider.extractUserId(jwtToken);
+        user.setUpdate_id(updateUserId);
+        
+        userRepository.save(user);
+
+        // 로그 생성
+        createUserLog(user, updateUserId);
+
+        return ResponseEntity.ok("사용자 정보 수정 완료");
+    }
+
+    // null이 아닌 프로퍼티만 가져오는 헬퍼 메서드
+    private String[] getNullPropertyNames(Object source) {
+        final BeanWrapper src = new BeanWrapperImpl(source);
+        PropertyDescriptor[] pds = src.getPropertyDescriptors();
+        
+        Set<String> emptyNames = new HashSet<>();
+        for (PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null || (srcValue instanceof String && ((String) srcValue).isEmpty())) {
+                emptyNames.add(pd.getName());
+            }
+        }
+        
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
+    }
+
+    // 사용자 로그 생성 헬퍼 메서드
+    private void createUserLog(User user, Long updateUserId) {
+        UserLog userLog = new UserLog();
+        userLog.setLoginId(user.getLoginId());
+        userLog.setUpdate_dt(new Date());
+        userLog.setUpdate_id(updateUserId);
+        
+        if ("Y".equals(user.getStatus())) {
+            userLog.setStatus("삭제");
+        } else {
+            userLog.setStatus("정보수정");
+        }
+        
+        userLogRepository.save(userLog);
     }
 
     // 권한 변경 ( 관리자 기능 )
@@ -418,53 +409,50 @@ public class UserService {
         }
     }
     // 부서 수정/삭제 ( 관리자 기능 )
-    public ResponseEntity<?> updateDept(String deptCode, String token , DeptDTO deptDTO) {
+    public ResponseEntity<?> updateDept(String deptCode, String token, DeptDTO deptDTO) {
         if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        
         Optional<Dept_Info> deptOpt = deptRepository.findByDeptCode(deptCode);
-        if (deptOpt.isPresent()) {
-            Dept_Info deptInfo = deptOpt.get();
-            boolean isUpdated = false;
-            if(deptDTO.getDeptCode() != null && !deptDTO.getDeptCode().trim().isEmpty()){
-                deptInfo.setDeptCode(deptDTO.getDeptCode());
-                isUpdated = true;
-            }
-            if(deptDTO.getDept() != null && !deptDTO.getDept().trim().isEmpty()){
-                deptInfo.setDept(deptDTO.getDept());
-                isUpdated = true;
-            }
-            if(deptDTO.getStatus() != null && !deptDTO.getStatus().trim().isEmpty()){
-                deptInfo.setStatus(deptDTO.getStatus());
-                isUpdated = true;
-            }
-            if(isUpdated){
-                deptInfo.setUpdateDt(new Date());
-                deptInfo.setUpdateUser(jwtTokenProvider.extractUserName(token));
-                deptRepository.save(deptInfo);
-
-                DeptLog deptLog = new DeptLog();
-                deptLog.setDeptCode(deptDTO.getDeptCode());
-                deptLog.setDept(deptDTO.getDept());
-                if(deptDTO.getStatus().equals("Y")){
-                    deptLog.setStatus("삭제");
-                }else{
-                    deptLog.setStatus("사용중");
-                }
-                deptLog.setRegDt(deptDTO.getRegDt());
-                deptLog.setUserName(deptDTO.getUserName());
-                deptLog.setUserName(jwtTokenProvider.extractUserName(token));
-                deptLog.setUpdateDt(new Date());
-                deptLog.setUpdateUser(jwtTokenProvider.extractUserName(token));
-                deptLogRepository.save(deptLog);
-
-                return ResponseEntity.ok("부서 수정 완료");
-            }else{
-                return ResponseEntity.ok("수정할 내용 없음");
-            }
-        }else{
+        if (deptOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("부서 없음");
         }
+
+        Dept_Info deptInfo = deptOpt.get();
+        
+        // DTO의 null이 아닌 값들만 Dept_Info 엔티티에 복사
+        BeanUtils.copyProperties(deptDTO, deptInfo, getNullPropertyNames(deptDTO));
+        
+        // 업데이트 정보 설정
+        deptInfo.setUpdateDt(new Date());
+        deptInfo.setUpdateUser(jwtTokenProvider.extractUserName(token));
+        deptRepository.save(deptInfo);
+
+        // 부서 로그 생성
+        createDeptLog(deptDTO, token);
+
+        return ResponseEntity.ok("부서 수정 완료");
+    }
+
+    // 부서 로그 생성 헬퍼 메서드
+    private void createDeptLog(DeptDTO deptDTO, String token) {
+        DeptLog deptLog = new DeptLog();
+        deptLog.setDeptCode(deptDTO.getDeptCode());
+        deptLog.setDept(deptDTO.getDept());
+        
+        if ("Y".equals(deptDTO.getStatus())) {
+            deptLog.setStatus("삭제");
+        } else {
+            deptLog.setStatus("사용중");
+        }
+        
+        deptLog.setRegDt(deptDTO.getRegDt());
+        deptLog.setUserName(deptDTO.getUserName());
+        deptLog.setUpdateDt(new Date());
+        deptLog.setUpdateUser(jwtTokenProvider.extractUserName(token));
+        
+        deptLogRepository.save(deptLog);
     }
 
     // IP 변환 메소드

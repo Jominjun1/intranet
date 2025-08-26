@@ -17,8 +17,8 @@
           :icon="QuestionFilled" 
           circle 
           size="small"
-          @click="showHelp = true"
-          title="검색 도움말"
+          @click="toggleHelp"
+          title="로그 관리 도움말"
         />
       </div>
       <el-form :inline="true" class="search-form">
@@ -64,6 +64,7 @@
         v-loading="loading"
         stripe
         border
+        :key="tableKey"
       >
         <!-- 사용자 로그 -->
         <template v-if="selectedLogType === 'user'">
@@ -72,13 +73,13 @@
           <el-table-column prop="status" label="상태" width="100">
             <template #default="scope">
               <el-tag :type="getStatusType(scope.row.status)">
-                {{ scope.row.status }}
+                {{ getStatusDisplay(scope.row.status) }}
               </el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="ip_addr" label="IP 주소" width="140" />
           <el-table-column prop="http_refr" label="HTTP 레퍼런스" width="200" />
-          <el-table-column prop="reg_dt" label="등록일시" width="160">
+          <el-table-column prop="reg_dt" label="로그인 일시" width="160">
             <template #default="scope">
               {{ formatDate(scope.row.reg_dt) }}
             </template>
@@ -93,140 +94,206 @@
 
         <!-- 태그 기본정보 로그 -->
         <template v-else-if="selectedLogType === 'basic'">
-          <el-table-column prop="logId" label="로그 ID" width="80" />
+          <el-table-column prop="log_seq" label="로그 ID" width="80" />
           <el-table-column prop="ordNo" label="태그 번호" width="200" />
           <el-table-column prop="tagType" label="태그 타입" width="120" />
-          <el-table-column prop="erpCd" label="ERP 코드" width="120" />
-          <el-table-column prop="mngCtg" label="관리 카테고리" width="120" />
-          <el-table-column prop="lot" label="LOT 번호" width="120" />
-          <el-table-column prop="prodOdr" label="생산 지시" width="120" />
-          <el-table-column prop="pjtCd" label="프로젝트 코드" width="120" />
-          <el-table-column prop="pjtMngr" label="프로젝트 매니저" width="120" />
-          <el-table-column prop="macDupYn" label="MAC 중복 여부" width="120" />
-          <el-table-column prop="reg_dt" label="등록일시" width="160">
+          <el-table-column prop="ERP_CD" label="ERP 코드" width="120" />
+          <el-table-column prop="MNG_CTG" label="관리 카테고리" width="120" />
+          <el-table-column prop="LOT" label="LOT 번호" width="120" />
+          <el-table-column prop="PROD_ODR" label="생산 지시" width="120" />
+          <el-table-column prop="PJT_CD" label="프로젝트 코드" width="120" />
+          <el-table-column prop="PJT_MNGR" label="프로젝트 매니저" width="120" />
+          <el-table-column prop="MAC_DUP_YN" label="MAC 중복 여부" width="120" />
+          <el-table-column prop="Status" label="상태" width="100">
             <template #default="scope">
-              {{ formatDate(scope.row.reg_dt) }}
+              <el-tag :type="getStatusType(scope.row.Status)">
+                {{ getStatusDisplay(scope.row.Status) }}
+              </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="update_dt" label="수정일시" width="160">
+          <el-table-column prop="createDt" label="등록일시" width="160">
             <template #default="scope">
-              {{ formatDate(scope.row.update_dt) }}
+              {{ formatDate(scope.row.createDt) }}
             </template>
           </el-table-column>
-          <el-table-column prop="update_id" label="수정자" width="100" />
+          <el-table-column prop="UPDATE_DT" label="수정일시" width="160">
+            <template #default="scope">
+              {{ formatDate(scope.row.UPDATE_DT) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="UPDATE_ID" label="수정자" width="100" />
         </template>
 
         <!-- 태그 공통정보 로그 -->
         <template v-else-if="selectedLogType === 'common'">
-          <el-table-column prop="logId" label="로그 ID" width="80" />
-          <el-table-column prop="ordNo" label="태그 번호" width="200" />
+          <el-table-column prop="logseq" label="로그 ID" width="80" />
           <el-table-column prop="macAddr" label="MAC 주소" width="160" />
           <el-table-column prop="facCd" label="공장 코드" width="120" />
           <el-table-column prop="facNo" label="공장 번호" width="120" />
-          <el-table-column prop="reg_dt" label="등록일시" width="160">
+          <el-table-column prop="Status" label="상태" width="100">
             <template #default="scope">
-              {{ formatDate(scope.row.reg_dt) }}
+              <el-tag :type="getStatusType(scope.row.Status)">
+                {{ getStatusDisplay(scope.row.Status) }}
+              </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="update_dt" label="수정일시" width="160">
+          <el-table-column prop="createDt" label="등록일시" width="160">
             <template #default="scope">
-              {{ formatDate(scope.row.update_dt) }}
+              {{ formatDate(scope.row.createDt) }}
             </template>
           </el-table-column>
-          <el-table-column prop="update_id" label="수정자" width="100" />
+          <el-table-column prop="UPDATE_DT" label="수정일시" width="160">
+            <template #default="scope">
+              {{ formatDate(scope.row.UPDATE_DT) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="UPDATE_ID" label="수정자" width="100" />
         </template>
 
         <!-- 태그 설정정보 로그 -->
         <template v-else-if="selectedLogType === 'setting'">
           <el-table-column prop="logId" label="로그 ID" width="80" />
           <el-table-column prop="ordNo" label="태그 번호" width="200" />
-          <el-table-column prop="settingType" label="설정 타입" width="120" />
-          <el-table-column prop="settingValue" label="설정 값" width="200" />
-          <el-table-column prop="reg_dt" label="등록일시" width="160">
+          <el-table-column prop="hwVer" label="하드웨어 버전" width="120" />
+          <el-table-column prop="fwVer" label="펌웨어 버전" width="120" />
+          <el-table-column prop="ledSec" label="LED ON 주기" width="120" />
+          <el-table-column prop="riMs" label="송신주기" width="120" />
+          <el-table-column prop="txPower" label="신호 강도" width="120" />
+          <el-table-column prop="randomDv" label="랜덤 디바이스" width="120" />
+          <el-table-column prop="rfProfile" label="RF 프로파일" width="120" />
+          <el-table-column prop="channel" label="채널" width="100" />
+          <el-table-column prop="sleepMode" label="슬립 모드" width="100" />
+          <el-table-column prop="sleepThHold" label="슬립 임계값" width="120" />
+          <el-table-column prop="sleepInterval" label="슬립 간격" width="120" />
+          <el-table-column prop="sleepPeriod" label="슬립 주기" width="120" />
+          <el-table-column prop="bcVer" label="BC 버전" width="100" />
+          <el-table-column prop="bcPeriod" label="BC 주기" width="100" />
+          <el-table-column prop="bcSleep" label="BC 슬립" width="100" />
+          <el-table-column prop="deviceIp" label="디바이스 IP" width="140" />
+          <el-table-column prop="serverIp" label="서버 IP" width="140" />
+          <el-table-column prop="gateway" label="게이트웨이" width="140" />
+          <el-table-column prop="subMask" label="서브넷마스크" width="140" />
+          <el-table-column prop="tdma" label="TDMA" width="100" />
+          <el-table-column prop="port" label="포트" width="80" />
+          <el-table-column prop="createDt" label="등록일시" width="160">
             <template #default="scope">
-              {{ formatDate(scope.row.reg_dt) }}
+              {{ formatDate(scope.row.createDt) }}
             </template>
           </el-table-column>
-          <el-table-column prop="update_dt" label="수정일시" width="160">
+          <el-table-column prop="updateDt" label="수정일시" width="160">
             <template #default="scope">
-              {{ formatDate(scope.row.update_dt) }}
+              {{ formatDate(scope.row.updateDt) }}
             </template>
           </el-table-column>
-          <el-table-column prop="update_id" label="수정자" width="100" />
+          <el-table-column prop="updateId" label="수정자" width="100" />
         </template>
 
         <!-- 태그 프로세스 로그 -->
         <template v-else-if="selectedLogType === 'proc'">
-          <el-table-column prop="logId" label="로그 ID" width="80" />
+          <el-table-column prop="logseq" label="로그 ID" width="80" />
           <el-table-column prop="ordNo" label="태그 번호" width="200" />
-          <el-table-column prop="procStep" label="프로세스 단계" width="120" />
-          <el-table-column prop="procStatus" label="프로세스 상태" width="120" />
-          <el-table-column prop="procResult" label="프로세스 결과" width="200" />
-          <el-table-column prop="reg_dt" label="등록일시" width="160">
+          <el-table-column prop="RECEIPT_DT" label="입고일" width="160">
             <template #default="scope">
-              {{ formatDate(scope.row.reg_dt) }}
+              {{ formatDate(scope.row.RECEIPT_DT) }}
             </template>
           </el-table-column>
-          <el-table-column prop="update_dt" label="수정일시" width="160">
+          <el-table-column prop="DELIVERY_DT" label="납품일" width="160">
             <template #default="scope">
-              {{ formatDate(scope.row.update_dt) }}
+              {{ formatDate(scope.row.DELIVERY_DT) }}
             </template>
           </el-table-column>
-          <el-table-column prop="update_id" label="수정자" width="100" />
+          <el-table-column prop="LAB_INSP_DT" label="연구소 검수일" width="160">
+            <template #default="scope">
+              {{ formatDate(scope.row.LAB_INSP_DT) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="LAB_INSP_DESC" label="연구소 검수소견" width="200" />
+          <el-table-column prop="Status" label="상태" width="100">
+            <template #default="scope">
+              <el-tag :type="getStatusType(scope.row.Status)">
+                {{ getStatusDisplay(scope.row.Status) }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="createDt" label="등록일시" width="160">
+            <template #default="scope">
+              {{ formatDate(scope.row.createDt) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="UPDATE_DT" label="수정일시" width="160">
+            <template #default="scope">
+              {{ formatDate(scope.row.UPDATE_DT) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="UPDATE_ID" label="수정자" width="100" />
         </template>
 
         <!-- 태그 AS 로그 -->
         <template v-else-if="selectedLogType === 'prod'">
-          <el-table-column prop="logId" label="로그 ID" width="80" />
+          <el-table-column prop="AS_LOG_SEQ" label="로그 ID" width="80" />
           <el-table-column prop="ordNo" label="태그 번호" width="200" />
-          <el-table-column prop="asCnt" label="AS 횟수" width="100" />
-          <el-table-column prop="asDoc" label="AS 문서" width="200" />
-          <el-table-column prop="occrDt" label="발생일시" width="160">
+          <el-table-column prop="AS_CNT" label="AS 횟수" width="100" />
+          <el-table-column prop="AS_DOC" label="AS 문서" width="200" />
+          <el-table-column prop="OCCR_DT" label="발생일시" width="160">
             <template #default="scope">
-              {{ formatDate(scope.row.occrDt) }}
+              {{ formatDate(scope.row.OCCR_DT) }}
             </template>
           </el-table-column>
-          <el-table-column prop="occrRsn" label="발생 사유" width="200" />
-          <el-table-column prop="deliveryDt" label="배송일시" width="160">
+          <el-table-column prop="OCCR_RSN" label="발생 사유" width="200" />
+          <el-table-column prop="DELIVERY_DT" label="배송일시" width="160">
             <template #default="scope">
-              {{ formatDate(scope.row.deliveryDt) }}
+              {{ formatDate(scope.row.DELIVERY_DT) }}
             </template>
           </el-table-column>
-          <el-table-column prop="closeDt" label="종료일시" width="160">
+          <el-table-column prop="CLOSE_DT" label="종료일시" width="160">
             <template #default="scope">
-              {{ formatDate(scope.row.closeDt) }}
+              {{ formatDate(scope.row.CLOSE_DT) }}
             </template>
           </el-table-column>
-          <el-table-column prop="closeRslt" label="종료 결과" width="120" />
-          <el-table-column prop="reg_dt" label="등록일시" width="160">
+          <el-table-column prop="CLOSE_RSLT" label="종료 결과" width="120" />
+          <el-table-column prop="Status" label="상태" width="100">
             <template #default="scope">
-              {{ formatDate(scope.row.reg_dt) }}
+              <el-tag :type="getStatusType(scope.row.Status)">
+                {{ getStatusDisplay(scope.row.Status) }}
+              </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="update_dt" label="수정일시" width="160">
+          <el-table-column prop="createDt" label="등록일시" width="160">
             <template #default="scope">
-              {{ formatDate(scope.row.update_dt) }}
+              {{ formatDate(scope.row.createDt) }}
             </template>
           </el-table-column>
-          <el-table-column prop="update_id" label="수정자" width="100" />
+          <el-table-column prop="UPDATE_DT" label="수정일시" width="160">
+            <template #default="scope">
+              {{ formatDate(scope.row.UPDATE_DT) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="UPDATE_ID" label="수정자" width="100" />
         </template>
 
         <!-- 태그 버전 로그 -->
         <template v-else-if="selectedLogType === 'version'">
-          <el-table-column prop="logId" label="로그 ID" width="80" />
+          <el-table-column prop="logseq" label="로그 ID" width="80" />
           <el-table-column prop="ordNo" label="태그 번호" width="200" />
-          <el-table-column prop="tagVer" label="태그 버전" width="120" />
-          <el-table-column prop="reg_dt" label="등록일시" width="160">
+          <el-table-column prop="TAG_VER" label="태그 버전" width="120" />
+          <el-table-column prop="Status" label="상태" width="100">
             <template #default="scope">
-              {{ formatDate(scope.row.reg_dt) }}
+              <el-tag :type="getStatusType(scope.row.Status)">
+                {{ getStatusDisplay(scope.row.Status) }}
+              </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="update_dt" label="수정일시" width="160">
+          <el-table-column prop="createDt" label="등록일시" width="160">
             <template #default="scope">
-              {{ formatDate(scope.row.update_dt) }}
+              {{ formatDate(scope.row.createDt) }}
             </template>
           </el-table-column>
-          <el-table-column prop="update_id" label="수정자" width="100" />
+          <el-table-column prop="UPDATE_DT" label="수정일시" width="160">
+            <template #default="scope">
+              {{ formatDate(scope.row.UPDATE_DT) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="UPDATE_ID" label="수정자" width="100" />
         </template>
       </el-table>
       
@@ -245,12 +312,12 @@
     </div>
 
     <!-- 도움말 사이드바 -->
-    <div class="help-sidebar" v-if="showHelp">
+    <div class="help-sidebar" :class="{ show: showHelp }">
       <div class="sidebar-header">
         <h3>로그 관리 도움말</h3>
         <el-button type="link"
           :icon="Close" 
-          @click="showHelp = false"
+          @click="toggleHelp"
           class="close-btn"
         />
       </div>
@@ -308,7 +375,6 @@ import { ref, onMounted, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { QuestionFilled, Close, Download } from '@element-plus/icons-vue'
 import axios from 'axios'
-import Header from './Header.vue'
 
 // Props
 const props = defineProps({
@@ -333,6 +399,7 @@ const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(20)
 const showHelp = ref(false)
+const tableKey = ref(0)
 
 // 페이지네이션된 데이터
 const paginatedData = computed(() => {
@@ -350,23 +417,68 @@ function handleUserCommand(command) {
   emit('user-command', command)
 }
 
+function toggleHelp() {
+  showHelp.value = !showHelp.value
+}
+
 function getStatusType(status) {
-  switch (status) {
+  if (!status) return 'info'
+  
+  const statusStr = String(status).toLowerCase()
+  
+  switch (statusStr) {
     case '성공':
+    case 'success':
     case '로그인':
+    case 'login':
     case '로그아웃':
+    case 'logout':
+    case '정상':
+    case 'active':
       return 'success'
     case '실패':
+    case 'fail':
+    case 'error':
+    case '오류':
       return 'danger'
     case '잠김':
+    case 'lock':
+    case 'blocked':
+    case '경고':
+    case 'warning':
       return 'warning'
-    case '회원가입':
-    case '정보수정':
-    case '권한수정':
-    case '비밀번호 변경':
-      return 'info'
     default:
-      return ''
+      return 'info'
+  }
+}
+
+function getStatusDisplay(status) {
+  if (!status) return '미정'
+  
+  const statusStr = String(status).toLowerCase()
+  
+  // 간단한 상태 표시로 변환
+  switch (statusStr) {
+    case '성공':
+    case 'success':
+    case '로그인':
+    case 'login':
+    case '로그아웃':
+    case 'logout':
+    case '정상':
+    case 'active':
+      return '성공'
+    case '실패':
+    case 'fail':
+    case 'error':
+    case '오류':
+      return '실패'
+    case '잠김':
+    case 'lock':
+    case 'blocked':
+      return '잠김'
+    default:
+      return statusStr
   }
 }
 
@@ -405,6 +517,7 @@ async function loadLogs() {
     }
     
     logs.value = Array.isArray(responseData) ? responseData : []
+    tableKey.value++ // 테이블 키 업데이트로 강제 리렌더링
 
     ElMessage.success('로그를 성공적으로 조회했습니다.')
   } catch (error) {
@@ -415,8 +528,6 @@ async function loadLogs() {
     loading.value = false
   }
 }
-
-
 
 function exportLogs() {
   if (!logs.value.length) {
@@ -492,28 +603,28 @@ onMounted(() => {
   margin-bottom: 20px;
   padding: 20px;
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .search-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .search-header h3 {
   margin: 0;
   color: #2c3e50;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: 600;
 }
 
 .search-form {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 20px;
   align-items: flex-end;
 }
 
@@ -524,8 +635,8 @@ onMounted(() => {
 .table-section {
   margin-top: 20px;
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 
@@ -537,43 +648,22 @@ onMounted(() => {
   border-top: 1px solid #eee;
 }
 
-/* 테이블 헤더 중앙 정렬 */
-:deep(.el-table th) {
-  text-align: center !important;
-}
-
-:deep(.el-table th .cell) {
-  text-align: center !important;
-}
-
-:deep(.el-table__header-wrapper .el-table__header th) {
-  text-align: center !important;
-}
-
-:deep(.el-table__header-wrapper .el-table__header th .cell) {
-  text-align: center !important;
-}
-
+/* 테이블 전체 중앙 정렬 */
 :deep(.el-table) {
-  table-layout: fixed !important;
-}
-
-:deep(.el-table__body-wrapper) {
-  text-align: center !important;
-}
-
-:deep(.el-table__header-wrapper) {
-  text-align: center !important;
+  table-layout: auto !important;
 }
 
 :deep(.el-table th) {
   text-align: center !important;
-  padding: 8px 0 !important;
+  padding: 12px 0 !important;
+  background-color: #f8f9fa !important;
+  color: #2c3e50 !important;
+  font-weight: 600 !important;
 }
 
 :deep(.el-table td) {
   text-align: center !important;
-  padding: 8px 0 !important;
+  padding: 12px 0 !important;
 }
 
 :deep(.el-table .cell) {
@@ -581,8 +671,119 @@ onMounted(() => {
   padding: 8px 0 !important;
 }
 
+:deep(.el-table th .cell) {
+  text-align: center !important;
+}
+
 :deep(.el-table td .cell) {
   text-align: center !important;
+}
+
+:deep(.el-table__header-wrapper) {
+  text-align: center !important;
+}
+
+:deep(.el-table__body-wrapper) {
+  text-align: center !important;
+}
+
+/* 테이블 내부 모든 요소 중앙 정렬 강제 */
+:deep(.el-table__body td) {
+  text-align: center !important;
+}
+
+:deep(.el-table__body td .cell) {
+  text-align: center !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+:deep(.el-table__header th .cell) {
+  text-align: center !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* 스크롤바와 테이블 헤더 위치 맞춤 */
+:deep(.el-scrollbar__view) {
+  width: 100% !important;
+}
+
+:deep(.el-table__header) {
+  width: 100% !important;
+}
+
+:deep(.el-table__header th) {
+  position: relative !important;
+}
+
+:deep(.el-table__header th .cell) {
+  position: relative !important;
+  width: 100% !important;
+}
+
+/* 테이블 컨테이너 스크롤 정렬 */
+:deep(.el-table__body-wrapper) {
+  overflow-x: auto !important;
+}
+
+:deep(.el-table__header-wrapper) {
+  overflow: hidden !important;
+}
+
+/* 테이블 헤더와 바디 정렬 맞춤 */
+:deep(.el-table__header-wrapper table) {
+  width: 100% !important;
+}
+
+:deep(.el-table__body-wrapper table) {
+  width: 100% !important;
+}
+
+:deep(.el-table__header-wrapper table th),
+:deep(.el-table__body-wrapper table td) {
+  box-sizing: border-box !important;
+}
+
+/* 스크롤바 스타일링 */
+:deep(.el-scrollbar__bar) {
+  z-index: 1 !important;
+}
+
+:deep(.el-scrollbar__bar.is-horizontal) {
+  height: 8px !important;
+}
+
+:deep(.el-scrollbar__bar.is-vertical) {
+  width: 8px !important;
+}
+
+/* 버튼 스타일 개선 */
+:deep(.el-button) {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.el-button:hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+:deep(.el-tag) {
+  border-radius: 6px;
+  font-weight: 500;
+  border: none;
+}
+
+:deep(.el-input) {
+  border-radius: 8px;
+}
+
+:deep(.el-select) {
+  border-radius: 8px;
 }
 
 @media (max-width: 768px) {

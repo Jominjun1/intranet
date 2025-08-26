@@ -73,10 +73,10 @@ public class TagController {
 
     // 세팅정보 수정/삭제 (제품버전 0.1 증가)
     @PutMapping("/update_setting_{ordNo}")
-    public ResponseEntity<?> updateSettingInfo(@PathVariable String ordNo, @RequestBody TagSettingDTO SettingDTO) {
+    public ResponseEntity<?> updateSettingInfo(@PathVariable String ordNo, @RequestBody TagSettingDTO SettingDTO, @RequestHeader("Authorization") String token) {
         try {
             log.info("세팅정보 수정 요청 : {}" , ordNo);
-            return ResponseEntity.ok(tagService.updateSettingInfo(ordNo, SettingDTO));
+            return ResponseEntity.ok(tagService.updateSettingInfo(ordNo, SettingDTO, token));
         } catch (Exception e) {
             log.info("에러 발생 : {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

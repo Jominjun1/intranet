@@ -9,9 +9,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Slf4j
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
@@ -22,10 +25,14 @@ public class UserController {
     }
 
     // ID 찾기
-    @GetMapping("/findID/{login_id}")
-    public ResponseEntity<?> findID(@RequestBody UserDTO userDTO) {
+    @GetMapping("/findID")
+    public ResponseEntity<?> findID(@RequestParam String user_name, @RequestParam String user_email, @RequestParam String user_phone_num) {
         try{
-            log.info("ID 찾기 요청 : {}", userDTO.getLogin_id());
+            log.info("ID 찾기 요청 : 이름={}, 이메일={}, 전화번호={}", user_name, user_email, user_phone_num);
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUser_name(user_name);
+            userDTO.setUser_email(user_email);
+            userDTO.setUser_phone_num(user_phone_num);
             return ResponseEntity.ok(userService.findLoginId(userDTO));
         } catch (Exception e) {
             log.info("에러 발생 : {}" , e.getMessage());
@@ -82,5 +89,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    // 비밀번호 찾기
+    @PutMapping("/findPassword")
+    public ResponseEntity<?> findPassword(@RequestBody UserDTO userDTO) {
+        try {
+            log.info("비밀번호 찾기 요청 : {}", userDTO.getLogin_id());
+            return ResponseEntity.ok(userService.findPassword(userDTO));
+        } catch (Exception e) {
+            log.info("에러 발생 : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
 }

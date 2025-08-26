@@ -207,8 +207,8 @@ async function handleLogin() {
 
 async function findId() {
   try {
-    const response = await axios.get(`/user/findID/${findIdForm.login_id}`, { 
-      data: findIdForm 
+    const response = await axios.get('/user/findID', { 
+      params: findIdForm 
     })
     if (response.data) {
       ElMessage.success(`찾은 아이디: ${response.data.login_id}`)
@@ -223,13 +223,12 @@ async function findId() {
 
 async function findPassword() {
   try {
-    const token = sessionStorage.getItem('jwt_token')
-    const response = await axios.put(`/user/changePwd/${findPasswordForm.login_id}`, {
-      password: findPasswordForm.password
-    }, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    ElMessage.success('비밀번호 변경 요청이 완료되었습니다.')
+    const response = await axios.put('/user/findPassword', findPasswordForm)
+    if (response.data) {
+      ElMessage.success('비밀번호 찾기 요청이 완료되었습니다.')
+    } else {
+      ElMessage.warning('일치하는 정보가 없습니다.')
+    }
     showFindPassword.value = false
   } catch (error) {
     ElMessage.error('비밀번호 찾기 중 오류가 발생했습니다.')

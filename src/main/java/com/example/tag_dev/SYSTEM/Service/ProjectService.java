@@ -1,20 +1,22 @@
 package com.example.tag_dev.SYSTEM.Service;
 
-import com.example.tag_dev.SYSTEM.DTO.ProjectDTO;
-import com.example.tag_dev.SYSTEM.Model.Project_Info;
-import com.example.tag_dev.SYSTEM.Repository.ProjectRepository;
 import com.example.tag_dev.Config.JwtTokenProvider;
 import com.example.tag_dev.LOG.LogRepository.ProjectLogRepository;
 import com.example.tag_dev.LOG.Model.ProjectLog;
+import com.example.tag_dev.SYSTEM.DTO.ProjectDTO;
+import com.example.tag_dev.SYSTEM.Model.Project_Info;
+import com.example.tag_dev.SYSTEM.Repository.ProjectRepository;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.beans.PropertyDescriptor;
 import java.time.Year;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ProjectService {
@@ -93,87 +95,63 @@ public class ProjectService {
     }
 
     // 프로젝트 수정/삭제
-    public ResponseEntity<?> updateProject( String projectCode, String token, ProjectDTO projectDTO) {
+    public ResponseEntity<?> updateProject(String projectCode, String token, ProjectDTO projectDTO) {
         if(!jwtTokenProvider.validateToken(token)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        
         Optional<Project_Info> projectOpt = projectRepository.findByProjectCode(projectCode);
-        if(projectOpt.isPresent()){
-            Project_Info projectInfo = projectOpt.get();
-            boolean isUpdated = false;
-
-            if(projectDTO.getProject_name() != null && !projectDTO.getProject_name().isEmpty()){
-                projectInfo.setProject_name(projectDTO.getProject_name());
-                isUpdated = true;
-            }
-            if(projectDTO.getProject_leader() != null && !projectDTO.getProject_leader().isEmpty()){
-                projectInfo.setProject_leader(projectDTO.getProject_leader());
-                isUpdated = true;
-            }
-            if(projectDTO.getProject_status() != null && !projectDTO.getProject_status().isEmpty()){
-                projectInfo.setProject_status(projectDTO.getProject_status());
-                isUpdated = true;
-            }
-            if(projectDTO.getStatus() != null && !projectDTO.getStatus().isEmpty()){
-                projectInfo.setStatus(projectDTO.getStatus());
-                isUpdated = true;
-            }
-            if(projectDTO.getCustomer() != null && !projectDTO.getCustomer().isEmpty()){
-                projectInfo.setCustomer(projectDTO.getCustomer());
-                isUpdated = true;
-            }
-            if(projectDTO.getDeptCd() != null && !projectDTO.getDeptCd().isEmpty()){
-                projectInfo.setDeptCd(projectDTO.getDeptCd());
-                isUpdated = true;
-            }
-            if(projectDTO.getProject_category() != null && !projectDTO.getProject_category().isEmpty()){
-                projectInfo.setProject_category(projectDTO.getProject_category());
-                isUpdated = true;
-            }
-            if(projectDTO.getStartDt() != null){
-                projectInfo.setStartDt(projectDTO.getStartDt());
-                isUpdated = true;
-            }
-            if(projectDTO.getEndDt() != null){
-                projectInfo.setEndDt(projectDTO.getEndDt());
-                isUpdated = true;
-            }
-            if(projectDTO.getRegion() != null && !projectDTO.getRegion().isEmpty()){
-                projectInfo.setRegion(projectDTO.getRegion());
-                isUpdated = true;
-            }
-            if(projectDTO.getProject_leader() != null && !projectDTO.getProject_leader().isEmpty()){
-                projectInfo.setProject_leader(projectDTO.getProject_leader());
-                isUpdated = true;
-            }
-            if(isUpdated){
-                projectInfo.setRegDt(new Date());
-                projectInfo.setUserName(jwtTokenProvider.extractUserName(token));
-                projectRepository.save(projectInfo);
-
-                ProjectLog projectLog = new ProjectLog();
-                projectLog.setProject_leader(projectInfo.getProject_leader());
-                projectLog.setProject_status(projectInfo.getProject_status());
-                projectLog.setCustomer(projectInfo.getCustomer());
-                projectLog.setDeptCd(projectInfo.getDeptCd());
-                projectLog.setStartDt(projectInfo.getStartDt());
-                projectLog.setEndDt(projectInfo.getEndDt());
-                projectLog.setRegion(projectInfo.getRegion());
-                if(projectInfo.getStatus().equals("Y")) {
-                    projectLog.setStatus(projectInfo.getStatus());
-                } else {
-                    projectLog.setStatus(projectInfo.getStatus());
-                }
-                projectLog.setUserName(jwtTokenProvider.extractUserName(token));
-                projectLog.setRegDt(new Date());
-                projectLogRepository.save(projectLog);
-
-                return ResponseEntity.ok("프로젝트 정보 수정/삭제 완료");
-            } else{
-                return ResponseEntity.ok("수정할 내용 없음");
-            }
-        }else {
+        if(projectOpt.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("프로젝트 없음");
         }
+
+        Project_Info projectInfo = projectOpt.get();
+        
+        // DTO의 null이 아닌 값들만 Project_Info 엔티티에 복사
+        BeanUtils.copyProperties(projectDTO, projectInfo, getNullPropertyNames(projectDTO));
+        
+        // 업데이트 정보 설정
+        projectInfo.setRegDt(new Date());
+        projectInfo.setUserName(jwtTokenProvider.extractUserName(token));
+        projectRepository.save(projectInfo);
+
+        // 프로젝트 로그 생성
+        createProjectLog(projectInfo, token);
+
+        return ResponseEntity.ok("프로젝트 정보 수정/삭제 완료");
+    }
+
+    // null이 아닌 프로퍼티만 가져오는 헬퍼 메서드
+    private String[] getNullPropertyNames(Object source) {
+        final BeanWrapper src = new BeanWrapperImpl(source);
+        PropertyDescriptor[] pds = src.getPropertyDescriptors();
+        
+        Set<String> emptyNames = new HashSet<>();
+        for (PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null || (srcValue instanceof String && ((String) srcValue).isEmpty())) {
+                emptyNames.add(pd.getName());
+            }
+        }
+        
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
+    }
+
+    // 프로젝트 로그 생성 헬퍼 메서드
+    private void createProjectLog(Project_Info projectInfo, String token) {
+        ProjectLog projectLog = new ProjectLog();
+        projectLog.setProject_leader(projectInfo.getProject_leader());
+        projectLog.setProject_status(projectInfo.getProject_status());
+        projectLog.setCustomer(projectInfo.getCustomer());
+        projectLog.setDeptCd(projectInfo.getDeptCd());
+        projectLog.setStartDt(projectInfo.getStartDt());
+        projectLog.setEndDt(projectInfo.getEndDt());
+        projectLog.setRegion(projectInfo.getRegion());
+        projectLog.setStatus(projectInfo.getStatus());
+        projectLog.setUserName(jwtTokenProvider.extractUserName(token));
+        projectLog.setRegDt(new Date());
+        
+        projectLogRepository.save(projectLog);
     }
 }

@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import LoginForm from './components/LoginForm.vue'
 import Header from './components/Header.vue'
+import Sidebar from './components/Sidebar.vue'
 import { ElMessage } from 'element-plus'
 import './css/App.css'
 
@@ -145,11 +146,32 @@ onUnmounted(() => {
 <template>
   <LoginForm v-if="!isLoggedIn" @login-success="handleLoginSuccess"/>
   <div v-else class="app-container">
-    <router-view 
-      :user-info="userInfo" 
+    <!-- Header -->
+    <Header
       :active-menu="route.name"
+      :user-info="userInfo"
       @menu-select="handleMenuSelect"
       @user-command="handleUserCommand"
     />
+
+    <!-- Main content area -->
+    <div class="main-content">
+      <!-- Sidebar -->
+      <Sidebar
+        :active-menu="route.name"
+        :user-info="userInfo"
+        @menu-select="handleMenuSelect"
+      />
+
+      <!-- Content area -->
+      <div class="content-area">
+        <router-view
+          :user-info="userInfo"
+          :active-menu="route.name"
+          @menu-select="handleMenuSelect"
+          @user-command="handleUserCommand"
+        />
+      </div>
+    </div>
   </div>
 </template>

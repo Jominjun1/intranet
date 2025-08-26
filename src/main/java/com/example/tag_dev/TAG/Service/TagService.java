@@ -1,5 +1,6 @@
 package com.example.tag_dev.TAG.Service;
 
+import com.example.tag_dev.Config.JwtTokenProvider;
 import com.example.tag_dev.LOG.LogRepository.*;
 import com.example.tag_dev.TAG.DTO.TagSettingDTO;
 import com.example.tag_dev.LOG.Model.CommonInfoLog;
@@ -8,11 +9,16 @@ import com.example.tag_dev.LOG.Model.SettingInfoLog;
 import com.example.tag_dev.LOG.Model.VersionInfoLog;
 import com.example.tag_dev.TAG.Model.*;
 import com.example.tag_dev.TAG.Repository.*;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -33,8 +39,9 @@ public class TagService {
     private final BasicInfoLogRepository basicInfoLogRepository;
     private final VersionInfoLogRepository versionInfoLogRepository;
     private final CommonInfoLogRepository commonInfoLogRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public TagService(BasicInfoRepository basicInfoRepository, CommonInfoRepository commonInfoRepository, VersionInfoRepository versionInfoRepository, ProcStepRepository procStepRepository, SettingInfoRepository settingInfoRepository, ProdAsRepository prodAsRepository, ProdAsLogRepository prodAsLogRepository, ProcStepLogRepository procStepLogRepository, SettingInfoLogRepository settingInfoLogRepository, BasicInfoLogRepository basicInfoLogRepository, VersionInfoLogRepository versionInfoLogRepository, CommonInfoLogRepository commonInfoLogRepository) {
+    public TagService(BasicInfoRepository basicInfoRepository, CommonInfoRepository commonInfoRepository, VersionInfoRepository versionInfoRepository, ProcStepRepository procStepRepository, SettingInfoRepository settingInfoRepository, ProdAsRepository prodAsRepository, ProdAsLogRepository prodAsLogRepository, ProcStepLogRepository procStepLogRepository, SettingInfoLogRepository settingInfoLogRepository, BasicInfoLogRepository basicInfoLogRepository, VersionInfoLogRepository versionInfoLogRepository, CommonInfoLogRepository commonInfoLogRepository, JwtTokenProvider jwtTokenProvider) {
         this.basicInfoRepository = basicInfoRepository;
         this.commonInfoRepository = commonInfoRepository;
         this.versionInfoRepository = versionInfoRepository;
@@ -47,6 +54,7 @@ public class TagService {
         this.basicInfoLogRepository = basicInfoLogRepository;
         this.versionInfoLogRepository = versionInfoLogRepository;
         this.commonInfoLogRepository = commonInfoLogRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
 
@@ -96,7 +104,7 @@ public class TagService {
                 }
                 
                 Map<String, Object> row = new HashMap<>();
-                row.put("tag_No", basic.getOrdNo());
+                row.put("ord_no", basic.getOrdNo());
                 row.put("tag_Type", basic.getTagType());
                 row.put("erp_Code", basic.getErpCode());
                 row.put("Mng_Category", basic.getMngCategory());
@@ -157,91 +165,218 @@ public class TagService {
         }
     }
 
-    public ResponseEntity<?> updateSettingInfo(String ordNo, TagSettingDTO dto) {
+    public ResponseEntity<?> updateSettingInfo(String ordNo, TagSettingDTO dto, String token) {
         try {
-            Setting_Info setting = settingInfoRepository.findAll().stream().filter(s -> ordNo.equals(s.getOrdNo())).findFirst().orElse(null);
-            if (setting != null) {
-                boolean isUpdated = false;
-                if(setting.getHW_version() != null &&  !setting.getHW_version().trim().isEmpty()){
-                    setting.setHW_version(dto.getHW_VER());
-                    isUpdated = true;
-                }
-                if(setting.getFW_version() != null && !setting.getFW_version().trim().isEmpty()){
-                    setting.setFW_version(dto.getFW_VER());
-                    isUpdated = true;
-                }
-                if(setting.getStatus() != null && !setting.getStatus().trim().isEmpty()) {
-                    setting.setStatus(dto.getStatus());
-                    isUpdated = true;
-                }
-                if(isUpdated) {
-                    setting.setUPDATE_DT(new Date());
-                    setting.setUPDATE_ID(UUID.randomUUID().toString());
-                    settingInfoRepository.save(setting);
-
-
-                    SettingInfoLog settingInfoLog = new SettingInfoLog();
-                    settingInfoLog.setOrdNo(ordNo);
-                    settingInfoLog.setHW_VER(dto.getHW_VER());
-                    settingInfoLog.setFW_VER(dto.getFW_VER());
-                    settingInfoLog.setUPDATE_ID(dto.getUPDATE_ID());
-                    settingInfoLog.setUPDATE_DT(new Date());
-                    settingInfoLog.setUPDATE_ID(dto.getUPDATE_ID());
-                    if (Objects.equals(dto.getStatus(), "Y")) {
-                        settingInfoLog.setStatus("삭제");
-                    } else {
-                        settingInfoLog.setStatus("수정");
-                    }
-                    settingInfoLogRepository.save(settingInfoLog);
-
-                    Optional<Version_Info> verOpt = versionInfoRepository.findAll().stream().filter(v -> v.getOrdNo().equals(ordNo)).max(Comparator.comparing(Version_Info::getTag_version));
-                    String newVer = verOpt.map(v -> {
-                        try {
-                            double vNum = Double.parseDouble(v.getTag_version());
-                            return String.format("%.1f", vNum + 0.1);
-                        } catch (Exception e) {
-                            return "1.1";
-                        }
-                    }).orElse("1.1");
-                    Version_Info newVersion = new Version_Info();
-                    if(newVersion.getOrdNo() != null && !newVersion.getOrdNo().trim().isEmpty()){
-                        newVersion.setOrdNo(ordNo);
-                    }
-                    if(newVersion.getTag_version() != null && !newVersion.getTag_version().trim().isEmpty()){
-                        newVersion.setTag_version(newVer);
-                    }
-                    if(newVersion.getCREATE_DT() != null){
-                        newVersion.setCREATE_DT(new Date());
-                    }
-                    if(newVersion.getCREATE_ID() != null){
-                        newVersion.setCREATE_ID(dto.getUPDATE_ID());
-                    }
-                    if (Objects.equals(dto.getStatus(), "Y")) {
-                        newVersion.setStatus("Y");
-                    }
-                    versionInfoRepository.save(newVersion);
-
-                    VersionInfoLog versionInfoLog = new VersionInfoLog();
-                    versionInfoLog.setOrdNo(newVersion.getOrdNo());
-                    versionInfoLog.setTAG_VER(newVersion.getTag_version());
-                    versionInfoLog.setCREATE_ID(newVersion.getCREATE_ID());
-                    versionInfoLog.setCreateDt(newVersion.getCREATE_DT());
-                    versionInfoLog.setUPDATE_ID(newVersion.getUPDATE_ID());
-                    versionInfoLog.setUPDATE_DT(new Date());
-
-                    versionInfoLogRepository.save(versionInfoLog);
-
-                    if (Objects.equals(dto.getStatus(), "Y")) {
-                        versionInfoLog.setStatus("삭제");
-                    } else {
-                        versionInfoLog.setStatus("수정");
-                    }
-                }
+            // 토큰에서 사용자 ID 추출
+            if (!jwtTokenProvider.validateToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
             }
+            Long userId = jwtTokenProvider.extractUserId(token);
+            if (userId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 ID를 추출할 수 없습니다.");
+            }
+
+            Optional<Setting_Info> settingOpt = settingInfoRepository.findByOrdNo(ordNo);
+            if (settingOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 태그의 세팅정보를 찾을 수 없습니다.");
+            }
+
+            Setting_Info setting = settingOpt.get();
+            
+            // DTO의 값들을 엔티티에 수동으로 매핑
+            updateSettingFromDTO(setting, dto);
+            
+            // 수정 정보 설정
+            setting.setUPDATE_DT(new Date());
+            setting.setUPDATE_ID(userId.toString()); // 토큰에서 추출한 실제 사용자 ID 사용
+            
+            settingInfoRepository.save(setting);
+
+            // 세팅정보 로그 생성 (토큰에서 추출한 사용자 ID 전달)
+            createSettingInfoLog(ordNo, dto, userId);
+
+            // 버전 정보 업데이트 (토큰에서 추출한 사용자 ID 전달)
+            updateVersionInfo(ordNo, dto, userId);
+
             return ResponseEntity.ok(setting);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    // DTO의 값들을 Setting_Info 엔티티에 수동으로 매핑하는 헬퍼 메서드
+    private void updateSettingFromDTO(Setting_Info setting, TagSettingDTO dto) {
+        // null이 아니고 빈 문자열이 아닌 경우에만 설정
+        if (dto.getHW_VER() != null && !dto.getHW_VER().trim().isEmpty()) {
+            setting.setHW_version(dto.getHW_VER());
+        }
+        if (dto.getFW_VER() != null && !dto.getFW_VER().trim().isEmpty()) {
+            setting.setFW_version(dto.getFW_VER());
+        }
+        if (dto.getLED_SEC() != null && !dto.getLED_SEC().trim().isEmpty()) {
+            setting.setLED_SEC(dto.getLED_SEC());
+        }
+        if (dto.getRI_MS() != null && !dto.getRI_MS().trim().isEmpty()) {
+            setting.setRI_MS(dto.getRI_MS());
+        }
+        if (dto.getTX_POWER() != null && !dto.getTX_POWER().trim().isEmpty()) {
+            setting.setTX_POWER(dto.getTX_POWER());
+        }
+        if (dto.getRANDOM_DV() != null && !dto.getRANDOM_DV().trim().isEmpty()) {
+            setting.setRANDOM_DV(dto.getRANDOM_DV());
+        }
+        if (dto.getRF_PROFILE() != null && !dto.getRF_PROFILE().trim().isEmpty()) {
+            setting.setRF_PROFILE(dto.getRF_PROFILE());
+        }
+        if (dto.getCHANNEL() != null && !dto.getCHANNEL().trim().isEmpty()) {
+            setting.setCHANNEL(dto.getCHANNEL());
+        }
+        if (dto.getSLEEP_MODE() != null && !dto.getSLEEP_MODE().trim().isEmpty()) {
+            setting.setSLEEP_MODE(dto.getSLEEP_MODE());
+        }
+        if (dto.getSLEEP_TH_HOLD() != null && !dto.getSLEEP_TH_HOLD().trim().isEmpty()) {
+            setting.setSLEEP_TH_HOLD(dto.getSLEEP_TH_HOLD());
+        }
+        if (dto.getSLEEP_INTERVAL() != null && !dto.getSLEEP_INTERVAL().trim().isEmpty()) {
+            setting.setSLEEP_INTERVAL(dto.getSLEEP_INTERVAL());
+        }
+        if (dto.getSLEEP_PERIOD() != null && !dto.getSLEEP_PERIOD().trim().isEmpty()) {
+            setting.setSLEEP_PERIOD(dto.getSLEEP_PERIOD());
+        }
+        if (dto.getBC_VER() != null && !dto.getBC_VER().trim().isEmpty()) {
+            setting.setBC_VER(dto.getBC_VER());
+        }
+        if (dto.getBC_PERIOD() != null && !dto.getBC_PERIOD().trim().isEmpty()) {
+            setting.setBC_PERIOD(dto.getBC_PERIOD());
+        }
+        if (dto.getBC_SLEEP() != null && !dto.getBC_SLEEP().trim().isEmpty()) {
+            setting.setBC_SLEEP(dto.getBC_SLEEP());
+        }
+        if (dto.getDEVICE_IP() != null && !dto.getDEVICE_IP().trim().isEmpty()) {
+            setting.setDEVICE_IP(dto.getDEVICE_IP());
+        }
+        if (dto.getSERVER_IP() != null && !dto.getSERVER_IP().trim().isEmpty()) {
+            setting.setSERVER_IP(dto.getSERVER_IP());
+        }
+        if (dto.getGATEWAY() != null && !dto.getGATEWAY().trim().isEmpty()) {
+            setting.setGATEWAY(dto.getGATEWAY());
+        }
+        if (dto.getSUB_MASK() != null && !dto.getSUB_MASK().trim().isEmpty()) {
+            setting.setSUB_MASK(dto.getSUB_MASK());
+        }
+        if (dto.getTDMA() != null && !dto.getTDMA().trim().isEmpty()) {
+            setting.setTDMA(dto.getTDMA());
+        }
+        if (dto.getPORT() != null && !dto.getPORT().trim().isEmpty()) {
+            setting.setPORT(dto.getPORT());
+        }
+        if (dto.getStatus() != null && !dto.getStatus().trim().isEmpty()) {
+            setting.setStatus(dto.getStatus());
+        }
+    }
+
+    // null이 아닌 프로퍼티만 가져오는 헬퍼 메서드
+    private String[] getNullPropertyNames(Object source) {
+        final BeanWrapper src = new BeanWrapperImpl(source);
+        PropertyDescriptor[] pds = src.getPropertyDescriptors();
+        
+        Set<String> emptyNames = new HashSet<>();
+        for (PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null || (srcValue instanceof String && ((String) srcValue).isEmpty())) {
+                emptyNames.add(pd.getName());
+            }
+        }
+        
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
+    }
+
+    // 세팅정보 로그 생성 헬퍼 메서드
+    private void createSettingInfoLog(String ordNo, TagSettingDTO dto, Long userId) {
+        SettingInfoLog settingInfoLog = new SettingInfoLog();
+        settingInfoLog.setOrdNo(ordNo);
+        settingInfoLog.setHW_VER(dto.getHW_VER());
+        settingInfoLog.setFW_VER(dto.getFW_VER());
+        settingInfoLog.setLED_SEC(dto.getLED_SEC());
+        settingInfoLog.setRI_MS(dto.getRI_MS());
+        settingInfoLog.setTX_POWER(dto.getTX_POWER());
+        settingInfoLog.setRANDOM_DV(dto.getRANDOM_DV());
+        settingInfoLog.setRF_PROFILE(dto.getRF_PROFILE());
+        settingInfoLog.setCHANNEL(dto.getCHANNEL());
+        settingInfoLog.setSLEEP_MODE(dto.getSLEEP_MODE());
+        settingInfoLog.setSLEEP_TH_HOLD(dto.getSLEEP_TH_HOLD());
+        settingInfoLog.setSLEEP_INTERVAL(dto.getSLEEP_INTERVAL());
+        settingInfoLog.setSLEEP_PERIOD(dto.getSLEEP_PERIOD());
+        settingInfoLog.setBC_VER(dto.getBC_VER());
+        settingInfoLog.setBC_PERIOD(dto.getBC_PERIOD());
+        settingInfoLog.setBC_SLEEP(dto.getBC_SLEEP());
+        settingInfoLog.setDEVICE_IP(dto.getDEVICE_IP());
+        settingInfoLog.setSERVER_IP(dto.getSERVER_IP());
+        settingInfoLog.setGATEWAY(dto.getGATEWAY());
+        settingInfoLog.setSUB_MASK(dto.getSUB_MASK());
+        settingInfoLog.setTDMA(dto.getTDMA());
+        settingInfoLog.setPORT(dto.getPORT());
+        settingInfoLog.setUPDATE_ID(userId.toString());
+        settingInfoLog.setUPDATE_DT(new Date());
+        
+        if (Objects.equals(dto.getStatus(), "Y")) {
+            settingInfoLog.setStatus("삭제");
+        } else {
+            settingInfoLog.setStatus("수정");
+        }
+        
+        settingInfoLogRepository.save(settingInfoLog);
+    }
+
+    // 버전 정보 업데이트 헬퍼 메서드
+    private void updateVersionInfo(String ordNo, TagSettingDTO dto, Long userId) {
+        Optional<Version_Info> verOpt = versionInfoRepository.findAll().stream()
+                .filter(v -> v.getOrdNo() != null && v.getOrdNo().equals(ordNo))
+                .max(Comparator.comparing(Version_Info::getTag_version));
+        
+        String newVer = verOpt.map(v -> {
+            try {
+                double vNum = Double.parseDouble(v.getTag_version());
+                return String.format("%.1f", vNum + 0.1);
+            } catch (Exception e) {
+                return "1.1";
+            }
+        }).orElse("1.1");
+
+        Version_Info newVersion = new Version_Info();
+        newVersion.setOrdNo(ordNo);
+        newVersion.setTag_version(newVer);
+        newVersion.setCREATE_DT(new Date());
+        newVersion.setCREATE_ID(userId.toString());
+        
+        if (Objects.equals(dto.getStatus(), "Y")) {
+            newVersion.setStatus("Y");
+        }
+        
+        versionInfoRepository.save(newVersion);
+
+        // 버전 정보 로그 생성
+        createVersionInfoLog(newVersion, userId);
+    }
+
+    // 버전 정보 로그 생성 헬퍼 메서드
+    private void createVersionInfoLog(Version_Info newVersion, Long userId) {
+        VersionInfoLog versionInfoLog = new VersionInfoLog();
+        versionInfoLog.setOrdNo(newVersion.getOrdNo());
+        versionInfoLog.setTAG_VER(newVersion.getTag_version());
+        versionInfoLog.setCREATE_ID(newVersion.getCREATE_ID());
+        versionInfoLog.setCreateDt(newVersion.getCREATE_DT());
+        versionInfoLog.setUPDATE_ID(userId.toString()); // 토큰에서 추출한 사용자 ID 설정
+        versionInfoLog.setUPDATE_DT(new Date());
+
+        if (Objects.equals(newVersion.getStatus(), "Y")) {
+            versionInfoLog.setStatus("삭제");
+        } else {
+            versionInfoLog.setStatus("수정");
+        }
+
+        versionInfoLogRepository.save(versionInfoLog);
     }
 
     public ResponseEntity<?> getProdAsList(String ordNo, String filter) {
@@ -518,31 +653,140 @@ public class TagService {
                     break;
                 }
             }
-            if (existing != null) {
-                existing.setMacAddr((String) dto.get("mac_Addr"));
-                existing.setFacCd((String) dto.get("fac_Cd"));
-                existing.setFacNo((String) dto.get("fac_No"));
-                existing.setUpdate_dt(new Date());
-                existing.setUpdate_id((String) dto.get("update_Id"));
-                Common_Info saved = commonInfoRepository.save(existing);
-
-                CommonInfoLog commonInfoLog = new CommonInfoLog();
-                commonInfoLog.setStatus("수정");
-                commonInfoLog.setMacAddr(saved.getMacAddr());
-                commonInfoLog.setFacCd(saved.getFacCd());
-                commonInfoLog.setFacNo(saved.getFacNo());
-                commonInfoLog.setCreateDt(saved.getCreate_dt());
-                commonInfoLog.setCREATE_ID(saved.getCreate_id());
-                commonInfoLog.setUPDATE_DT(saved.getUpdate_dt());
-                commonInfoLog.setUPDATE_ID(saved.getUpdate_id());
-                commonInfoLogRepository.save(commonInfoLog);
-
-                return ResponseEntity.ok(saved);
+            
+            if (existing == null) {
+                return ResponseEntity.ok(null);
             }
-            return ResponseEntity.ok(null);
+
+            // Map의 값들을 Common_Info 엔티티에 동적으로 설정
+            updateEntityFromMap(existing, dto);
+            
+            // 업데이트 정보 설정
+            existing.setUpdate_dt(new Date());
+            existing.setUpdate_id((String) dto.get("update_Id"));
+            
+            Common_Info saved = commonInfoRepository.save(existing);
+
+            // 공통정보 로그 생성
+            createCommonInfoLog(saved);
+
+            return ResponseEntity.ok(saved);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    // Map의 값들을 엔티티에 동적으로 설정하는 헬퍼 메서드
+    private void updateEntityFromMap(Object entity, Map<String, Object> dto) {
+        try {
+            Class<?> entityClass = entity.getClass();
+            for (Map.Entry<String, Object> entry : dto.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                
+                // null이거나 빈 문자열인 경우 건너뛰기
+                if (value == null || (value instanceof String && ((String) value).trim().isEmpty())) {
+                    continue;
+                }
+                
+                // Map의 키를 엔티티 필드명으로 변환 (예: mac_Addr -> macAddr)
+                String fieldName = convertToFieldName(key);
+                
+                try {
+                    Field field = entityClass.getDeclaredField(fieldName);
+                    field.setAccessible(true);
+                    
+                    // 타입 변환 및 설정
+                    Object convertedValue = convertValue(value, field.getType());
+                    field.set(entity, convertedValue);
+                } catch (NoSuchFieldException e) {
+                    // 필드가 존재하지 않는 경우 무시
+                    continue;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("엔티티 업데이트 중 오류 발생", e);
+        }
+    }
+
+    // Map 키를 엔티티 필드명으로 변환하는 헬퍼 메서드
+    private String convertToFieldName(String mapKey) {
+        // 예: mac_Addr -> macAddr, fac_Cd -> facCd
+        if (mapKey.contains("_")) {
+            String[] parts = mapKey.split("_");
+            StringBuilder fieldName = new StringBuilder(parts[0].toLowerCase());
+            for (int i = 1; i < parts.length; i++) {
+                if (parts[i].length() > 0) {
+                    fieldName.append(Character.toUpperCase(parts[i].charAt(0)))
+                            .append(parts[i].substring(1).toLowerCase());
+                }
+            }
+            return fieldName.toString();
+        }
+        return mapKey.toLowerCase();
+    }
+
+    // 값을 적절한 타입으로 변환하는 헬퍼 메서드
+    private Object convertValue(Object value, Class<?> targetType) {
+        if (value == null) {
+            return null;
+        }
+        
+        if (targetType.isAssignableFrom(value.getClass())) {
+            return value;
+        }
+        
+        if (targetType == String.class) {
+            return value.toString();
+        }
+        
+        if (targetType == Integer.class || targetType == int.class) {
+            try {
+                return Integer.parseInt(value.toString());
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+        
+        if (targetType == Long.class || targetType == long.class) {
+            try {
+                return Long.parseLong(value.toString());
+            } catch (NumberFormatException e) {
+                return 0L;
+            }
+        }
+        
+        if (targetType == Double.class || targetType == double.class) {
+            try {
+                return Double.parseDouble(value.toString());
+            } catch (NumberFormatException e) {
+                return 0.0;
+            }
+        }
+        
+        if (targetType == Boolean.class || targetType == boolean.class) {
+            if (value instanceof Boolean) {
+                return value;
+            }
+            return Boolean.parseBoolean(value.toString());
+        }
+        
+        return value;
+    }
+
+    // 공통정보 로그 생성 헬퍼 메서드
+    private void createCommonInfoLog(Common_Info saved) {
+        CommonInfoLog commonInfoLog = new CommonInfoLog();
+        commonInfoLog.setStatus("수정");
+        commonInfoLog.setMacAddr(saved.getMacAddr());
+        commonInfoLog.setFacCd(saved.getFacCd());
+        commonInfoLog.setFacNo(saved.getFacNo());
+        commonInfoLog.setCreateDt(saved.getCreate_dt());
+        commonInfoLog.setCREATE_ID(saved.getCreate_id());
+        commonInfoLog.setUPDATE_DT(saved.getUpdate_dt());
+        commonInfoLog.setUPDATE_ID(saved.getUpdate_id());
+        
+        commonInfoLogRepository.save(commonInfoLog);
     }
 
     public ResponseEntity<?> createVersionInfo(String ordNo, Map<String, Object> dto) {

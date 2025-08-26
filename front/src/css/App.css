@@ -3,60 +3,62 @@
 .app-container {
   height: 100vh;
   width: 100vw;
-  position: fixed;
-  top: 0;
-  left: 0;
-  margin: 0;
-  padding: 0;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
   overflow: hidden;
 }
 
-.admin-page {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  position: fixed;
-  top: 0;
-  left: 0;
-  margin: 0;
-  padding: 0;
+.content-area {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 12px 0 0 0;
+  box-shadow: inset 2px 0 8px rgba(0, 0, 0, 0.05);
 }
 
-.admin-content {
-  flex: 1;
+/* Scrollbar styling for content-area */
+.content-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-area::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.content-area::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.content-area::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .content-area {
+    padding: 16px;
+    border-radius: 0;
+  }
+}
+
+/* Admin placeholder styling */
+.admin-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-}
-
-.admin-placeholder {
-  text-align: center;
-  padding: 48px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  max-width: 500px;
-  width: 100%;
-}
-
-.admin-placeholder h2 {
-  color: #2c3e50;
-  margin-bottom: 16px;
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.admin-placeholder p {
-  color: #666;
-  font-size: 1.1rem;
-  line-height: 1.6;
+  height: 100%;
+  font-size: 1.2rem;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 2px dashed #cbd5e1;
 } 
