@@ -260,6 +260,7 @@ import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { QuestionFilled, Close, Plus } from '@element-plus/icons-vue'
+import Header from './Header.vue'
 
 // Props
 const props = defineProps({

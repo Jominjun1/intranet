@@ -1,6 +1,6 @@
 package com.example.tag_dev.LOG.Service;
 
-import com.example.tag_dev.LOG.LogRepository.*;
+import com.example.tag_dev.LOG.Repository.*;
 import com.example.tag_dev.LOG.Model.*;
 import com.example.tag_dev.TAG.Repository.SettingInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ public class LogService {
     public ResponseEntity<?> searchLog(String type, String startDate, String endDate) {
         try {
             List<Map<String, Object>> result = new ArrayList<>();
-            
+
             // 날짜 파싱
             Date start = null;
             Date end = null;
@@ -59,7 +59,7 @@ public class LogService {
                 cal.set(Calendar.SECOND, 59);
                 end = cal.getTime();
             }
-            
+
             switch (type) {
                 case "user":
                     List<UserLog> userLogs;
@@ -81,7 +81,7 @@ public class LogService {
                         result.add(logMap);
                     }
                     break;
-                    
+
                 case "basic":
                     List<BasicInfoLog> basicLogs;
                     if (start != null && end != null) {
@@ -109,7 +109,7 @@ public class LogService {
                         result.add(logMap);
                     }
                     break;
-                    
+
                 case "common":
                     List<CommonInfoLog> commonLogs;
                     if (start != null && end != null) {
@@ -130,7 +130,7 @@ public class LogService {
                         result.add(logMap);
                     }
                     break;
-                    
+
                 case "setting":
                     List<SettingInfoLog> settingLogs;
                     if (start != null && end != null) {
@@ -170,7 +170,7 @@ public class LogService {
                         result.add(logMap);
                     }
                     break;
-                    
+
                 case "proc":
                     List<ProcStepLog> procLogs;
                     if (start != null && end != null) {
@@ -195,7 +195,7 @@ public class LogService {
                         result.add(logMap);
                     }
                     break;
-                    
+
                 case "prod":
                     List<ProdAsLog> prodLogs;
                     if (start != null && end != null) {
@@ -221,7 +221,7 @@ public class LogService {
                         result.add(logMap);
                     }
                     break;
-                    
+
                 case "version":
                     List<VersionInfoLog> versionLogs;
                     if (start != null && end != null) {
@@ -242,13 +242,13 @@ public class LogService {
                         result.add(logMap);
                     }
                     break;
-                    
+
                 default:
                     return ResponseEntity.badRequest().body("지원하지 않는 로그 타입입니다: " + type);
             }
-            
+
             return ResponseEntity.ok(result);
-            
+
         } catch (Exception e) {
             return ResponseEntity.status(500).body("로그 조회 중 오류가 발생했습니다: " + e.getMessage());
         }

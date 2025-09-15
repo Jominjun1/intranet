@@ -19,6 +19,8 @@ public class Common_Info {
     @Column(name="seq")
     private Long common_info_seq;
 
+    @Column(name="ORD_NO")
+    private String ordNo;
     @Column(name="MAC_ADDR")
     private String macAddr; // MAC 주소
     @Column(name="FAC_CD")

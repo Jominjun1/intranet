@@ -24,11 +24,11 @@ public class JwtTokenProvider {
     }
 
     // 토큰 생성
-    public String generateToken(String userName , String userAcl , Long userId) {
-        Map<String , Object> map = new HashMap<>();
-        map.put("user_name" , userName);
-        map.put("user_acl" , userAcl);
-        map.put("user_id" , userId);
+    public String generateToken(String userName, String userAcl, Long userId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("user_name", userName);
+        map.put("user_acl", userAcl);
+        map.put("user_id", userId);
 
         Long validityInMilliseconds = jwtConfig.getValidityInMilliseconds();
         try {
@@ -56,6 +56,7 @@ public class JwtTokenProvider {
             return false;
         }
     }
+
     // 토큰에서 권한 추출
     public String extractUserAcl(String token) {
         try {
@@ -65,16 +66,18 @@ public class JwtTokenProvider {
             return null;
         }
     }
+
     public Long extractUserId(String token) {
-        try{
+        try {
             Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
             return (Long) claims.get("user_id");
-        } catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
+
     public String extractUserName(String token) {
-        try{
+        try {
             Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
             return (String) claims.get("user_name");
         } catch (Exception e) {

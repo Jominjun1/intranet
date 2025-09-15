@@ -1,4 +1,4 @@
-package com.example.tag_dev.LOG.LogRepository;
+package com.example.tag_dev.LOG.Repository;
 
 import com.example.tag_dev.LOG.Model.ProdAsLog;
 import com.example.tag_dev.LOG.Model.ProjectLog;

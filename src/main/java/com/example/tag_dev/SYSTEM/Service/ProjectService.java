@@ -1,7 +1,7 @@
 package com.example.tag_dev.SYSTEM.Service;
 
 import com.example.tag_dev.Config.JwtTokenProvider;
-import com.example.tag_dev.LOG.LogRepository.ProjectLogRepository;
+import com.example.tag_dev.LOG.Repository.ProjectLogRepository;
 import com.example.tag_dev.LOG.Model.ProjectLog;
 import com.example.tag_dev.SYSTEM.DTO.ProjectDTO;
 import com.example.tag_dev.SYSTEM.Model.Project_Info;
@@ -33,61 +33,57 @@ public class ProjectService {
     }
 
     // 프로젝트 생성
-    public ResponseEntity<?> createProject(String token , ProjectDTO projectDTO) {
-        if(!jwtTokenProvider.validateToken(token)){
+    public ResponseEntity<?> createProject(String token, ProjectDTO projectDTO) {
+        if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        try{
-            String yearSuffix = String.valueOf(Year.now().getValue()).substring(2);
-            String maxCode = projectRepository.findMaxCodeByYear(yearSuffix);
+        String yearSuffix = String.valueOf(Year.now().getValue()).substring(2);
+        String maxCode = projectRepository.findMaxCodeByYear(yearSuffix);
 
-            int nextSeq = 1;
-            if (maxCode != null) {
-                // 뒤 3자리만 추출 후 숫자로 변환
-                int currentMax = Integer.parseInt(maxCode.substring(2));
-                nextSeq = currentMax + 1;
-            }
-            String newCode = yearSuffix + String.format("%03d", nextSeq);
-
-            Project_Info project_Info = new Project_Info();
-            project_Info.setProjectCode(newCode);
-            project_Info.setProject_name(projectDTO.getProject_name());
-            project_Info.setProject_status(projectDTO.getProject_status());
-            project_Info.setProject_leader(projectDTO.getProject_leader());
-            project_Info.setStatus("N");
-            project_Info.setProject_status(projectDTO.getProject_status());
-            project_Info.setCustomer(projectDTO.getCustomer());
-            project_Info.setDeptCd(projectDTO.getDeptCd());
-            project_Info.setStartDt(projectDTO.getStartDt());
-            project_Info.setEndDt(projectDTO.getEndDt());
-            project_Info.setRegion(projectDTO.getRegion());
-            project_Info.setRegDt(new Date());
-            project_Info.setUserName(jwtTokenProvider.extractUserName(token));
-            projectRepository.save(project_Info);
-
-            ProjectLog projectLog = new ProjectLog();
-            projectLog.setProject_leader(project_Info.getProject_leader());
-            projectLog.setProject_status(project_Info.getProject_status());
-            projectLog.setCustomer(project_Info.getCustomer());
-            projectLog.setDeptCd(project_Info.getDeptCd());
-            projectLog.setStatus(project_Info.getStatus());
-            projectLog.setStartDt(project_Info.getStartDt());
-            projectLog.setEndDt(project_Info.getEndDt());
-            projectLog.setRegion(project_Info.getRegion());
-            projectLog.setUserName(jwtTokenProvider.extractUserName(token));
-            projectLog.setRegDt(new Date());
-
-            projectLogRepository.save(projectLog);
-
-            return ResponseEntity.ok("프로젝트 생성");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 생성 중 오류가 발생: " + e.getMessage());
+        int nextSeq = 1;
+        if (maxCode != null) {
+            // 뒤 3자리만 추출 후 숫자로 변환
+            int currentMax = Integer.parseInt(maxCode.substring(2));
+            nextSeq = currentMax + 1;
         }
+        String newCode = yearSuffix + String.format("%03d", nextSeq);
+
+        Project_Info project_Info = new Project_Info();
+        project_Info.setProjectCode(newCode);
+        project_Info.setProject_name(projectDTO.getProject_name());
+        project_Info.setProject_status(projectDTO.getProject_status());
+        project_Info.setProject_leader(projectDTO.getProject_leader());
+        project_Info.setStatus("N");
+        project_Info.setProject_status(projectDTO.getProject_status());
+        project_Info.setCustomer(projectDTO.getCustomer());
+        project_Info.setDeptCd(projectDTO.getDeptCd());
+        project_Info.setStartDt(projectDTO.getStartDt());
+        project_Info.setEndDt(projectDTO.getEndDt());
+        project_Info.setRegion(projectDTO.getRegion());
+        project_Info.setRegDt(new Date());
+        project_Info.setUserName(jwtTokenProvider.extractUserName(token));
+        projectRepository.save(project_Info);
+
+        ProjectLog projectLog = new ProjectLog();
+        projectLog.setProject_leader(project_Info.getProject_leader());
+        projectLog.setProject_status(project_Info.getProject_status());
+        projectLog.setCustomer(project_Info.getCustomer());
+        projectLog.setDeptCd(project_Info.getDeptCd());
+        projectLog.setStatus(project_Info.getStatus());
+        projectLog.setStartDt(project_Info.getStartDt());
+        projectLog.setEndDt(project_Info.getEndDt());
+        projectLog.setRegion(project_Info.getRegion());
+        projectLog.setUserName(jwtTokenProvider.extractUserName(token));
+        projectLog.setRegDt(new Date());
+
+        projectLogRepository.save(projectLog);
+
+        return ResponseEntity.ok("프로젝트 생성");
     }
 
     // 프로젝트 조회
-    public ResponseEntity<?> getAllProject(String token){
-        if(!jwtTokenProvider.validateToken(token)){
+    public ResponseEntity<?> getAllProject(String token) {
+        if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         List<Project_Info> projects = projectRepository.findAll();
@@ -96,20 +92,20 @@ public class ProjectService {
 
     // 프로젝트 수정/삭제
     public ResponseEntity<?> updateProject(String projectCode, String token, ProjectDTO projectDTO) {
-        if(!jwtTokenProvider.validateToken(token)){
+        if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        
+
         Optional<Project_Info> projectOpt = projectRepository.findByProjectCode(projectCode);
-        if(projectOpt.isEmpty()){
+        if (projectOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("프로젝트 없음");
         }
 
         Project_Info projectInfo = projectOpt.get();
-        
+
         // DTO의 null이 아닌 값들만 Project_Info 엔티티에 복사
         BeanUtils.copyProperties(projectDTO, projectInfo, getNullPropertyNames(projectDTO));
-        
+
         // 업데이트 정보 설정
         projectInfo.setRegDt(new Date());
         projectInfo.setUserName(jwtTokenProvider.extractUserName(token));
@@ -125,7 +121,7 @@ public class ProjectService {
     private String[] getNullPropertyNames(Object source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         PropertyDescriptor[] pds = src.getPropertyDescriptors();
-        
+
         Set<String> emptyNames = new HashSet<>();
         for (PropertyDescriptor pd : pds) {
             Object srcValue = src.getPropertyValue(pd.getName());
@@ -133,7 +129,7 @@ public class ProjectService {
                 emptyNames.add(pd.getName());
             }
         }
-        
+
         String[] result = new String[emptyNames.size()];
         return emptyNames.toArray(result);
     }
@@ -151,7 +147,7 @@ public class ProjectService {
         projectLog.setStatus(projectInfo.getStatus());
         projectLog.setUserName(jwtTokenProvider.extractUserName(token));
         projectLog.setRegDt(new Date());
-        
+
         projectLogRepository.save(projectLog);
     }
 }

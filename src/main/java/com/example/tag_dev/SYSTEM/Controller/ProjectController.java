@@ -26,40 +26,25 @@ public class ProjectController {
 
     // 프로젝트 조회
     @GetMapping("/searchAll")
-    public ResponseEntity<?> searchAllProject(@RequestHeader("Authorization") String JwtToken){
-        try{
-            log.info("프로젝트 조회 요청 : {}" , jwtTokenProvider.extractUserName(JwtToken));
-            String token = JwtToken.substring(7);
-            return ResponseEntity.ok(projectService.getAllProject(token));
-        }catch (Exception e) {
-            log.info("에러 발생 : {}" , e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<?> searchAllProject(@RequestHeader("Authorization") String JwtToken) {
+        log.info("프로젝트 조회 요청 : {}", jwtTokenProvider.extractUserName(JwtToken));
+        String token = JwtToken.substring(7);
+        return ResponseEntity.ok(projectService.getAllProject(token));
     }
 
     // 프로젝트 생성
     @PostMapping("/create")
-    public ResponseEntity<?> createProject(@RequestHeader("Authorization") String JwtToken , @RequestBody ProjectDTO projectDTO) {
-        try{
-            log.info("프로젝트 생성 요청 : {}" , jwtTokenProvider.extractUserName(JwtToken));
-            String token = JwtToken.substring(7);
-            return ResponseEntity.ok(projectService.createProject(token, projectDTO));
-        }catch (Exception e) {
-            log.info("에러 발생 : {}" , e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<?> createProject(@RequestHeader("Authorization") String JwtToken, @RequestBody ProjectDTO projectDTO) {
+        log.info("프로젝트 생성 요청 : {}", jwtTokenProvider.extractUserName(JwtToken));
+        String token = JwtToken.substring(7);
+        return ResponseEntity.ok(projectService.createProject(token, projectDTO));
     }
 
     // 프로젝트 수정/삭제
     @PostMapping("/update{projectCode}")
-    public ResponseEntity<?> updateProject(@PathVariable String projectCode , @RequestHeader("Authorization") String JwtToken , @RequestBody ProjectDTO projectDTO) {
-        try{
-            log.info("프로젝트 수정 요청 : {}" , jwtTokenProvider.extractUserName(JwtToken));
-            String token = JwtToken.substring(7);
-            return ResponseEntity.ok(projectService.updateProject(projectCode ,token , projectDTO));
-        } catch (Exception e) {
-            log.info("에러 발생 : {}" , e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<?> updateProject(@PathVariable String projectCode, @RequestHeader("Authorization") String JwtToken, @RequestBody ProjectDTO projectDTO) {
+        log.info("프로젝트 수정 요청 : {}", jwtTokenProvider.extractUserName(JwtToken));
+        String token = JwtToken.substring(7);
+        return ResponseEntity.ok(projectService.updateProject(projectCode, token, projectDTO));
     }
 }

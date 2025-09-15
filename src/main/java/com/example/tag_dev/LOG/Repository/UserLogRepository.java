@@ -1,4 +1,4 @@
-package com.example.tag_dev.LOG.LogRepository;
+package com.example.tag_dev.LOG.Repository;
 
 import com.example.tag_dev.LOG.Model.UserLog;
 import org.springframework.data.domain.Page;

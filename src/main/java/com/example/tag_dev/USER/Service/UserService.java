@@ -6,10 +6,10 @@ import com.example.tag_dev.SYSTEM.Repository.DeptRepository;
 import com.example.tag_dev.Config.JwtTokenProvider;
 import com.example.tag_dev.USER.DTO.UserDTO;
 import com.example.tag_dev.USER.Model.User;
-import com.example.tag_dev.LOG.LogRepository.DeptLogRepository;
+import com.example.tag_dev.LOG.Repository.DeptLogRepository;
 import com.example.tag_dev.LOG.Model.DeptLog;
 import com.example.tag_dev.LOG.Model.UserLog;
-import com.example.tag_dev.LOG.LogRepository.UserLogRepository;
+import com.example.tag_dev.LOG.Repository.UserLogRepository;
 import com.example.tag_dev.USER.Repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
@@ -46,14 +46,14 @@ public class UserService {
 
     // ======================== 로그인 관련 ==============================//
     // 로그인
-    public ResponseEntity<?> login(UserDTO userDTO , HttpServletRequest request) {
+    public ResponseEntity<?> login(UserDTO userDTO, HttpServletRequest request) {
         Optional<User> userOpt = userRepository.findByLoginId(userDTO.getLogin_id());
 
-        if(userOpt.isPresent()){
+        if (userOpt.isPresent()) {
             User user = userOpt.get();
             UserLog userLog = new UserLog();
             boolean match = passwordEncoder.matches(userDTO.getPassword(), user.getPassword());
-            if(match){
+            if (match) {
                 System.out.println("[로그인] 비밀번호 일치, 로그인 성공");
                 user.setFail_login_cnt(0L);
                 String token = jwtTokenProvider.generateToken(
@@ -78,18 +78,18 @@ public class UserService {
                 userLogRepository.save(userLog);
 
                 return ResponseEntity.ok(Map.of(
-                        "token" , token,
-                        "user_id" , user.getUserId(),
-                        "user_name" , user.getUserName(),
-                        "login_id" , user.getLoginId(),
-                        "user_acl" , user.getUser_acl(),
-                        "user_email" , user.getUserEmail()
+                        "token", token,
+                        "user_id", user.getUserId(),
+                        "user_name", user.getUserName(),
+                        "login_id", user.getLoginId(),
+                        "user_acl", user.getUser_acl(),
+                        "user_email", user.getUserEmail()
                 ));
-            } else{
-                long failCount = user.getFail_login_cnt() != null ? user.getFail_login_cnt(): 0L;
+            } else {
+                long failCount = user.getFail_login_cnt() != null ? user.getFail_login_cnt() : 0L;
                 failCount++;
                 user.setFail_login_cnt(failCount);
-                if(failCount >=5 ){
+                if (failCount >= 5) {
                     user.setUser_stat("LOCK");
                     user.setUser_acl("0");
                     userRepository.save(user);
@@ -116,19 +116,20 @@ public class UserService {
 
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호 일치 하지 않음");
             }
-        } else{
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 사용자");
         }
     }
+
     // 로그아웃
-    public ResponseEntity<?> logout(String jwtToken ,  HttpServletRequest request){
-        if(!jwtTokenProvider.validateToken(jwtToken)){
+    public ResponseEntity<?> logout(String jwtToken, HttpServletRequest request) {
+        if (!jwtTokenProvider.validateToken(jwtToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않는 토큰");
         }
         Long userId = jwtTokenProvider.extractUserId(jwtToken);
-        if(userId != null){
+        if (userId != null) {
             Optional<User> userOpt = userRepository.findById(userId);
-            if(userOpt.isPresent()){
+            if (userOpt.isPresent()) {
                 User user = userOpt.get();
                 user.setJwt_token(null);
                 user.setJwt_expiry_pt(null);
@@ -150,25 +151,25 @@ public class UserService {
     }
 
     // ID 중복 확인
-    public Optional<User> checkLoginId(String loginId){
+    public Optional<User> checkLoginId(String loginId) {
         return userRepository.findByLoginId(loginId);
     }
 
     // 아이디 찾기
     public Optional<User> findLoginId(UserDTO userDTO) {
-        return userRepository.findByNameAndEmailOrPhone(userDTO.getUser_name() , userDTO.getUser_email() , userDTO.getUser_phone_num());
+        return userRepository.findByNameAndEmailOrPhone(userDTO.getUser_name(), userDTO.getUser_email(), userDTO.getUser_phone_num());
     }
 
     // 비밀번호 찾기
-    public Optional<User> findPassword(UserDTO userDTO){
-        return userRepository.findByUserNameAndLoginIdAndUserEmailAndUserPhoneNum(userDTO.getUser_name() , userDTO.getLogin_id() , userDTO.getUser_email() , userDTO.getUser_phone_num());
+    public Optional<User> findPassword(UserDTO userDTO) {
+        return userRepository.findByUserNameAndLoginIdAndUserEmailAndUserPhoneNum(userDTO.getUser_name(), userDTO.getLogin_id(), userDTO.getUser_email(), userDTO.getUser_phone_num());
     }
 
 
     // ====================================== 관리자 관련 =====================================//
     // 사용자 수정/삭제 ( 관리자 기능 )
     public ResponseEntity<?> updateUserInfo(String userId, UserDTO userDto, String jwtToken) {
-        if(!jwtTokenProvider.validateToken(jwtToken)){
+        if (!jwtTokenProvider.validateToken(jwtToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -178,15 +179,15 @@ public class UserService {
         }
 
         User user = userOpt.get();
-        
+
         // DTO의 null이 아닌 값들만 User 엔티티에 복사
         BeanUtils.copyProperties(userDto, user, getNullPropertyNames(userDto));
-        
+
         // 업데이트 정보 설정
         user.setUpdate_dt(new Date());
         Long updateUserId = jwtTokenProvider.extractUserId(jwtToken);
         user.setUpdate_id(updateUserId);
-        
+
         userRepository.save(user);
 
         // 로그 생성
@@ -199,7 +200,7 @@ public class UserService {
     private String[] getNullPropertyNames(Object source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         PropertyDescriptor[] pds = src.getPropertyDescriptors();
-        
+
         Set<String> emptyNames = new HashSet<>();
         for (PropertyDescriptor pd : pds) {
             Object srcValue = src.getPropertyValue(pd.getName());
@@ -207,7 +208,7 @@ public class UserService {
                 emptyNames.add(pd.getName());
             }
         }
-        
+
         String[] result = new String[emptyNames.size()];
         return emptyNames.toArray(result);
     }
@@ -218,19 +219,19 @@ public class UserService {
         userLog.setLoginId(user.getLoginId());
         userLog.setUpdate_dt(new Date());
         userLog.setUpdate_id(updateUserId);
-        
+
         if ("Y".equals(user.getStatus())) {
             userLog.setStatus("삭제");
         } else {
             userLog.setStatus("정보수정");
         }
-        
+
         userLogRepository.save(userLog);
     }
 
     // 권한 변경 ( 관리자 기능 )
     public ResponseEntity<?> changeAcl(String token, Long userId, String userAcl) {
-        if(!jwtTokenProvider.validateToken(token)){
+        if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         Optional<User> userOpt = userRepository.findById(userId);
@@ -254,7 +255,7 @@ public class UserService {
 
     // 사용자 전체 조회 ( 관리자 기능 )
     public ResponseEntity<?> getAllUser(String token) {
-        if(!jwtTokenProvider.validateToken(token)){
+        if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         List<User> users = userRepository.findAll();
@@ -264,11 +265,11 @@ public class UserService {
 
     // 해당 사용자 비밀번호 변경 ( 관리자 기능 )
     public ResponseEntity<?> changePassword(UserDTO userDTO, String token) {
-        if(!jwtTokenProvider.validateToken(token)){
+        if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지않음");
         }
         Optional<User> user = userRepository.findByLoginId(userDTO.getLogin_id());
-        if(user.isPresent()){
+        if (user.isPresent()) {
             User users = user.get();
             users.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             userRepository.save(users);
@@ -281,7 +282,7 @@ public class UserService {
             userLogRepository.save(userLog);
 
             return ResponseEntity.ok("변경 성공");
-        }else{
+        } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호 변경중 오류 발생");
         }
 
@@ -290,12 +291,12 @@ public class UserService {
     // 사용자 생성 ( 관리자 기능 )
     public ResponseEntity<?> createUser(String token, UserDTO userDTO) {
         // JWT 토큰 검증
-        if(!jwtTokenProvider.validateToken(token)){
+        if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         // 로그인 ID 중복 확인
-        if(userRepository.findByLoginId(userDTO.getLogin_id()).isPresent()){
+        if (userRepository.findByLoginId(userDTO.getLogin_id()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용중인 로그인 ID");
         }
 
@@ -371,7 +372,7 @@ public class UserService {
         if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        try{
+        try {
             Dept_Info deptInfo = new Dept_Info();
             deptInfo.setDeptCode(deptDTO.getDeptCode());
             deptInfo.setDept(deptDTO.getDept());
@@ -390,15 +391,16 @@ public class UserService {
             deptLogRepository.save(deptLog);
 
             return ResponseEntity.ok(deptInfo);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("부서 등록 중 오류가 발생: " + e.getMessage());
         }
     }
+
     // 부서 조회
-    public ResponseEntity<?> getDept(String dept , String deptCode) {
-        try{
+    public ResponseEntity<?> getDept(String dept, String deptCode) {
+        try {
             boolean hasSearchCondition = (dept != null && !dept.trim().isEmpty()) || (deptCode != null && !deptCode.trim().isEmpty());
-            if(!hasSearchCondition){
+            if (!hasSearchCondition) {
                 return ResponseEntity.ok("아무것도 없음");
             }
             Optional<Dept_Info> deptInfo = deptRepository.findByDeptCode(dept);
@@ -408,22 +410,23 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("부서 수정 중 오류가 발생: " + e.getMessage());
         }
     }
+
     // 부서 수정/삭제 ( 관리자 기능 )
     public ResponseEntity<?> updateDept(String deptCode, String token, DeptDTO deptDTO) {
         if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        
+
         Optional<Dept_Info> deptOpt = deptRepository.findByDeptCode(deptCode);
         if (deptOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("부서 없음");
         }
 
         Dept_Info deptInfo = deptOpt.get();
-        
+
         // DTO의 null이 아닌 값들만 Dept_Info 엔티티에 복사
         BeanUtils.copyProperties(deptDTO, deptInfo, getNullPropertyNames(deptDTO));
-        
+
         // 업데이트 정보 설정
         deptInfo.setUpdateDt(new Date());
         deptInfo.setUpdateUser(jwtTokenProvider.extractUserName(token));
@@ -440,18 +443,18 @@ public class UserService {
         DeptLog deptLog = new DeptLog();
         deptLog.setDeptCode(deptDTO.getDeptCode());
         deptLog.setDept(deptDTO.getDept());
-        
+
         if ("Y".equals(deptDTO.getStatus())) {
             deptLog.setStatus("삭제");
         } else {
             deptLog.setStatus("사용중");
         }
-        
+
         deptLog.setRegDt(deptDTO.getRegDt());
         deptLog.setUserName(deptDTO.getUserName());
         deptLog.setUpdateDt(new Date());
         deptLog.setUpdateUser(jwtTokenProvider.extractUserName(token));
-        
+
         deptLogRepository.save(deptLog);
     }
 
