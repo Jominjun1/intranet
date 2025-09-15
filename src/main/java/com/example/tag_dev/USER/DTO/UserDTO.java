@@ -1,6 +1,5 @@
 package com.example.tag_dev.USER.DTO;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.util.Date;

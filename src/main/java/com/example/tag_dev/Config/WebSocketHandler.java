@@ -18,7 +18,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String token = getTokenFromQuery(session);
-        if (token == null || !jwtTokenProvider.validateToken(token)) {
+        if (token == null || jwtTokenProvider.validateToken(token)) {
             session.close(CloseStatus.NOT_ACCEPTABLE.withReason("Invalid JWT"));
             return;
         }

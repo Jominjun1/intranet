@@ -1,15 +1,15 @@
 package com.example.tag_dev.USER.Service;
 
+import com.example.tag_dev.Config.JwtTokenProvider;
+import com.example.tag_dev.LOG.Model.DeptLog;
+import com.example.tag_dev.LOG.Model.UserLog;
+import com.example.tag_dev.LOG.Repository.DeptLogRepository;
+import com.example.tag_dev.LOG.Repository.UserLogRepository;
 import com.example.tag_dev.SYSTEM.DTO.DeptDTO;
 import com.example.tag_dev.SYSTEM.Model.Dept_Info;
 import com.example.tag_dev.SYSTEM.Repository.DeptRepository;
-import com.example.tag_dev.Config.JwtTokenProvider;
 import com.example.tag_dev.USER.DTO.UserDTO;
 import com.example.tag_dev.USER.Model.User;
-import com.example.tag_dev.LOG.Repository.DeptLogRepository;
-import com.example.tag_dev.LOG.Model.DeptLog;
-import com.example.tag_dev.LOG.Model.UserLog;
-import com.example.tag_dev.LOG.Repository.UserLogRepository;
 import com.example.tag_dev.USER.Repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
@@ -123,7 +123,7 @@ public class UserService {
 
     // 로그아웃
     public ResponseEntity<?> logout(String jwtToken, HttpServletRequest request) {
-        if (!jwtTokenProvider.validateToken(jwtToken)) {
+        if (jwtTokenProvider.validateToken(jwtToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않는 토큰");
         }
         Long userId = jwtTokenProvider.extractUserId(jwtToken);
@@ -169,7 +169,7 @@ public class UserService {
     // ====================================== 관리자 관련 =====================================//
     // 사용자 수정/삭제 ( 관리자 기능 )
     public ResponseEntity<?> updateUserInfo(String userId, UserDTO userDto, String jwtToken) {
-        if (!jwtTokenProvider.validateToken(jwtToken)) {
+        if (jwtTokenProvider.validateToken(jwtToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -198,6 +198,10 @@ public class UserService {
 
     // null이 아닌 프로퍼티만 가져오는 헬퍼 메서드
     private String[] getNullPropertyNames(Object source) {
+        return getStrings(source);
+    }
+
+    public static String[] getStrings(Object source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         PropertyDescriptor[] pds = src.getPropertyDescriptors();
 
@@ -231,7 +235,7 @@ public class UserService {
 
     // 권한 변경 ( 관리자 기능 )
     public ResponseEntity<?> changeAcl(String token, Long userId, String userAcl) {
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         Optional<User> userOpt = userRepository.findById(userId);
@@ -255,7 +259,7 @@ public class UserService {
 
     // 사용자 전체 조회 ( 관리자 기능 )
     public ResponseEntity<?> getAllUser(String token) {
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         List<User> users = userRepository.findAll();
@@ -265,7 +269,7 @@ public class UserService {
 
     // 해당 사용자 비밀번호 변경 ( 관리자 기능 )
     public ResponseEntity<?> changePassword(UserDTO userDTO, String token) {
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지않음");
         }
         Optional<User> user = userRepository.findByLoginId(userDTO.getLogin_id());
@@ -291,7 +295,7 @@ public class UserService {
     // 사용자 생성 ( 관리자 기능 )
     public ResponseEntity<?> createUser(String token, UserDTO userDTO) {
         // JWT 토큰 검증
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -336,7 +340,7 @@ public class UserService {
 
     // 사용자 비밀번호 변경 ( 관리자 기능 )
     public ResponseEntity<?> changeUserPasswordByAdmin(String loginId, UserDTO userDTO, String token) {
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -369,7 +373,7 @@ public class UserService {
     //========================================= 부서 관련 ===================================//
     // 부서 등록 ( 관리자 기능 )
     public ResponseEntity<?> createDept(String token, DeptDTO deptDTO) {
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         try {
@@ -413,7 +417,7 @@ public class UserService {
 
     // 부서 수정/삭제 ( 관리자 기능 )
     public ResponseEntity<?> updateDept(String deptCode, String token, DeptDTO deptDTO) {
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 

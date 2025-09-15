@@ -1,10 +1,10 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>스마트태그 재고관리</title>
+    <title>스마트태그 인벤토리 관리</title>
     <style>
       * {
         margin: 0;
@@ -16,7 +16,10 @@
         height: 100%;
         width: 100%;
         overflow: hidden;
-        background: #000;
+        background: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
       
       #app {
@@ -29,10 +32,42 @@
         left: 0;
         margin: 0;
         padding: 0;
+        background: #f8fafc;
+      }
+      
+      /* Scrollbar styling */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      
+      ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+      }
+      
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      
+      /* Focus styling */
+      *:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+      }
+      
+      /* Selected text styling */
+      ::selection {
+        background: #dbeafe;
+        color: #1e40af;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-DBnJcO3n.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CC_j0S6V.css">
+    <script type="module" crossorigin src="/assets/index-CdKWfNOP.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C84i3V8z.css">
   </head>
   <body>
     <div id="app"></div>

@@ -1,10 +1,10 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import {computed, onMounted, onUnmounted, ref} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
 import LoginForm from './components/LoginForm.vue'
 import Header from './components/Header.vue'
 import Sidebar from './components/Sidebar.vue'
-import { ElMessage } from 'element-plus'
+import {ElMessage} from 'element-plus'
 import './css/App.css'
 
 // 라우터 설정

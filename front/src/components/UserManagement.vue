@@ -1,13 +1,5 @@
 <template>
   <div class="user-management-page">
-    <!-- 헤더 -->
-    <Header 
-      :active-menu="activeMenu" 
-      :user-info="userInfo"
-      @menu-select="handleMenuSelect"
-      @user-command="handleUserCommand"
-    />
-    
     <!-- 검색 영역 -->
     <div class="search-section">
       <div class="search-header">
@@ -256,11 +248,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import axios from 'axios'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { QuestionFilled, Close, Plus } from '@element-plus/icons-vue'
-import Header from './Header.vue'
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {Close, Plus, QuestionFilled} from '@element-plus/icons-vue'
 
 // Props
 const props = defineProps({

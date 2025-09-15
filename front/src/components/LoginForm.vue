@@ -113,8 +113,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import {onMounted, reactive, ref} from 'vue'
+import {ElMessage} from 'element-plus'
 import axios from 'axios'
 import loginBg from '../image/login_img.jpg'
 import '../css/LoginForm.css'

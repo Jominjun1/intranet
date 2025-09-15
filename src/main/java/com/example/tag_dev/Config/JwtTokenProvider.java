@@ -47,13 +47,13 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
-            return true;
+            return false;
         } catch (ExpiredJwtException e) {
             System.err.println("토큰 만료: " + e.getMessage());
-            return false;
+            return true;
         } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {
             System.err.println("잘못된 토큰: " + e.getMessage());
-            return false;
+            return true;
         }
     }
 

@@ -1,26 +1,25 @@
 package com.example.tag_dev.TAG.Service;
 
 import com.example.tag_dev.Config.JwtTokenProvider;
-import com.example.tag_dev.LOG.Repository.*;
-import com.example.tag_dev.TAG.DTO.TagSettingDTO;
 import com.example.tag_dev.LOG.Model.CommonInfoLog;
 import com.example.tag_dev.LOG.Model.ProdAsLog;
 import com.example.tag_dev.LOG.Model.SettingInfoLog;
 import com.example.tag_dev.LOG.Model.VersionInfoLog;
+import com.example.tag_dev.LOG.Repository.*;
+import com.example.tag_dev.TAG.DTO.TagSettingDTO;
 import com.example.tag_dev.TAG.Model.*;
 import com.example.tag_dev.TAG.Repository.*;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.example.tag_dev.USER.Service.UserService.getStrings;
 
 @Service
 public class TagService {
@@ -102,7 +101,8 @@ public class TagService {
             }
 
             Map<String, Object> row = new HashMap<>();
-            row.put("ord_no", basic.getOrdNo());
+            row.put("tag_No", basic.getOrdNo());
+            row.put("ordNo", basic.getOrdNo()); // 호환성을 위해 ordNo도 추가
             row.put("tag_Type", basic.getTagType());
             row.put("erp_Code", basic.getErpCode());
             row.put("Mng_Category", basic.getMngCategory());
@@ -117,10 +117,12 @@ public class TagService {
             row.put("mac_Addr", common.getMacAddr());
             row.put("fac_Cd", common.getFacCd());
             row.put("fac_No", common.getFacNo());
-            Optional<Version_Info> ver = versionInfoRepository.findAll().stream().filter(v -> v.getOrdNo().equals(basic.getOrdNo())).max(Comparator.comparing(Version_Info::getTag_version));
+            Optional<Version_Info> ver = versionInfoRepository.findAll().stream()
+                    .filter(v -> v.getOrdNo() != null && v.getOrdNo().equals(basic.getOrdNo()))
+                    .max(Comparator.comparing(Version_Info::getTag_version));
             row.put("tag_Version", ver.map(Version_Info::getTag_version).orElse("1.0"));
             long asCount = prodAsRepository.findAll().stream()
-                    .filter(a -> a.getOrdNo().equals(basic.getOrdNo()))
+                    .filter(a -> a.getOrdNo() != null && a.getOrdNo().equals(basic.getOrdNo()))
                     .filter(a -> a.getAsCnt() != null && a.getAsCnt() > 0)
                     .count();
             row.put("as_Cnt", asCount);
@@ -150,7 +152,7 @@ public class TagService {
 
     public ResponseEntity<?> updateSettingInfo(String ordNo, TagSettingDTO dto, String token) {
         // 토큰에서 사용자 ID 추출
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
         }
         Long userId = jwtTokenProvider.extractUserId(token);
@@ -256,19 +258,7 @@ public class TagService {
 
     // null이 아닌 프로퍼티만 가져오는 헬퍼 메서드
     private String[] getNullPropertyNames(Object source) {
-        final BeanWrapper src = new BeanWrapperImpl(source);
-        PropertyDescriptor[] pds = src.getPropertyDescriptors();
-
-        Set<String> emptyNames = new HashSet<>();
-        for (PropertyDescriptor pd : pds) {
-            Object srcValue = src.getPropertyValue(pd.getName());
-            if (srcValue == null || (srcValue instanceof String && ((String) srcValue).isEmpty())) {
-                emptyNames.add(pd.getName());
-            }
-        }
-
-        String[] result = new String[emptyNames.size()];
-        return emptyNames.toArray(result);
+        return getStrings(source);
     }
 
     // 세팅정보 로그 생성 헬퍼 메서드
@@ -826,8 +816,9 @@ public class TagService {
 
         for (Basic_Info basic : basics) {
             String ordNo = basic.getOrdNo();
-            if (query == null || query.trim().isEmpty() ||
-                    ordNo.toLowerCase().contains(query.toLowerCase())) {
+            // ordNo가 null이 아닌 경우에만 처리
+            if (ordNo != null && (query == null || query.trim().isEmpty() ||
+                    ordNo.toLowerCase().contains(query.toLowerCase()))) {
                 tagNumbers.add(ordNo);
             }
         }

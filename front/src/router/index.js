@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import UserManagement from '../components/UserManagement.vue'
 import TagManagement from '../components/TagManagement.vue'
 import LogManagement from '../components/LogManagement.vue'

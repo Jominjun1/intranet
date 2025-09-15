@@ -316,7 +316,7 @@
       <div class="sidebar-header">
         <h3>로그 관리 도움말</h3>
         <el-button type="link"
-          :icon="Close" 
+          :icon="Close"
           @click="toggleHelp"
           class="close-btn"
         />
@@ -371,9 +371,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { ElMessage } from 'element-plus'
-import { QuestionFilled, Close, Download } from '@element-plus/icons-vue'
+import {computed, onMounted, ref} from 'vue'
+import {ElMessage} from 'element-plus'
+import {Close, Download, QuestionFilled} from '@element-plus/icons-vue'
 import axios from 'axios'
 
 // Props

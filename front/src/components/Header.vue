@@ -28,9 +28,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { ElMessage } from 'element-plus'
-import { ArrowDown } from '@element-plus/icons-vue'
+import {computed} from 'vue'
+import {ArrowDown} from '@element-plus/icons-vue'
 
 const props = defineProps({
   activeMenu: {

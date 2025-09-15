@@ -1,8 +1,8 @@
 package com.example.tag_dev.SYSTEM.Service;
 
 import com.example.tag_dev.Config.JwtTokenProvider;
-import com.example.tag_dev.LOG.Repository.ProjectLogRepository;
 import com.example.tag_dev.LOG.Model.ProjectLog;
+import com.example.tag_dev.LOG.Repository.ProjectLogRepository;
 import com.example.tag_dev.SYSTEM.DTO.ProjectDTO;
 import com.example.tag_dev.SYSTEM.Model.Project_Info;
 import com.example.tag_dev.SYSTEM.Repository.ProjectRepository;
@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.beans.PropertyDescriptor;
 import java.time.Year;
 import java.util.*;
+
+import static com.example.tag_dev.USER.Service.UserService.getStrings;
 
 @Service
 public class ProjectService {
@@ -34,7 +36,7 @@ public class ProjectService {
 
     // 프로젝트 생성
     public ResponseEntity<?> createProject(String token, ProjectDTO projectDTO) {
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String yearSuffix = String.valueOf(Year.now().getValue()).substring(2);
@@ -83,7 +85,7 @@ public class ProjectService {
 
     // 프로젝트 조회
     public ResponseEntity<?> getAllProject(String token) {
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         List<Project_Info> projects = projectRepository.findAll();
@@ -92,7 +94,7 @@ public class ProjectService {
 
     // 프로젝트 수정/삭제
     public ResponseEntity<?> updateProject(String projectCode, String token, ProjectDTO projectDTO) {
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -119,19 +121,7 @@ public class ProjectService {
 
     // null이 아닌 프로퍼티만 가져오는 헬퍼 메서드
     private String[] getNullPropertyNames(Object source) {
-        final BeanWrapper src = new BeanWrapperImpl(source);
-        PropertyDescriptor[] pds = src.getPropertyDescriptors();
-
-        Set<String> emptyNames = new HashSet<>();
-        for (PropertyDescriptor pd : pds) {
-            Object srcValue = src.getPropertyValue(pd.getName());
-            if (srcValue == null || (srcValue instanceof String && ((String) srcValue).isEmpty())) {
-                emptyNames.add(pd.getName());
-            }
-        }
-
-        String[] result = new String[emptyNames.size()];
-        return emptyNames.toArray(result);
+        return getStrings(source);
     }
 
     // 프로젝트 로그 생성 헬퍼 메서드

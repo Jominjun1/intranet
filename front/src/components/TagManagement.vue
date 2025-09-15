@@ -226,7 +226,7 @@
               size="small"
               placeholder="LED 주기"
             />
-            <span v-else>{{ settingInfoData[0]?.led_SEC }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.led_SEC) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="송신주기">
@@ -236,7 +236,7 @@
               size="small"
               placeholder="송신주기"
             />
-            <span v-else>{{ settingInfoData[0]?.ri_MS }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.ri_MS) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="신호 강도">
@@ -246,7 +246,7 @@
               size="small"
               placeholder="신호 강도"
             />
-            <span v-else>{{ settingInfoData[0]?.tx_POWER }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.tx_POWER) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="송신 방식">
@@ -256,7 +256,7 @@
               size="small"
               placeholder="송신 방식"
             />
-            <span v-else>{{ settingInfoData[0]?.random_DV }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.random_DV) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="RF 프로파일">
@@ -266,7 +266,7 @@
               size="small"
               placeholder="RF 프로파일"
             />
-            <span v-else>{{ settingInfoData[0]?.rf_PROFILE }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.rf_PROFILE) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="채널">
@@ -276,7 +276,7 @@
               size="small"
               placeholder="채널"
             />
-            <span v-else>{{ settingInfoData[0]?.channel }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.channel) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="서버 IP">
@@ -296,151 +296,151 @@
               size="small"
               placeholder="디바이스 IP"
             />
-            <span v-else>{{ settingInfoData[0]?.device_IP }}</span>
+            <span v-else>{{ settingInfoData.device_IP }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="게이트웨이">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData[0].gateway" 
+              v-model="settingInfoData.gateway" 
               size="small"
               placeholder="게이트웨이"
             />
-            <span v-else>{{ settingInfoData[0]?.gateway }}</span>
+            <span v-else>{{ settingInfoData.gateway }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="서브넷 마스크">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData[0].sub_MASK" 
+              v-model="settingInfoData.sub_MASK" 
               size="small"
               placeholder="서브넷 마스크"
             />
-            <span v-else>{{ settingInfoData[0]?.sub_MASK }}</span>
+            <span v-else>{{ settingInfoData.sub_MASK }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="포트">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData[0].port" 
+              v-model="settingInfoData.port" 
               size="small"
               placeholder="포트"
             />
-            <span v-else>{{ settingInfoData[0]?.port }}</span>
+            <span v-else>{{ settingInfoData.port }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="BC 버전">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData[0].bc_VER" 
+              v-model="settingInfoData.bc_VER" 
               size="small"
               placeholder="BC 버전 (예: 1.0)"
             />
-            <span v-else>{{ getVersionDisplay(settingInfoData[0]?.bc_VER) }}</span>
+            <span v-else>{{ getVersionDisplay(settingInfoData.bc_VER) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="BC 주기">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData[0].bc_PERIOD" 
+              v-model="settingInfoData.bc_PERIOD" 
               size="small"
               placeholder="BC 주기"
             />
-            <span v-else>{{ settingInfoData[0]?.bc_PERIOD }}</span>
+            <span v-else>{{ settingInfoData.bc_PERIOD }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="BC 슬립">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData[0].bc_SLEEP" 
+              v-model="settingInfoData.bc_SLEEP" 
               size="small"
               placeholder="BC 슬립"
             />
-            <span v-else>{{ settingInfoData[0]?.bc_SLEEP }}</span>
+            <span v-else>{{ settingInfoData.bc_SLEEP }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="슬립 모드">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData[0].sleep_MODE" 
+              v-model="settingInfoData.sleep_MODE" 
               size="small"
               placeholder="슬립 모드"
             />
-            <span v-else>{{ settingInfoData[0]?.sleep_MODE }}</span>
+            <span v-else>{{ settingInfoData.sleep_MODE }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="슬립 주기">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData[0].sleep_PERIOD" 
+              v-model="settingInfoData.sleep_PERIOD" 
               size="small"
               placeholder="슬립 주기"
             />
-            <span v-else>{{ settingInfoData[0]?.sleep_PERIOD }}</span>
+            <span v-else>{{ settingInfoData.sleep_PERIOD }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="슬립 간격">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData[0].sleep_INTERVAL" 
+              v-model="settingInfoData.sleep_INTERVAL" 
               size="small"
               placeholder="슬립 간격"
             />
-            <span v-else>{{ settingInfoData[0]?.sleep_INTERVAL }}</span>
+            <span v-else>{{ settingInfoData.sleep_INTERVAL }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="슬립 임계값">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData[0].sleep_TH_HOLD" 
+              v-model="settingInfoData.sleep_TH_HOLD" 
               size="small"
               placeholder="슬립 임계값"
             />
-            <span v-else>{{ settingInfoData[0]?.sleep_TH_HOLD }}</span>
+            <span v-else>{{ settingInfoData.sleep_TH_HOLD }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="TDMA">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData[0].tdma" 
+              v-model="settingInfoData.tdma" 
               size="small"
               placeholder="TDMA"
             />
-            <span v-else>{{ settingInfoData[0]?.tdma }}</span>
+            <span v-else>{{ settingInfoData.tdma }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="상태">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData[0].status" 
+              v-model="settingInfoData.status" 
               size="small"
               placeholder="상태"
             />
-            <span v-else>{{ settingInfoData[0]?.status }}</span>
+            <span v-else>{{ settingInfoData.status }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="생성일">
-            <span>{{ formatDate(settingInfoData[0]?.create_DT) }}</span>
+            <span>{{ formatDate(settingInfoData.create_DT) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="생성자">
-            <span>{{ settingInfoData[0]?.create_ID }}</span>
+            <span>{{ settingInfoData.create_ID }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="수정일">
-            <span>{{ formatDate(settingInfoData[0]?.update_DT) }}</span>
+            <span>{{ formatDate(settingInfoData.update_DT) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="수정자">
-            <span>{{ settingInfoData[0]?.update_ID }}</span>
+            <span>{{ settingInfoData.update_ID }}</span>
           </el-descriptions-item>
         </el-descriptions>
       </div>
     </div>
     
     <div v-else-if="currentSubMenu === 'tag-version'" class="submenu-content">
-      <h2>버전 이력 관리</h2>
-      <p>태그번호를 입력하여 버전 이력을 관리하세요.</p>
+              <h2>버전 이력 관리</h2>
+        <p>태그번호를 입력하여 버전 이력을 관리하세요.</p>
       
       <!-- 태그번호 검색 섹션 -->
       <div class="direct-search-section">
@@ -514,8 +514,8 @@
     </div>
     
     <div v-else-if="currentSubMenu === 'tag-common'" class="submenu-content">
-      <h2>공통정보 관리</h2>
-      <p>태그번호를 입력하여 공통정보를 관리하세요.</p>
+              <h2>공통정보 관리</h2>
+        <p>태그번호를 입력하여 공통정보를 관리하세요.</p>
       
       <!-- 태그번호 검색 섹션 -->
       <div class="direct-search-section">
@@ -609,8 +609,8 @@
     </div>
     
     <div v-else-if="currentSubMenu === 'tag-as'" class="submenu-content">
-      <h2>AS 이력 관리</h2>
-      <p>태그번호를 입력하여 AS 이력을 관리하세요.</p>
+              <h2>AS 이력 관리</h2>
+        <p>태그번호를 입력하여 AS 이력을 관리하세요.</p>
       
       <!-- 태그번호 검색 섹션 -->
       <div class="direct-search-section">
@@ -833,32 +833,32 @@
           <el-button type="primary" @click="editSettingInfo">세팅정보 수정</el-button>
         </div>
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="태그번호">{{ settingInfoData[0]?.ordNo }}</el-descriptions-item>
-          <el-descriptions-item label="하드웨어버전">{{ settingInfoData[0]?.hw_version }}</el-descriptions-item>
-          <el-descriptions-item label="펌웨어버전">{{ settingInfoData[0]?.fw_version }}</el-descriptions-item>
-          <el-descriptions-item label="LED ON 주기">{{ settingInfoData[0]?.led_SEC }}</el-descriptions-item>
-          <el-descriptions-item label="송신주기">{{ settingInfoData[0]?.ri_MS }}</el-descriptions-item>
-          <el-descriptions-item label="신호 강도">{{ settingInfoData[0]?.tx_POWER }}</el-descriptions-item>
-          <el-descriptions-item label="송신 방식">{{ settingInfoData[0]?.random_DV }}</el-descriptions-item>
-          <el-descriptions-item label="RF 프로파일">{{ settingInfoData[0]?.rf_PROFILE }}</el-descriptions-item>
-          <el-descriptions-item label="통신 채널">{{ settingInfoData[0]?.channel }}</el-descriptions-item>
-          <el-descriptions-item label="슬립모드">{{ settingInfoData[0]?.sleep_MODE }}</el-descriptions-item>
-          <el-descriptions-item label="슬립모드 강도">{{ settingInfoData[0]?.sleep_TH_HOLD }}</el-descriptions-item>
-          <el-descriptions-item label="RISM">{{ settingInfoData[0]?.sleep_INTERVAL }}</el-descriptions-item>
-          <el-descriptions-item label="슬립모드 진입시간">{{ settingInfoData[0]?.sleep_PERIOD }}</el-descriptions-item>
-          <el-descriptions-item label="Back Channel 버전">{{ settingInfoData[0]?.bc_VER }}</el-descriptions-item>
-          <el-descriptions-item label="Back Channel 주기">{{ settingInfoData[0]?.bc_PERIOD }}</el-descriptions-item>
-          <el-descriptions-item label="BC Sleep 주기">{{ settingInfoData[0]?.bc_SLEEP }}</el-descriptions-item>
-          <el-descriptions-item label="디바이스 IP">{{ settingInfoData[0]?.device_IP }}</el-descriptions-item>
-          <el-descriptions-item label="서버 IP">{{ settingInfoData[0]?.server_IP }}</el-descriptions-item>
-          <el-descriptions-item label="게이트웨이">{{ settingInfoData[0]?.gateway }}</el-descriptions-item>
-          <el-descriptions-item label="서브넷 마스크">{{ settingInfoData[0]?.sub_MASK }}</el-descriptions-item>
-          <el-descriptions-item label="TDMA">{{ settingInfoData[0]?.tdma }}</el-descriptions-item>
-          <el-descriptions-item label="포트 번호">{{ settingInfoData[0]?.port }}</el-descriptions-item>
-          <el-descriptions-item label="생성일">{{ formatDate(settingInfoData[0]?.create_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="생성자">{{ settingInfoData[0]?.create_ID }}</el-descriptions-item>
-          <el-descriptions-item label="수정일">{{ formatDate(settingInfoData[0]?.update_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="수정자">{{ settingInfoData[0]?.update_ID }}</el-descriptions-item>
+          <el-descriptions-item label="태그번호">{{ settingInfoData.ordNo }}</el-descriptions-item>
+          <el-descriptions-item label="하드웨어버전">{{ settingInfoData.hw_VER }}</el-descriptions-item>
+          <el-descriptions-item label="펌웨어버전">{{ settingInfoData.fw_VER }}</el-descriptions-item>
+          <el-descriptions-item label="LED ON 주기">{{ settingInfoData.led_SEC }}</el-descriptions-item>
+          <el-descriptions-item label="송신주기">{{ settingInfoData.ri_MS }}</el-descriptions-item>
+          <el-descriptions-item label="신호 강도">{{ settingInfoData.tx_POWER }}</el-descriptions-item>
+          <el-descriptions-item label="송신 방식">{{ settingInfoData.random_DV }}</el-descriptions-item>
+          <el-descriptions-item label="RF 프로파일">{{ settingInfoData.rf_PROFILE }}</el-descriptions-item>
+          <el-descriptions-item label="통신 채널">{{ settingInfoData.channel }}</el-descriptions-item>
+          <el-descriptions-item label="슬립모드">{{ settingInfoData.sleep_MODE }}</el-descriptions-item>
+          <el-descriptions-item label="슬립모드 강도">{{ settingInfoData.sleep_TH_HOLD }}</el-descriptions-item>
+          <el-descriptions-item label="RISM">{{ settingInfoData.sleep_INTERVAL }}</el-descriptions-item>
+          <el-descriptions-item label="슬립모드 진입시간">{{ settingInfoData.sleep_PERIOD }}</el-descriptions-item>
+          <el-descriptions-item label="Back Channel 버전">{{ settingInfoData.bc_VER }}</el-descriptions-item>
+          <el-descriptions-item label="Back Channel 주기">{{ settingInfoData.bc_PERIOD }}</el-descriptions-item>
+          <el-descriptions-item label="BC Sleep 주기">{{ settingInfoData.bc_SLEEP }}</el-descriptions-item>
+          <el-descriptions-item label="디바이스 IP">{{ settingInfoData.device_IP }}</el-descriptions-item>
+          <el-descriptions-item label="서버 IP">{{ settingInfoData.server_IP }}</el-descriptions-item>
+          <el-descriptions-item label="게이트웨이">{{ settingInfoData.gateway }}</el-descriptions-item>
+          <el-descriptions-item label="서브넷 마스크">{{ settingInfoData.sub_MASK }}</el-descriptions-item>
+          <el-descriptions-item label="TDMA">{{ settingInfoData.tdma }}</el-descriptions-item>
+          <el-descriptions-item label="포트 번호">{{ settingInfoData.port }}</el-descriptions-item>
+          <el-descriptions-item label="생성일">{{ formatDate(settingInfoData.create_DT) }}</el-descriptions-item>
+          <el-descriptions-item label="생성자">{{ settingInfoData.create_ID }}</el-descriptions-item>
+          <el-descriptions-item label="수정일">{{ formatDate(settingInfoData.update_DT) }}</el-descriptions-item>
+          <el-descriptions-item label="수정자">{{ settingInfoData.update_ID }}</el-descriptions-item>
         </el-descriptions>
       </div>
       <div v-else>
@@ -1076,6 +1076,7 @@ import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { QuestionFilled, Close, InfoFilled } from '@element-plus/icons-vue'
+import Header from './Header.vue'
 
 
 // Props
@@ -1140,7 +1141,7 @@ const pageSize = ref(10)
 const totalTagCount = ref(0)
 
 // 서브메뉴 관련 상태
-const currentSubMenu = ref('tag-proc-step')
+const currentSubMenu = ref(null)
 
 // 세팅정보 편집 모드 상태
 const isEditMode = ref(false)
@@ -1242,10 +1243,7 @@ async function doSearch() {
     }
     
     console.log('API 요청 파라미터:', params)
-    const res = await axios.get('/api/tags/getTagList', { params })
-    
-    console.log('API 응답 전체:', res)
-    console.log('API 응답 데이터:', res.data)
+    const res = await axios.get('/tags/getTagList', { params })
     
     // API 응답 구조에 맞게 데이터 추출
     let responseData = res.data
@@ -1453,7 +1451,7 @@ onMounted(() => {
 async function loadProcStepData(ordNo) {
   if (!ordNo) return
   try {
-    const res = await axios.get(`/api/tags/proc_step_${ordNo}`)
+    const res = await axios.get(`/tags/proc_step_${ordNo}`)
     procStepData.value = res.data.body || res.data
   } catch (error) {
     console.error('처리단계 조회 오류:', error)
@@ -1464,26 +1462,15 @@ async function loadProcStepData(ordNo) {
 async function loadSettingData(ordNo) {
   if (!ordNo) return
   try {
-    console.log('세팅정보 조회 시작:', ordNo)
-    const res = await axios.get(`/api/tags/setting_info_${ordNo}`)
-    console.log('세팅정보 응답:', res.data)
+    const res = await axios.get(`/tags/setting_info_${ordNo}`)
+    const data = res.data.body || res.data
     
-    // API 응답 구조에 맞게 데이터 추출
-    let responseData = res.data
-    
-    // 응답이 래핑된 경우 body에서 추출
-    if (responseData && typeof responseData === 'object' && responseData.body !== undefined) {
-      responseData = responseData.body
-      console.log('body에서 추출된 세팅정보:', responseData)
+    // 단일 객체를 배열로 감싸서 처리
+    if (data && !Array.isArray(data)) {
+      settingInfoData.value = [data]
+    } else {
+      settingInfoData.value = data || []
     }
-    
-    // 배열이 아닌 경우 배열로 변환
-    if (responseData && !Array.isArray(responseData)) {
-      responseData = [responseData]
-    }
-    
-    settingInfoData.value = responseData || []
-    console.log('설정된 세팅정보 데이터:', settingInfoData.value)
   } catch (error) {
     console.error('세팅정보 조회 오류:', error)
     ElMessage.error('세팅정보를 불러오는 중 오류가 발생했습니다.')
@@ -1494,7 +1481,7 @@ async function loadSettingData(ordNo) {
 async function loadVersionData(ordNo) {
   if (!ordNo) return
   try {
-    const res = await axios.get(`/api/tags/version-history/${ordNo}`)
+    const res = await axios.get(`/tags/version-history/${ordNo}`)
     versionHistoryData.value = res.data.body || res.data || []
   } catch (error) {
     console.error('버전 이력 조회 오류:', error)
@@ -1506,7 +1493,7 @@ async function loadCommonData(ordNo) {
   if (!ordNo) return
   try {
     console.log('공통정보 조회 시작:', ordNo)
-    const res = await axios.get(`/api/tags/common_history_${ordNo}`)
+    const res = await axios.get(`/tags/common_history_${ordNo}`)
     console.log('공통정보 응답:', res.data)
     
     let data = res.data.body || res.data
@@ -1526,7 +1513,7 @@ async function loadCommonData(ordNo) {
 async function loadAsData(ordNo) {
   if (!ordNo) return
   try {
-    const res = await axios.get(`/api/tags/prod_as_${ordNo}`)
+    const res = await axios.get(`/tags/prod_as_${ordNo}`)
     const data = res.data.body || res.data
     if (Array.isArray(data)) {
       asInfoData.value = data
@@ -1572,7 +1559,7 @@ async function searchProcStep() {
     return
   }
   try {
-    const res = await axios.get(`/api/tags/proc_step_${searchTagNo.value.trim()}`)
+    const res = await axios.get(`/tags/proc_step_${searchTagNo.value.trim()}`)
     console.log('처리단계 응답 데이터:', res.data)
     procStepData.value = res.data.body || res.data
     if (!procStepData.value) {
@@ -1590,10 +1577,18 @@ async function searchSettingInfo() {
     return
   }
   try {
-    const res = await axios.get(`/api/tags/setting_info_${searchTagNo.value.trim()}`)
+    const res = await axios.get(`/tags/setting_info_${searchTagNo.value.trim()}`)
     console.log('세팅정보 응답 데이터:', res.data)
-    settingInfoData.value = res.data.body || res.data
-    if (!settingInfoData.value) {
+    const data = res.data.body || res.data
+    
+    // 단일 객체를 배열로 감싸서 처리
+    if (data && !Array.isArray(data)) {
+      settingInfoData.value = [data]
+    } else {
+      settingInfoData.value = data || []
+    }
+    
+    if (!settingInfoData.value || settingInfoData.value.length === 0) {
       ElMessage.warning('해당 태그의 세팅정보가 없습니다.')
     }
     // 편집 모드 초기화
@@ -1602,6 +1597,7 @@ async function searchSettingInfo() {
   } catch (error) {
     console.error('세팅정보 조회 오류:', error)
     ElMessage.error('세팅정보를 불러오는 중 오류가 발생했습니다.')
+    settingInfoData.value = []
   }
 }
 
@@ -1637,18 +1633,33 @@ async function searchTagNumbers() {
   }
   
   try {
+    console.log('태그번호 검색 시작:', searchTagNo.value.trim())
     const res = await axios.get('/tags/tag-numbers', {
       params: { query: searchTagNo.value.trim() }
     })
+    console.log('태그번호 검색 응답:', res.data)
     const tagNumbers = res.data.body || res.data || []
+    console.log('태그번호 목록:', tagNumbers)
     
     // 태그번호 목록을 상세 정보와 함께 가져오기
     const detailedList = []
     for (const ordNo of tagNumbers) {
-      // MAC주소, 공장코드, 시리얼번호 추출
-      const macAddr = ordNo.substring(0, 12)
-      const facCd = ordNo.substring(12, 18)
-      const facNo = ordNo.substring(18)
+      // 태그번호가 20자리 이상인 경우에만 분해
+      let macAddr = ''
+      let facCd = ''
+      let facNo = ''
+      
+      if (ordNo && ordNo.length >= 20) {
+        // MAC주소 부분 (12자리)
+        macAddr = ordNo.substring(0, 12)
+        // 공장코드 부분 (6자리)
+        facCd = ordNo.substring(12, 18)
+        // 시리얼번호 부분 (나머지)
+        facNo = ordNo.substring(18)
+      } else {
+        // 20자리 미만인 경우 전체를 MAC주소로 처리
+        macAddr = ordNo || ''
+      }
       
       detailedList.push({
         tag_No: ordNo,
@@ -1658,6 +1669,7 @@ async function searchTagNumbers() {
       })
     }
     
+    console.log('상세 목록:', detailedList)
     tagNumberList.value = detailedList
     totalTagCount.value = detailedList.length
     
@@ -1849,13 +1861,13 @@ function deleteSettingInfo() {
     type: 'warning'
   }).then(async () => {
     try {
-      await axios.put(`/tags/update_setting_${settingInfoData.value.ordNo}`, {
+      await axios.put(`/tags/update_setting_${settingInfoData.value[0]?.ordNo}`, {
         status: 'Y',
         updateId: userInfo.value.user_id
       })
       ElMessage.success('세팅정보가 삭제되었습니다.')
       // 삭제 후 데이터 다시 로드
-      await loadSettingData(settingInfoData.value.ordNo)
+      await loadSettingData(settingInfoData.value[0]?.ordNo)
     } catch (error) {
       console.error('세팅정보 삭제 오류:', error)
       ElMessage.error('세팅정보 삭제 중 오류가 발생했습니다.')
@@ -2149,27 +2161,27 @@ async function saveSettingInfo() {
     
     // 전송할 데이터 준비
     const requestData = {
-      HW_VER: convertNullToEmpty(settingInfoData.value.hw_version),
-      FW_VER: convertNullToEmpty(settingInfoData.value.fw_version),
-      LED_SEC: convertNullToEmpty(settingInfoData.value.led_SEC),
-      RI_MS: convertNullToEmpty(settingInfoData.value.ri_MS),
-      TX_POWER: convertNullToEmpty(settingInfoData.value.tx_POWER),
-      RANDOM_DV: convertNullToEmpty(settingInfoData.value.random_DV),
-      RF_PROFILE: convertNullToEmpty(settingInfoData.value.rf_PROFILE),
-      CHANNEL: convertNullToEmpty(settingInfoData.value.channel),
-      SLEEP_MODE: convertNullToEmpty(settingInfoData.value.sleep_MODE),
-      SLEEP_TH_HOLD: convertNullToEmpty(settingInfoData.value.sleep_TH_HOLD),
-      SLEEP_INTERVAL: convertNullToEmpty(settingInfoData.value.sleep_INTERVAL),
-      SLEEP_PERIOD: convertNullToEmpty(settingInfoData.value.sleep_PERIOD),
-      BC_VER: convertNullToEmpty(settingInfoData.value.bc_VER),
-      BC_PERIOD: convertNullToEmpty(settingInfoData.value.bc_PERIOD),
-      BC_SLEEP: convertNullToEmpty(settingInfoData.value.bc_SLEEP),
-      DEVICE_IP: convertNullToEmpty(settingInfoData.value.device_IP),
-      SERVER_IP: convertNullToEmpty(settingInfoData.value.server_IP),
-      GATEWAY: convertNullToEmpty(settingInfoData.value.gateway),
-      SUB_MASK: convertNullToEmpty(settingInfoData.value.sub_MASK),
-      TDMA: convertNullToEmpty(settingInfoData.value.tdma),
-      PORT: convertNullToEmpty(settingInfoData.value.port)
+      HW_VER: convertNullToEmpty(settingInfoData.value[0]?.hw_version),
+      FW_VER: convertNullToEmpty(settingInfoData.value[0]?.fw_version),
+      LED_SEC: convertNullToEmpty(settingInfoData.value[0]?.led_SEC),
+      RI_MS: convertNullToEmpty(settingInfoData.value[0]?.ri_MS),
+      TX_POWER: convertNullToEmpty(settingInfoData.value[0]?.tx_POWER),
+      RANDOM_DV: convertNullToEmpty(settingInfoData.value[0]?.random_DV),
+      RF_PROFILE: convertNullToEmpty(settingInfoData.value[0]?.rf_PROFILE),
+      CHANNEL: convertNullToEmpty(settingInfoData.value[0]?.channel),
+      SLEEP_MODE: convertNullToEmpty(settingInfoData.value[0]?.sleep_MODE),
+      SLEEP_TH_HOLD: convertNullToEmpty(settingInfoData.value[0]?.sleep_TH_HOLD),
+      SLEEP_INTERVAL: convertNullToEmpty(settingInfoData.value[0]?.sleep_INTERVAL),
+      SLEEP_PERIOD: convertNullToEmpty(settingInfoData.value[0]?.sleep_PERIOD),
+      BC_VER: convertNullToEmpty(settingInfoData.value[0]?.bc_VER),
+      BC_PERIOD: convertNullToEmpty(settingInfoData.value[0]?.bc_PERIOD),
+      BC_SLEEP: convertNullToEmpty(settingInfoData.value[0]?.bc_SLEEP),
+      DEVICE_IP: convertNullToEmpty(settingInfoData.value[0]?.device_IP),
+      SERVER_IP: convertNullToEmpty(settingInfoData.value[0]?.server_IP),
+      GATEWAY: convertNullToEmpty(settingInfoData.value[0]?.gateway),
+      SUB_MASK: convertNullToEmpty(settingInfoData.value[0]?.sub_MASK),
+      TDMA: convertNullToEmpty(settingInfoData.value[0]?.tdma),
+      PORT: convertNullToEmpty(settingInfoData.value[0]?.port)
     }
     
     // JWT 토큰을 헤더에 포함
@@ -2179,7 +2191,7 @@ async function saveSettingInfo() {
     }
     
     // 수정된 데이터로 API 호출
-    const res = await axios.put(`/tags/update_setting_${settingInfoData.value.ordNo}`, requestData, { headers })
+    const res = await axios.put(`/tags/update_setting_${settingInfoData.value[0]?.ordNo}`, requestData, { headers })
     
     // 백엔드 응답 구조에 맞게 성공 체크
     if (res.data.statusCode === 'OK' || res.data.statusCodeValue === 200 || res.status === 200) {
@@ -2188,7 +2200,7 @@ async function saveSettingInfo() {
       isEditMode.value = false
       originalSettingData.value = null
       // 최신 데이터 다시 로드
-      await loadSettingData(settingInfoData.value.ordNo)
+      await loadSettingData(settingInfoData.value[0]?.ordNo)
     } else {
       ElMessage.error('세팅정보 수정에 실패했습니다.')
       console.error('수정 실패 응답:', res.data)
@@ -2210,46 +2222,6 @@ function getVersionDisplay(value) {
   // 이미 "v"로 시작하면 그대로 반환, 아니면 "v" 추가
   return value.startsWith('v') ? value : `v${value}`
 }
-
-// 사이드바 메뉴 선택 처리 함수
-function handleSidebarMenuSelect(menuKey) {
-  console.log('사이드바 메뉴 선택:', menuKey)
-  
-  // 서브메뉴 설정
-  switch (menuKey) {
-    case 'tag-search':
-    case 'tag-proc-step':
-      currentSubMenu.value = 'tag-proc-step'
-      break
-    case 'tag-setting':
-      currentSubMenu.value = 'tag-setting'
-      break
-    case 'tag-version':
-      currentSubMenu.value = 'tag-version'
-      break
-    case 'tag-common':
-      currentSubMenu.value = 'tag-common'
-      break
-    case 'tag-as':
-      currentSubMenu.value = 'tag-as'
-      break
-    default:
-      currentSubMenu.value = 'tag-proc-step'
-  }
-  
-  // 검색 조건 초기화
-  resetSearch()
-  
-  // 기존 데이터 초기화
-  tableData.value = []
-  procStepData.value = null
-  settingInfoData.value = []
-  versionHistoryData.value = []
-  commonHistoryData.value = []
-  asInfoData.value = []
-}
-
-
 </script>
 
 <style scoped>
