@@ -11,7 +11,6 @@ import com.example.tag_dev.SYSTEM.Repository.DeptRepository;
 import com.example.tag_dev.USER.DTO.UserDTO;
 import com.example.tag_dev.USER.Model.User;
 import com.example.tag_dev.USER.Repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -42,117 +41,6 @@ public class UserService {
         this.deptLogRepository = deptLogRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.passwordEncoder = passwordEncoder;
-    }
-
-    // ======================== 로그인 관련 ==============================//
-    // 로그인
-    public ResponseEntity<?> login(UserDTO userDTO, HttpServletRequest request) {
-        Optional<User> userOpt = userRepository.findByLoginId(userDTO.getLogin_id());
-
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            UserLog userLog = new UserLog();
-            boolean match = passwordEncoder.matches(userDTO.getPassword(), user.getPassword());
-            if (match) {
-                System.out.println("[로그인] 비밀번호 일치, 로그인 성공");
-                user.setFail_login_cnt(0L);
-                String token = jwtTokenProvider.generateToken(
-                        user.getUserName(),
-                        user.getUser_acl(),
-                        user.getUserId()
-                );
-                user.setJwt_token(token);
-                user.setLogin_dt(new Date());
-                long expiryMillis = System.currentTimeMillis() + 7L * 24 * 60;
-                Date expiryDate = new Date(expiryMillis);
-                user.setJwt_expiry_pt(expiryDate);
-
-                userRepository.save(user);
-
-                userLog.setLoginId(user.getLoginId());
-                userLog.setStatus("성공");
-                userLog.setIp_addr(getClientIP(request));
-                userLog.setHttp_refr(request.getHeader("referer"));
-                userLog.setRegDt(new Date());
-
-                userLogRepository.save(userLog);
-
-                return ResponseEntity.ok(Map.of(
-                        "token", token,
-                        "user_id", user.getUserId(),
-                        "user_name", user.getUserName(),
-                        "login_id", user.getLoginId(),
-                        "user_acl", user.getUser_acl(),
-                        "user_email", user.getUserEmail()
-                ));
-            } else {
-                long failCount = user.getFail_login_cnt() != null ? user.getFail_login_cnt() : 0L;
-                failCount++;
-                user.setFail_login_cnt(failCount);
-                if (failCount >= 5) {
-                    user.setUser_stat("LOCK");
-                    user.setUser_acl("0");
-                    userRepository.save(user);
-
-                    userLog.setLoginId(user.getLoginId());
-                    userLog.setStatus("잠김");
-                    userLog.setIp_addr(getClientIP(request));
-                    userLog.setHttp_refr(request.getHeader("referer"));
-                    userLog.setRegDt(new Date());
-
-                    userLogRepository.save(userLog);
-
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-                }
-                userRepository.save(user);
-
-                userLog.setLoginId(user.getLoginId());
-                userLog.setStatus("실패");
-                userLog.setIp_addr(getClientIP(request));
-                userLog.setHttp_refr(request.getHeader("referer"));
-                userLog.setRegDt(new Date());
-
-                userLogRepository.save(userLog);
-
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호 일치 하지 않음");
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 사용자");
-        }
-    }
-
-    // 로그아웃
-    public ResponseEntity<?> logout(String jwtToken, HttpServletRequest request) {
-        if (jwtTokenProvider.validateToken(jwtToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않는 토큰");
-        }
-        Long userId = jwtTokenProvider.extractUserId(jwtToken);
-        if (userId != null) {
-            Optional<User> userOpt = userRepository.findById(userId);
-            if (userOpt.isPresent()) {
-                User user = userOpt.get();
-                user.setJwt_token(null);
-                user.setJwt_expiry_pt(null);
-                userRepository.save(user);
-
-                UserLog userLog = new UserLog();
-
-                userLog.setLoginId(user.getLoginId());
-                userLog.setStatus("로그아웃");
-                userLog.setIp_addr(getClientIP(request));
-                userLog.setHttp_refr(request.getHeader("referer"));
-                userLog.setRegDt(new Date());
-
-                userLogRepository.save(userLog);
-
-            }
-        }
-        return ResponseEntity.ok("로그아웃 성공");
-    }
-
-    // ID 중복 확인
-    public Optional<User> checkLoginId(String loginId) {
-        return userRepository.findByLoginId(loginId);
     }
 
     // 아이디 찾기
@@ -460,30 +348,6 @@ public class UserService {
         deptLog.setUpdateUser(jwtTokenProvider.extractUserName(token));
 
         deptLogRepository.save(deptLog);
-    }
-
-    // IP 변환 메소드
-    public static String getClientIP(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            return ip.split(",")[0].trim();
-        }
-
-        ip = request.getHeader("X-Real-IP");
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            return ip;
-        }
-
-        ip = request.getHeader("Proxy-Client-IP");
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            return ip;
-        }
-
-        ip = request.getHeader("WL-Proxy-Client-IP"); // WebLogic
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            return ip;
-        }
-        return request.getRemoteAddr();
     }
 
 }

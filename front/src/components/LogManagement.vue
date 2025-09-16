@@ -273,13 +273,13 @@
 
         <!-- 태그 버전 로그 -->
         <template v-else-if="selectedLogType === 'version'">
-          <el-table-column prop="logseq" label="로그 ID" width="80" />
+          <el-table-column prop="logId" label="로그 ID" width="80" />
           <el-table-column prop="ordNo" label="태그 번호" width="200" />
-          <el-table-column prop="TAG_VER" label="태그 버전" width="120" />
-          <el-table-column prop="Status" label="상태" width="100">
+          <el-table-column prop="tagVer" label="태그 버전" width="120" />
+          <el-table-column prop="delRsn" label="상태" width="100">
             <template #default="scope">
-              <el-tag :type="getStatusType(scope.row.Status)">
-                {{ getStatusDisplay(scope.row.Status) }}
+              <el-tag :type="getStatusType(scope.row.delRsn)">
+                {{ getStatusDisplay(scope.row.delRsn) }}
               </el-tag>
             </template>
           </el-table-column>
@@ -288,12 +288,12 @@
               {{ formatDate(scope.row.createDt) }}
             </template>
           </el-table-column>
-          <el-table-column prop="UPDATE_DT" label="수정일시" width="160">
+          <el-table-column prop="updateDt" label="수정일시" width="160">
             <template #default="scope">
-              {{ formatDate(scope.row.UPDATE_DT) }}
+              {{ formatDate(scope.row.updateDt) }}
             </template>
           </el-table-column>
-          <el-table-column prop="UPDATE_ID" label="수정자" width="100" />
+          <el-table-column prop="updateId" label="수정자" width="100" />
         </template>
       </el-table>
       

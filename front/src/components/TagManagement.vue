@@ -90,16 +90,16 @@
         </div>
         <el-descriptions :column="2" border>
           <el-descriptions-item label="태그번호">{{ procStepData.ordNo }}</el-descriptions-item>
-          <el-descriptions-item label="입고일">{{ formatDate(procStepData.receipt_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="납품일">{{ formatDate(procStepData.delivery_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="연구소 검수일">{{ formatDate(procStepData.lab_INSP_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="연구소 검수소견">{{ procStepData.lab_INSP_DESC }}</el-descriptions-item>
-          <el-descriptions-item label="융합기술팀 검수일">{{ formatDate(procStepData.tech_INSP_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="융합기술팀 검수소견">{{ procStepData.tech_INSP_DESC }}</el-descriptions-item>
-          <el-descriptions-item label="생성일">{{ formatDate(procStepData.create_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="생성자">{{ procStepData.create_ID }}</el-descriptions-item>
-          <el-descriptions-item label="수정일">{{ formatDate(procStepData.update_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="수정자">{{ procStepData.update_ID }}</el-descriptions-item>
+          <el-descriptions-item label="입고일">{{ formatDate(procStepData.receipt_dt) }}</el-descriptions-item>
+          <el-descriptions-item label="납품일">{{ formatDate(procStepData.delivery_dt) }}</el-descriptions-item>
+          <el-descriptions-item label="연구소 검수일">{{ formatDate(procStepData.lab_insp_dt) }}</el-descriptions-item>
+          <el-descriptions-item label="연구소 검수소견">{{ procStepData.lab_insp_desc }}</el-descriptions-item>
+          <el-descriptions-item label="융합기술팀 검수일">{{ formatDate(procStepData.tech_inst_dt) }}</el-descriptions-item>
+          <el-descriptions-item label="융합기술팀 검수소견">{{ procStepData.tech_inst_desc }}</el-descriptions-item>
+          <el-descriptions-item label="생성일">{{ formatDate(procStepData.create_dt) }}</el-descriptions-item>
+          <el-descriptions-item label="생성자">{{ procStepData.create_id }}</el-descriptions-item>
+          <el-descriptions-item label="수정일">{{ formatDate(procStepData.update_dt) }}</el-descriptions-item>
+          <el-descriptions-item label="수정자">{{ procStepData.update_id }}</el-descriptions-item>
         </el-descriptions>
       </div>
     </div>
@@ -286,7 +286,7 @@
               size="small"
               placeholder="서버 IP"
             />
-            <span v-else>{{ settingInfoData[0]?.server_IP }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.server_IP) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="디바이스 IP">
@@ -296,143 +296,167 @@
               size="small"
               placeholder="디바이스 IP"
             />
-            <span v-else>{{ settingInfoData.device_IP }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.device_IP) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="게이트웨이">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData.gateway" 
+              v-model="settingInfoData[0].gateway"
               size="small"
               placeholder="게이트웨이"
             />
-            <span v-else>{{ settingInfoData.gateway }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.gateway) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="서브넷 마스크">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData.sub_MASK" 
+              v-model="settingInfoData[0].sub_MASK"
               size="small"
               placeholder="서브넷 마스크"
             />
-            <span v-else>{{ settingInfoData.sub_MASK }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.sub_MASK) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="포트">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData.port" 
+              v-model="settingInfoData[0].port"
               size="small"
               placeholder="포트"
             />
-            <span v-else>{{ settingInfoData.port }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.port) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="BC 버전">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData.bc_VER" 
+              v-model="settingInfoData[0].bc_VER"
               size="small"
               placeholder="BC 버전 (예: 1.0)"
             />
-            <span v-else>{{ getVersionDisplay(settingInfoData.bc_VER) }}</span>
+            <span v-else>{{ getVersionDisplay(settingInfoData[0]?.bc_VER) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="BC 주기">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData.bc_PERIOD" 
+              v-model="settingInfoData[0].bc_PERIOD"
               size="small"
               placeholder="BC 주기"
             />
-            <span v-else>{{ settingInfoData.bc_PERIOD }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.bc_PERIOD) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="BC 슬립">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData.bc_SLEEP" 
+              v-model="settingInfoData[0].bc_SLEEP"
               size="small"
               placeholder="BC 슬립"
             />
-            <span v-else>{{ settingInfoData.bc_SLEEP }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.bc_SLEEP) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="슬립 모드">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData.sleep_MODE" 
+              v-model="settingInfoData[0].sleep_MODE"
               size="small"
               placeholder="슬립 모드"
             />
-            <span v-else>{{ settingInfoData.sleep_MODE }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.sleep_MODE) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="슬립 주기">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData.sleep_PERIOD" 
+              v-model="settingInfoData[0].sleep_PERIOD"
               size="small"
               placeholder="슬립 주기"
             />
-            <span v-else>{{ settingInfoData.sleep_PERIOD }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.sleep_PERIOD) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="슬립 간격">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData.sleep_INTERVAL" 
+              v-model="settingInfoData[0].sleep_INTERVAL"
               size="small"
               placeholder="슬립 간격"
             />
-            <span v-else>{{ settingInfoData.sleep_INTERVAL }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.sleep_INTERVAL) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="슬립 임계값">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData.sleep_TH_HOLD" 
+              v-model="settingInfoData[0].sleep_TH_HOLD"
               size="small"
               placeholder="슬립 임계값"
             />
-            <span v-else>{{ settingInfoData.sleep_TH_HOLD }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.sleep_TH_HOLD) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="TDMA">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData.tdma" 
+              v-model="settingInfoData[0].tdma"
               size="small"
               placeholder="TDMA"
             />
-            <span v-else>{{ settingInfoData.tdma }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.tdma) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="상태">
             <el-input 
               v-if="isEditMode" 
-              v-model="settingInfoData.status" 
+              v-model="settingInfoData[0].status"
               size="small"
               placeholder="상태"
             />
-            <span v-else>{{ settingInfoData.status }}</span>
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.status) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="생성일">
-            <span>{{ formatDate(settingInfoData.create_DT) }}</span>
+            <el-input
+                v-if="isEditMode"
+                v-model="settingInfoData[0].create_DT"
+                size="small"
+                placeholder="생성일"
+            />
+            <span v-else>{{ formatDate(settingInfoData[0]?.create_DT) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="생성자">
-            <span>{{ settingInfoData.create_ID }}</span>
+            <el-input
+            v-if="isEditMode"
+            v-model="settingInfoData[0].create_ID"
+            size="small"
+            placeholder="생성자"
+            />
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.create_ID) }}</span>
           </el-descriptions-item>
           
           <el-descriptions-item label="수정일">
-            <span>{{ formatDate(settingInfoData.update_DT) }}</span>
+            <el-input
+                v-if="isEditMode"
+                v-model="settingInfoData[0].update_DT"
+                size="small"
+                placeholder="수정일"
+            />
+            <span v-else>{{ formatDate(settingInfoData[0].update_DT) }}</span>
           </el-descriptions-item>
-          
+
           <el-descriptions-item label="수정자">
-            <span>{{ settingInfoData.update_ID }}</span>
+            <el-input
+                v-if="isEditMode"
+                v-model="settingInfoData[0].update_ID"
+                size="small"
+                placeholder="수정자"
+            />
+            <span v-else>{{ getDisplayValue(settingInfoData[0]?.update_ID) }}</span>
           </el-descriptions-item>
         </el-descriptions>
       </div>
@@ -809,16 +833,16 @@
       <div v-if="procStepData">
         <el-descriptions :column="2" border>
           <el-descriptions-item label="태그번호">{{ procStepData.ordNo }}</el-descriptions-item>
-          <el-descriptions-item label="입고일">{{ formatDate(procStepData.receipt_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="납품일">{{ formatDate(procStepData.delivery_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="연구소 검수일">{{ formatDate(procStepData.lab_INSP_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="연구소 검수소견">{{ procStepData.lab_INSP_DESC }}</el-descriptions-item>
-          <el-descriptions-item label="융합기술팀 검수일">{{ formatDate(procStepData.tech_INSP_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="융합기술팀 검수소견">{{ procStepData.tech_INSP_DESC }}</el-descriptions-item>
-          <el-descriptions-item label="생성일">{{ formatDate(procStepData.create_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="생성자">{{ procStepData.create_ID }}</el-descriptions-item>
-          <el-descriptions-item label="수정일">{{ formatDate(procStepData.update_DT) }}</el-descriptions-item>
-          <el-descriptions-item label="수정자">{{ procStepData.update_ID }}</el-descriptions-item>
+          <el-descriptions-item label="입고일">{{ formatDate(procStepData.receipt_dt) }}</el-descriptions-item>
+          <el-descriptions-item label="납품일">{{ formatDate(procStepData.delivery_dt) }}</el-descriptions-item>
+          <el-descriptions-item label="연구소 검수일">{{ formatDate(procStepData.lab_insp_dt) }}</el-descriptions-item>
+          <el-descriptions-item label="연구소 검수소견">{{ procStepData.lab_insp_desc }}</el-descriptions-item>
+          <el-descriptions-item label="융합기술팀 검수일">{{ formatDate(procStepData.tech_inst_dt) }}</el-descriptions-item>
+          <el-descriptions-item label="융합기술팀 검수소견">{{ procStepData.tech_inst_desc }}</el-descriptions-item>
+          <el-descriptions-item label="생성일">{{ formatDate(procStepData.create_dt) }}</el-descriptions-item>
+          <el-descriptions-item label="생성자">{{ procStepData.create_id }}</el-descriptions-item>
+          <el-descriptions-item label="수정일">{{ formatDate(procStepData.update_dt) }}</el-descriptions-item>
+          <el-descriptions-item label="수정자">{{ procStepData.update_id }}</el-descriptions-item>
         </el-descriptions>
       </div>
       <div v-else>

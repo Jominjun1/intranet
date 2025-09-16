@@ -211,7 +211,7 @@ async function findId() {
       params: findIdForm 
     })
     if (response.data) {
-      ElMessage.success(`찾은 아이디: ${response.data.login_id}`)
+      ElMessage.success(`찾은 아이디: ${response.data.loginId}`)
     } else {
       ElMessage.warning('일치하는 정보가 없습니다.')
     }
@@ -225,7 +225,7 @@ async function findPassword() {
   try {
     const response = await axios.put('/user/findPassword', findPasswordForm)
     if (response.data) {
-      ElMessage.success('비밀번호 찾기 요청이 완료되었습니다.')
+      ElMessage.success(`찾은 비밀번호: ${response.data.password}`)
     } else {
       ElMessage.warning('일치하는 정보가 없습니다.')
     }

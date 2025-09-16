@@ -51,6 +51,4 @@ public class User {
     @Column(name= "Status")
     private String Status; // 삭제여부
 
-    private String jwt_token; // JWT 토큰
-    private Date jwt_expiry_pt; // JWT 만료일자
 }

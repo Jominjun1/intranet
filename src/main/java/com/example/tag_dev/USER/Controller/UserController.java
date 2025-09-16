@@ -1,8 +1,10 @@
 package com.example.tag_dev.USER.Controller;
 
 import com.example.tag_dev.USER.DTO.UserDTO;
+import com.example.tag_dev.USER.Service.AuthService;
 import com.example.tag_dev.USER.Service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +18,11 @@ public class UserController {
 
     @Autowired
     private final UserService userService;
+    private final AuthService authService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthService authService) {
         this.userService = userService;
+        this.authService = authService;
     }
 
     // ID 찾기
@@ -36,22 +40,23 @@ public class UserController {
     @GetMapping("/checkID")
     public ResponseEntity<?> checkID(@RequestParam String loginId) {
         log.info("로그인 ID 중복 체크 : {}", loginId);
-        return ResponseEntity.ok(userService.checkLoginId(loginId));
+        return ResponseEntity.ok(authService.checkLoginId(loginId));
     }
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDTO userDTO, HttpServletRequest request) {
+    public ResponseEntity<?> login(@RequestBody UserDTO userDTO, HttpServletRequest request , HttpServletResponse response) {
         log.info("로그인 요청 : {}", userDTO.getLogin_id());
-        return userService.login(userDTO, request);
+        return authService.login(userDTO, request, response);
     }
 
     // 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String jwtToken, HttpServletRequest request) {
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String jwtToken, HttpServletRequest request
+    , HttpServletResponse response) {
         log.info("로그아웃 요청");
         String token = jwtToken.startsWith("Bearer ") ? jwtToken.substring(7) : jwtToken;
-        return ResponseEntity.ok(userService.logout(token, request));
+        return ResponseEntity.ok(authService.logout(token, request , response));
     }
 
     // 비밀번호 변경

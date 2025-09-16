@@ -10,6 +10,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class JwtTokenProvider {
@@ -31,29 +32,26 @@ public class JwtTokenProvider {
         map.put("user_id", userId);
 
         Long validityInMilliseconds = jwtConfig.getValidityInMilliseconds();
-        try {
-            return Jwts.builder()
-                    .setClaims(map)
-                    .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + validityInMilliseconds))
-                    .signWith(secretKey, SignatureAlgorithm.HS256)
-                    .compact();
-        } catch (Exception e) {
-            throw new RuntimeException("토큰 생성 실패", e);
-        }
+        return Jwts.builder()
+                .setClaims(map)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + validityInMilliseconds))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // Refresh 토큰 발급
+    public String generateRefreshToken() {
+        return UUID.randomUUID().toString();
     }
 
     // 토큰 검증
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+            return true;
+        } catch (JwtException e) {
             return false;
-        } catch (ExpiredJwtException e) {
-            System.err.println("토큰 만료: " + e.getMessage());
-            return true;
-        } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {
-            System.err.println("잘못된 토큰: " + e.getMessage());
-            return true;
         }
     }
 
@@ -68,12 +66,8 @@ public class JwtTokenProvider {
     }
 
     public Long extractUserId(String token) {
-        try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
-            return (Long) claims.get("user_id");
-        } catch (Exception e) {
-            return null;
-        }
+        return ((Number) Jwts.parserBuilder().setSigningKey(secretKey).build()
+                .parseClaimsJws(token).getBody().get("user_id")).longValue();
     }
 
     public String extractUserName(String token) {

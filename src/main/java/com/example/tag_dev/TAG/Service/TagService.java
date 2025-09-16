@@ -256,11 +256,6 @@ public class TagService {
         }
     }
 
-    // null이 아닌 프로퍼티만 가져오는 헬퍼 메서드
-    private String[] getNullPropertyNames(Object source) {
-        return getStrings(source);
-    }
-
     // 세팅정보 로그 생성 헬퍼 메서드
     private void createSettingInfoLog(String ordNo, TagSettingDTO dto, Long userId) {
         SettingInfoLog settingInfoLog = new SettingInfoLog();

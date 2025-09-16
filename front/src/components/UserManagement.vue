@@ -20,8 +20,8 @@
         <el-form-item label="로그인ID">
           <el-input v-model="searchLoginId" placeholder="로그인ID 입력" clearable />
         </el-form-item>
-        <el-form-item label="부서코드">
-          <el-input v-model="searchDeptCd" placeholder="부서코드 입력" clearable />
+        <el-form-item label="부서">
+          <el-input v-model="searchDeptCd" placeholder="부서 입력" clearable />
         </el-form-item>
         <el-form-item label="권한">
           <el-select v-model="searchAcl" placeholder="권한 선택" clearable style="width: 150px;">
@@ -61,7 +61,7 @@
         <el-table-column prop="loginId" label="로그인ID" width="100" />
         <el-table-column prop="userEmail" label="이메일" width="180" />
         <el-table-column prop="userPhoneNum" label="전화번호" width="120" />
-        <el-table-column prop="dept_cd" label="부서코드" width="80" />
+        <el-table-column prop="dept_cd" label="부서" width="80" />
         <el-table-column prop="user_job" label="직책" width="80" />
         <el-table-column prop="user_acl" label="권한" width="80">
           <template #default="{ row }">
@@ -140,7 +140,7 @@
           <ul>
             <li><strong>이름:</strong> 사용자의 이름으로 검색할 수 있습니다.</li>
             <li><strong>로그인ID:</strong> 사용자의 로그인 ID로 검색할 수 있습니다.</li>
-            <li><strong>부서코드:</strong> 사용자의 부서 코드로 검색할 수 있습니다.</li>
+            <li><strong>부서:</strong> 사용자의 부서로 검색할 수 있습니다.</li>
             <li><strong>권한:</strong> 관리자, 일반사용자, 잠금 상태로 필터링할 수 있습니다.</li>
             <li><strong>상태:</strong> 활성, 비활성 상태로 필터링할 수 있습니다.</li>
           </ul>
@@ -208,8 +208,8 @@
         <el-form-item label="전화번호" prop="user_phone_num">
           <el-input v-model="userForm.user_phone_num" placeholder="전화번호를 입력하세요" />
         </el-form-item>
-        <el-form-item label="부서코드" prop="dept_cd">
-          <el-input v-model="userForm.dept_cd" placeholder="부서코드를 입력하세요" />
+        <el-form-item label="부서" prop="dept_cd">
+          <el-input v-model="userForm.dept_cd" placeholder="부서를 입력하세요" />
         </el-form-item>
         <el-form-item label="직책" prop="user_job">
           <el-input v-model="userForm.user_job" placeholder="직책을 입력하세요" />
