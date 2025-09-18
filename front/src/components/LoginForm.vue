@@ -92,9 +92,6 @@
         <el-form-item label="아이디">
           <el-input v-model="findPasswordForm.login_id" placeholder="아이디를 입력하세요" />
         </el-form-item>
-        <el-form-item label="새 비밀번호">
-          <el-input v-model="findPasswordForm.password" type="password" placeholder="새 비밀번호를 입력하세요" show-password />
-        </el-form-item>
         <el-form-item label="이메일">
           <el-input v-model="findPasswordForm.user_email" placeholder="이메일을 입력하세요" />
         </el-form-item>
@@ -115,7 +112,7 @@
 <script setup>
 import {onMounted, reactive, ref} from 'vue'
 import {ElMessage} from 'element-plus'
-import axios from 'axios'
+import api from '../utils/axios.js'
 import loginBg from '../image/login_img.jpg'
 import '../css/LoginForm.css'
 
@@ -166,7 +163,7 @@ async function handleLogin() {
     await loginFormRef.value.validate()
     loading.value = true
     
-    const response = await axios.post('/user/login', loginForm)
+    const response = await api.post('/user/login', loginForm)
     
     if (response.data) {
       // 로그인 성공 시 아이디 저장 처리
@@ -177,15 +174,11 @@ async function handleLogin() {
         localStorage.removeItem('saved_login_id')
         localStorage.removeItem('remember_id')
       }
-      
-      sessionStorage.setItem('jwt_token', response.data.token)
-      sessionStorage.setItem('user_info', JSON.stringify({
-        user_id: response.data.user_id,
-        user_name: response.data.user_name,
-        login_id: response.data.login_id,
-        user_acl: response.data.user_acl,
-        user_email: response.data.user_email
-      }))
+      const tokenData = response.data?.data || response.data || {}
+
+      // 쿠키 기반 인증으로 변경 - 백엔드에서 httpOnly 쿠키로 토큰 관리
+      // 클라이언트에서는 토큰을 저장하지 않음
+
       
       ElMessage.success('로그인 성공')
       emit('login-success', response.data)
@@ -207,11 +200,11 @@ async function handleLogin() {
 
 async function findId() {
   try {
-    const response = await axios.get('/user/findID', { 
+    const response = await api.get('/user/findID', {
       params: findIdForm 
     })
     if (response.data) {
-      ElMessage.success(`찾은 아이디: ${response.data.loginId}`)
+      ElMessage.success(`찾은 아이디: ${response.data}`)
     } else {
       ElMessage.warning('일치하는 정보가 없습니다.')
     }
@@ -223,9 +216,9 @@ async function findId() {
 
 async function findPassword() {
   try {
-    const response = await axios.put('/user/findPassword', findPasswordForm)
+    const response = await api.put('/user/findPassword', findPasswordForm)
     if (response.data) {
-      ElMessage.success(`찾은 비밀번호: ${response.data.password}`)
+      ElMessage.success(`찾은 비밀번호: ${response.data}`)
     } else {
       ElMessage.warning('일치하는 정보가 없습니다.')
     }

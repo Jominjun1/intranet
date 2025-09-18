@@ -76,6 +76,51 @@ button:focus-visible {
   background-color: #f8f9fa;
 }
 
+/* 전역 테이블 스타일 */
+.el-table {
+  border: 1px solid #ebeef5;
+}
+
+.el-table .cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 8px 12px;
+}
+
+.el-table .el-table__cell {
+  padding: 0;
+}
+
+.el-table .cell:hover {
+  white-space: normal;
+  word-break: break-all;
+  background-color: #f5f7fa;
+  z-index: 10;
+  position: relative;
+}
+
+/* 테이블 컬럼 크기 조정 핸들 스타일 */
+.el-table__header-wrapper .el-table__header th {
+  position: relative;
+}
+
+.el-table__header-wrapper .el-table__header th::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: transparent;
+  cursor: col-resize;
+  z-index: 1;
+}
+
+.el-table__header-wrapper .el-table__header th:hover::after {
+  background: #409eff;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

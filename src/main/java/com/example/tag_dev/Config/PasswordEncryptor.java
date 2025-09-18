@@ -2,23 +2,18 @@ package com.example.tag_dev.Config;
 
 import com.example.tag_dev.USER.Model.User;
 import com.example.tag_dev.USER.Repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Component
 public class PasswordEncryptor {
 
-    @Autowired
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public PasswordEncryptor(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public void encryptAllAdminPasswords() {
         List<User> users = userRepository.findAll();

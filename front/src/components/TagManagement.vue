@@ -53,12 +53,12 @@
       <!-- 태그 검색 결과 테이블 -->
       <div v-if="tableData.length > 0">
         <h3>검색된 태그 목록</h3>
-        <el-table :data="tableData" style="width:100%" v-loading="loading">
-          <el-table-column prop="tag_No" label="태그번호" width="150" />
-          <el-table-column prop="mac_Addr" label="MAC주소" width="150" />
-          <el-table-column prop="fac_Cd" label="공장코드" width="100" />
-          <el-table-column prop="fac_No" label="시리얼번호" width="120" />
-          <el-table-column prop="Status" label="삭제여부" width="100">
+        <el-table :data="paginatedData" style="width:100%" v-loading="loading" border resizable>
+          <el-table-column prop="tag_No" label="태그번호" width="150" resizable />
+          <el-table-column prop="mac_Addr" label="MAC주소" width="150" resizable />
+          <el-table-column prop="fac_Cd" label="공장코드" width="100" resizable />
+          <el-table-column prop="fac_No" label="시리얼번호" width="120" resizable />
+          <el-table-column prop="Status" label="삭제여부" width="100" resizable>
             <template #default="{ row }">
               <el-tag :type="row.Status === 'Y' ? 'danger' : 'success'">
                 {{ row.Status === 'Y' ? '삭제됨' : '사용중' }}
@@ -84,8 +84,14 @@
         <div class="result-header">
           <h3>처리단계 정보</h3>
           <div class="action-buttons" v-if="userAcl >= 2">
-            <el-button type="primary" @click="editProcStep">수정</el-button>
-            <el-button type="danger" @click="deleteProcStep">삭제</el-button>
+            <el-button type="primary" @click="editProcStep">
+              <el-icon><Edit /></el-icon>
+              수정
+            </el-button>
+            <el-button type="danger" @click="deleteProcStep">
+              <el-icon><Delete /></el-icon>
+              삭제
+            </el-button>
           </div>
         </div>
         <el-descriptions :column="2" border>
@@ -131,12 +137,12 @@
       <!-- 태그번호 검색 결과 -->
       <div v-if="tagNumberList.length > 0" class="tag-search-results">
         <h3>검색된 태그번호 목록 (총 {{ totalTagCount }}개)</h3>
-        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber">
-          <el-table-column prop="tag_No" label="태그번호" width="300" align="center" />
-          <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" />
-          <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" />
-          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" />
-          <el-table-column label="작업" width="120" align="center">
+        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber" border resizable>
+          <el-table-column prop="tag_No" label="태그번호" width="300" align="center" resizable />
+          <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" resizable />
+          <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" resizable />
+          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" resizable />
+          <el-table-column label="작업" width="120" align="center" resizable>
             <template #default="{ row }">
               <el-button size="small" type="primary" @click.stop="selectTagNumber(row)">선택</el-button>
             </template>
@@ -166,6 +172,7 @@
               :type="isEditMode ? 'success' : 'primary'" 
               @click="toggleEditMode"
             >
+              <el-icon><Edit /></el-icon>
               {{ isEditMode ? '저장' : '수정모드' }}
             </el-button>
             <el-button 
@@ -173,9 +180,13 @@
               type="warning" 
               @click="cancelEdit"
             >
+              <el-icon><Close /></el-icon>
               취소
             </el-button>
-            <el-button type="danger" @click="deleteSettingInfo">삭제</el-button>
+            <el-button type="danger" @click="deleteSettingInfo">
+              <el-icon><Delete /></el-icon>
+              삭제
+            </el-button>
           </div>
         </div>
         
@@ -489,12 +500,12 @@
       <!-- 태그번호 검색 결과 -->
       <div v-if="tagNumberList.length > 0" class="tag-search-results">
         <h3>검색된 태그번호 목록 (총 {{ totalTagCount }}개)</h3>
-        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber">
-          <el-table-column prop="tag_No" label="태그번호" width="300" align="center" />
-          <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" />
-          <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" />
-          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" />
-          <el-table-column label="작업" width="120" align="center">
+        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber" border resizable>
+          <el-table-column prop="tag_No" label="태그번호" width="300" align="center" resizable />
+          <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" resizable />
+          <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" resizable />
+          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" resizable />
+          <el-table-column label="작업" width="120" align="center" resizable>
             <template #default="{ row }">
               <el-button size="small" type="primary" @click.stop="selectTagNumber(row)">선택</el-button>
             </template>
@@ -520,19 +531,22 @@
         <div class="result-header">
           <h3>버전 이력</h3>
           <div class="action-buttons" v-if="userAcl >= 2">
-            <el-button type="primary" @click="addNewVersion">새 버전 등록</el-button>
+            <el-button type="primary" @click="addNewVersion">
+              <el-icon><Plus /></el-icon>
+              새 버전 등록
+            </el-button>
           </div>
         </div>
-        <el-table :data="versionHistoryData || []" style="width: 100%">
-          <el-table-column prop="tag_version" label="버전" width="100" />
-          <el-table-column prop="HW_VERSION" label="하드웨어버전" width="120" />
-          <el-table-column prop="FW_VERSION" label="펌웨어버전" width="120" />
-          <el-table-column prop="create_Dt" label="생성일" width="120">
+        <el-table :data="versionHistoryData || []" style="width: 100%" border resizable>
+          <el-table-column prop="tag_version" label="버전" width="100" resizable />
+          <el-table-column prop="HW_VERSION" label="하드웨어버전" width="120" resizable />
+          <el-table-column prop="FW_VERSION" label="펌웨어버전" width="120" resizable />
+          <el-table-column prop="create_Dt" label="생성일" width="120" resizable>
             <template #default="{ row }">
               {{ formatDate(row.create_Dt) }}
             </template>
           </el-table-column>
-          <el-table-column prop="create_Id" label="생성자" width="100" />
+          <el-table-column prop="create_Id" label="생성자" width="100" resizable />
         </el-table>
       </div>
     </div>
@@ -564,12 +578,12 @@
       <!-- 태그번호 검색 결과 -->
       <div v-if="tagNumberList.length > 0" class="tag-search-results">
         <h3>검색된 태그번호 목록 (총 {{ totalTagCount }}개)</h3>
-        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber">
-          <el-table-column prop="tag_No" label="태그번호" width="300" align="center" />
-          <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" />
-          <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" />
-          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" />
-          <el-table-column label="작업" width="120" align="center">
+        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber" border resizable>
+          <el-table-column prop="tag_No" label="태그번호" width="300" align="center" resizable />
+          <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" resizable />
+          <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" resizable />
+          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" resizable />
+          <el-table-column label="작업" width="120" align="center" resizable>
             <template #default="{ row }">
               <el-button size="small" type="primary" @click.stop="selectTagNumber(row)">선택</el-button>
             </template>
@@ -597,25 +611,28 @@
         <div class="result-header">
           <h3>공통정보</h3>
           <div class="action-buttons" v-if="userAcl >= 2">
-            <el-button type="primary" @click="addNewCommon">새 공통정보 등록</el-button>
+            <el-button type="primary" @click="addNewCommon">
+              <el-icon><Plus /></el-icon>
+              새 공통정보 등록
+            </el-button>
           </div>
         </div>
-        <el-table :data="Array.isArray(commonHistoryData) ? commonHistoryData : [commonHistoryData]" style="width: 100%">
-          <el-table-column prop="mac_ADDR" label="MAC주소" width="180" />
-          <el-table-column prop="fac_CD" label="공장코드" width="100" />
-          <el-table-column prop="fac_NO" label="시리얼번호" width="100" />
-          <el-table-column prop="create_DT" label="생성일" width="140">
+        <el-table :data="Array.isArray(commonHistoryData) ? commonHistoryData : [commonHistoryData]" style="width: 100%" border resizable>
+          <el-table-column prop="mac_ADDR" label="MAC주소" width="180" resizable />
+          <el-table-column prop="fac_CD" label="공장코드" width="100" resizable />
+          <el-table-column prop="fac_NO" label="시리얼번호" width="100" resizable />
+          <el-table-column prop="create_DT" label="생성일" width="140" resizable>
             <template #default="{ row }">
               {{ formatDate(row.create_DT) }}
             </template>
           </el-table-column>
-          <el-table-column prop="create_ID" label="생성자" width="80" />
-          <el-table-column prop="update_DT" label="수정일" width="140">
+          <el-table-column prop="create_ID" label="생성자" width="80" resizable />
+          <el-table-column prop="update_DT" label="수정일" width="140" resizable>
             <template #default="{ row }">
               {{ formatDate(row.update_DT) }}
             </template>
           </el-table-column>
-          <el-table-column prop="update_ID" label="수정자" width="80" />
+          <el-table-column prop="update_ID" label="수정자" width="80" resizable />
         </el-table>
       </div>
       
@@ -659,12 +676,12 @@
       <!-- 태그번호 검색 결과 -->
       <div v-if="tagNumberList.length > 0" class="tag-search-results">
         <h3>검색된 태그번호 목록 (총 {{ totalTagCount }}개)</h3>
-        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber">
-          <el-table-column prop="tag_No" label="태그번호" width="300" align="center" />
-          <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" />
-          <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" />
-          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" />
-          <el-table-column label="작업" width="120" align="center">
+        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber" border resizable>
+          <el-table-column prop="tag_No" label="태그번호" width="300" align="center" resizable />
+          <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" resizable />
+          <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" resizable />
+          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" resizable />
+          <el-table-column label="작업" width="120" align="center" resizable>
             <template #default="{ row }">
               <el-button size="small" type="primary" @click.stop="selectTagNumber(row)">선택</el-button>
             </template>
@@ -690,23 +707,23 @@
       <!-- AS이력 조회 결과 -->
       <div v-if="asInfoData && asInfoData.length > 0" class="result-section">
         <h3>AS 이력</h3>
-        <el-table :data="asInfoData" style="width: 100%">
-          <el-table-column prop="as_Cnt" label="AS 횟수" width="80" align="center" />
-          <el-table-column prop="mac_ADDR" label="MAC주소" width="150" align="center" />
-          <el-table-column prop="as_Doc" label="AS 문서번호" width="120" align="center" />
-          <el-table-column prop="occr_Dt" label="AS 발생일" width="120" align="center">
+        <el-table :data="asInfoData" style="width: 100%" border resizable>
+          <el-table-column prop="as_Cnt" label="AS 횟수" width="80" align="center" resizable />
+          <el-table-column prop="mac_ADDR" label="MAC주소" width="150" align="center" resizable />
+          <el-table-column prop="as_Doc" label="AS 문서번호" width="120" align="center" resizable />
+          <el-table-column prop="occr_Dt" label="AS 발생일" width="120" align="center" resizable>
             <template #default="{ row }">
               {{ formatDate(row.occr_Dt) }}
             </template>
           </el-table-column>
-          <el-table-column prop="occr_RSN" label="AS 발생사유" width="150" align="center" />
-          <el-table-column prop="close_Dt" label="AS 종결일" width="120" align="center">
+          <el-table-column prop="occr_RSN" label="AS 발생사유" width="150" align="center" resizable />
+          <el-table-column prop="close_Dt" label="AS 종결일" width="120" align="center" resizable>
             <template #default="{ row }">
               {{ formatDate(row.close_Dt) }}
             </template>
           </el-table-column>
-          <el-table-column prop="close_RSLT" label="AS 처리 결과" width="150" align="center" />
-          <el-table-column prop="delivery_DT" label="납품일" width="120" align="center">
+          <el-table-column prop="close_RSLT" label="AS 처리 결과" width="150" align="center" resizable />
+          <el-table-column prop="delivery_DT" label="납품일" width="120" align="center" resizable>
             <template #default="{ row }">
               {{ formatDate(row.delivery_DT) }}
             </template>
@@ -778,35 +795,52 @@
       <!-- 태그 검색 결과 테이블 -->
       <div v-if="tableData.length > 0">
         <h3>검색된 태그 목록</h3>
-        <el-table :data="tableData" style="width:100%" v-loading="loading">
-          <el-table-column prop="tag_No" label="태그번호" width="150" align="center" />
-          <el-table-column prop="mac_Addr" label="MAC주소" width="150" align="center" />
-          <el-table-column prop="fac_Cd" label="공장코드" width="100" align="center" />
-          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" />
-          <el-table-column prop="tag_Version" label="제품버전" width="100" align="center" />
-          <el-table-column prop="tag_Type" label="태그타입" width="100" align="center" />
-          <el-table-column prop="erp_Code" label="ERP코드" width="120" align="center" />
-          <el-table-column prop="Mng_Category" label="관리카테고리" width="120" align="center" />
-          <el-table-column prop="Lot" label="LOT번호" width="120" align="center" />
-          <el-table-column prop="Prod_order" label="생산지시" width="120" align="center" />
-          <el-table-column prop="Project_code" label="프로젝트코드" width="120" align="center" />
-          <el-table-column prop="Project_manager" label="프로젝트매니저" width="120" align="center" />
-          <el-table-column prop="Mac_duple_yn" label="MAC중복여부" width="120" align="center" />
-          <el-table-column prop="as_Cnt" label="AS횟수" width="80" align="center" />
-          <el-table-column prop="Status" label="삭제여부" width="100" align="center">
+        <el-table :data="paginatedData" style="width:100%" v-loading="loading" border resizable>
+          <el-table-column prop="tag_No" label="태그번호" width="150" align="center" resizable />
+          <el-table-column prop="mac_Addr" label="MAC주소" width="150" align="center" resizable />
+          <el-table-column prop="fac_Cd" label="공장코드" width="100" align="center" resizable />
+          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" resizable />
+          <el-table-column prop="tag_Version" label="제품버전" width="100" align="center" resizable />
+          <el-table-column prop="tag_Type" label="태그타입" width="100" align="center" resizable />
+          <el-table-column prop="erp_Code" label="ERP코드" width="120" align="center" resizable />
+          <el-table-column prop="Mng_Category" label="관리카테고리" width="120" align="center" resizable />
+          <el-table-column prop="Lot" label="LOT번호" width="120" align="center" resizable />
+          <el-table-column prop="Prod_order" label="생산지시" width="120" align="center" resizable />
+          <el-table-column prop="Project_code" label="프로젝트코드" width="120" align="center" resizable />
+          <el-table-column prop="Project_manager" label="프로젝트매니저" width="120" align="center" resizable />
+          <el-table-column prop="Mac_duple_yn" label="MAC중복여부" width="120" align="center" resizable />
+          <el-table-column prop="as_Cnt" label="AS횟수" width="80" align="center" resizable />
+          <el-table-column prop="Status" label="삭제여부" width="100" align="center" resizable>
             <template #default="{ row }">
               <el-tag :type="row.Status === 'Y' ? 'danger' : 'success'">
                 {{ row.Status === 'Y' ? '삭제됨' : '사용중' }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="작업" width="250" align="center">
+          <el-table-column label="작업" width="320" align="center" resizable>
             <template #default="{ row }">
-              <el-button size="small" @click="showProcStep(row.tag_No)">처리단계</el-button>
-              <el-button size="small" @click="showSettingInfo(row.tag_No)">세팅정보</el-button>
-              <el-button size="small" @click="showVersionHistory(row.tag_No)">버전이력</el-button>
-              <el-button size="small" @click="showCommonHistory(row.tag_No)">공통정보</el-button>
-              <el-button size="small" @click="showAsInfo(row.tag_No)">AS이력</el-button>
+              <div class="action-buttons">
+                <el-button size="small" @click="showProcStep(row.tag_No)">
+                  <el-icon><Setting /></el-icon>
+                  처리단계
+                </el-button>
+                <el-button size="small" @click="showSettingInfo(row.tag_No)">
+                  <el-icon><Tools /></el-icon>
+                  세팅정보
+                </el-button>
+                <el-button size="small" @click="showVersionHistory(row.tag_No)">
+                  <el-icon><Document /></el-icon>
+                  버전이력
+                </el-button>
+                <el-button size="small" @click="showCommonHistory(row.tag_No)">
+                  <el-icon><InfoFilled /></el-icon>
+                  공통정보
+                </el-button>
+                <el-button size="small" @click="showAsInfo(row.tag_No)">
+                  <el-icon><Warning /></el-icon>
+                  AS이력
+                </el-button>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -895,17 +929,17 @@
       <div class="version-actions" v-if="userAcl >= 2">
         <el-button type="primary" @click="addNewVersion">새 버전 등록</el-button>
       </div>
-      <el-table :data="versionHistoryData || []" style="width: 100%">
-        <el-table-column prop="TAG_VER" label="버전" width="100" />
-        <el-table-column prop="HW_VER" label="하드웨어버전" width="120" />
-        <el-table-column prop="FW_VER" label="펌웨어버전" width="120" />
-        <el-table-column prop="CREATE_DT" label="생성일" width="120">
+      <el-table :data="versionHistoryData || []" style="width: 100%" border resizable>
+        <el-table-column prop="TAG_VER" label="버전" width="100" resizable />
+        <el-table-column prop="HW_VER" label="하드웨어버전" width="120" resizable />
+        <el-table-column prop="FW_VER" label="펌웨어버전" width="120" resizable />
+        <el-table-column prop="CREATE_DT" label="생성일" width="120" resizable>
           <template #default="{ row }">
             {{ formatDate(row.CREATE_DT) }}
           </template>
         </el-table-column>
-        <el-table-column prop="CREATE_ID" label="생성자" width="100" />
-        <el-table-column label="작업" width="150" v-if="userAcl >= 2">
+        <el-table-column prop="CREATE_ID" label="생성자" width="100" resizable />
+        <el-table-column label="작업" width="150" v-if="userAcl >= 2" resizable>
           <template #default="{ row }">
             <el-button size="small" @click="editVersion(row)">수정</el-button>
           </template>
@@ -918,17 +952,17 @@
       <div class="common-actions" v-if="userAcl >= 2">
         <el-button type="primary" @click="addNewCommon">새 공통정보 등록</el-button>
       </div>
-      <el-table :data="commonHistoryData" style="width: 100%">
-        <el-table-column prop="mac_ADDR" label="MAC주소" width="150" />
-        <el-table-column prop="fac_CD" label="공장코드" width="100" />
-        <el-table-column prop="fac_NO" label="시리얼번호" width="120" />
-        <el-table-column prop="CREATE_DT" label="생성일" width="120">
+      <el-table :data="commonHistoryData" style="width: 100%" border resizable>
+        <el-table-column prop="mac_ADDR" label="MAC주소" width="150" resizable />
+        <el-table-column prop="fac_CD" label="공장코드" width="100" resizable />
+        <el-table-column prop="fac_NO" label="시리얼번호" width="120" resizable />
+        <el-table-column prop="CREATE_DT" label="생성일" width="120" resizable>
           <template #default="{ row }">
             {{ formatDate(row.CREATE_DT) }}
           </template>
         </el-table-column>
-        <el-table-column prop="CREATE_ID" label="생성자" width="100" />
-        <el-table-column label="작업" width="150" v-if="userAcl >= 2">
+        <el-table-column prop="CREATE_ID" label="생성자" width="100" resizable />
+        <el-table-column label="작업" width="150" v-if="userAcl >= 2" resizable>
           <template #default="{ row }">
             <el-button size="small" @click="editCommon(row)">수정</el-button>
           </template>
@@ -938,61 +972,69 @@
 
     <!-- AS이력 모달 -->
     <el-dialog v-model="asInfoVisible" title="AS 이력" width="1200">
-      <div class="as-actions" v-if="userAcl >= 2">
-        <el-button type="primary" @click="addNewAs">새 AS 등록</el-button>
-      </div>
-      <el-table :data="asInfoData" style="width: 100%; margin: 0 auto;">
-        <el-table-column prop="as_Cnt" label="AS 횟수" width="80" align="center" />
-        <el-table-column prop="mac_ADDR" label="MAC주소" width="150" align="center" />
-        <el-table-column prop="as_Doc" label="AS 문서번호" width="120" align="center" />
-        <el-table-column prop="occr_Dt" label="AS 발생일" width="120" align="center">
+        <div class="as-actions" v-if="userAcl >= 2">
+          <el-button type="primary" @click="addNewAs">
+            <el-icon><Plus /></el-icon>
+            새 AS 등록
+          </el-button>
+        </div>
+      <el-table :data="asInfoData" style="width: 100%; margin: 0 auto;" border resizable>
+        <el-table-column prop="as_Cnt" label="AS 횟수" width="80" align="center" resizable />
+        <el-table-column prop="mac_ADDR" label="MAC주소" width="150" align="center" resizable />
+        <el-table-column prop="as_Doc" label="AS 문서번호" width="120" align="center" resizable />
+        <el-table-column prop="occr_Dt" label="AS 발생일" width="120" align="center" resizable>
           <template #default="{ row }">
             {{ formatDate(row.occr_Dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="occr_RSN" label="AS 발생사유" width="150" align="center" />
-        <el-table-column prop="close_Dt" label="AS 종결일" width="120" align="center">
+        <el-table-column prop="occr_RSN" label="AS 발생사유" width="150" align="center" resizable />
+        <el-table-column prop="close_Dt" label="AS 종결일" width="120" align="center" resizable>
           <template #default="{ row }">
             {{ formatDate(row.close_Dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="close_RSLT" label="AS 처리결과" width="150" align="center" />
-        <el-table-column prop="delivery_DT" label="납품일" width="120" align="center">
+        <el-table-column prop="close_RSLT" label="AS 처리결과" width="150" align="center" resizable />
+        <el-table-column prop="delivery_DT" label="납품일" width="120" align="center" resizable>
           <template #default="{ row }">
             {{ formatDate(row.delivery_DT) }}
           </template>
         </el-table-column>
-        <el-table-column prop="create_DT" label="생성일" width="120" align="center">
+        <el-table-column prop="create_DT" label="생성일" width="120" align="center" resizable>
           <template #default="{ row }">
             {{ formatDate(row.create_DT) }}
           </template>
         </el-table-column>
-        <el-table-column prop="create_ID" label="생성자" width="100" align="center" />
-        <el-table-column prop="update_DT" label="수정일" width="120" align="center">
+        <el-table-column prop="create_ID" label="생성자" width="100" align="center" resizable />
+        <el-table-column prop="update_DT" label="수정일" width="120" align="center" resizable>
           <template #default="{ row }">
             {{ formatDate(row.update_DT) }}
           </template>
         </el-table-column>
-        <el-table-column prop="update_ID" label="수정자" width="100" align="center" />
-        <el-table-column prop="del_YN" label="삭제여부" width="100" align="center">
+        <el-table-column prop="update_ID" label="수정자" width="100" align="center" resizable />
+        <el-table-column prop="del_YN" label="삭제여부" width="100" align="center" resizable>
           <template #default="{ row }">
             <el-tag :type="row.del_YN === 'Y' ? 'danger' : 'success'">
               {{ row.del_YN === 'Y' ? '삭제됨' : '사용중' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="작업" width="200" align="center" v-if="userAcl >= 2">
+        <el-table-column label="작업" width="200" align="center" v-if="userAcl >= 2" resizable>
           <template #default="{ row }">
-            <el-button size="small" @click="editAs(row)" style="margin-right: 5px;">수정</el-button>
-            <el-button
-              v-if="row.del_YN !== 'Y'"
-              size="small"
-              type="danger"
-              @click="deleteAs(row)"
-              style="margin-left: 5px;"
-            >
-              삭제
-            </el-button>
+            <div class="action-buttons">
+              <el-button size="small" @click="editAs(row)">
+                <el-icon><Edit /></el-icon>
+                수정
+              </el-button>
+              <el-button
+                v-if="row.del_YN !== 'Y'"
+                size="small"
+                type="danger"
+                @click="deleteAs(row)"
+              >
+                <el-icon><Delete /></el-icon>
+                삭제
+              </el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -1098,9 +1140,10 @@
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
+import '../css/TagManagement.css'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { QuestionFilled, Close, InfoFilled } from '@element-plus/icons-vue'
-import Header from './Header.vue'
+import { QuestionFilled, Close, InfoFilled, Setting, Tools, Document, Warning, Edit, Delete, Plus } from '@element-plus/icons-vue'
+
 
 
 // Props
@@ -1193,7 +1236,16 @@ const filteredData = computed(() => {
 const paginatedData = computed(() => {
   const startIndex = (currentPage.value - 1) * pageSize.value
   const endIndex = startIndex + pageSize.value
-  return filteredData.value.slice(startIndex, endIndex)
+  const result = tableData.value.slice(startIndex, endIndex)
+  console.log('페이징 계산:', {
+    currentPage: currentPage.value,
+    pageSize: pageSize.value,
+    totalData: tableData.value.length,
+    startIndex,
+    endIndex,
+    resultLength: result.length
+  })
+  return result
 })
 
 // 페이지네이션 이벤트 핸들러
@@ -2131,15 +2183,15 @@ function deleteVersion(row) {
 
 // 로그아웃
 function logout() {
-  sessionStorage.removeItem('jwt_token')
+  // 쿠키 기반 인증 - 사용자 정보만 삭제, 토큰은 백엔드에서 처리
   sessionStorage.removeItem('user_info')
   window.location.reload()
 }
 
-// 컴포넌트 마운트 시 권한 체크만
+// 컴포넌트 마운트 시 권한 체크 및 초기 데이터 로드
 onMounted(() => {
   if (userInfo.value.user_acl === '0') {
-    sessionStorage.removeItem('jwt_token')
+    // 쿠키 기반 인증 - 사용자 정보만 삭제
     sessionStorage.removeItem('user_info')
     window.location.reload()
     return
@@ -2148,8 +2200,55 @@ onMounted(() => {
   // 삭제여부 초기값 설정
   searchDelFilter.value = 'all'
   
-  // 초기에는 검색하지 않음 - 사용자가 검색 조건을 입력해야 함
+  // 페이지 로드 시 모든 태그 정보 자동 로드
+  loadAllTags()
 })
+
+// 모든 태그 정보를 로드하는 함수
+async function loadAllTags() {
+  loading.value = true
+  try {
+    console.log('모든 태그 정보 로드 시작...')
+    
+    // 빈 검색 조건으로 모든 태그 조회
+    const params = {
+      delFilter: 'all' // 모든 태그 (사용중 + 삭제됨)
+    }
+    
+    console.log('API 요청 파라미터:', params)
+    const res = await axios.get('/tags/getTagList', { params })
+    
+    // API 응답 구조에 맞게 데이터 추출
+    let responseData = res.data
+    
+    // 응답이 래핑된 경우 body에서 추출
+    if (responseData && typeof responseData === 'object' && responseData.body !== undefined) {
+      responseData = responseData.body
+    }
+    
+    // 배열이 아닌 경우 빈 배열로 설정
+    tableData.value = Array.isArray(responseData) ? responseData : []
+    
+    // 검색 후 첫 페이지로 이동
+    currentPage.value = 1
+    
+    console.log('전체 태그 검색 결과:', responseData)
+    console.log('결과 개수:', tableData.value.length)
+    
+    if (tableData.value.length === 0) {
+      ElMessage.info('등록된 태그가 없습니다.')
+    } else {
+      ElMessage.success(`총 ${tableData.value.length}개의 태그가 로드되었습니다.`)
+    }
+  } catch (error) {
+    console.error('전체 태그 로드 오류:', error)
+    console.error('오류 응답:', error.response?.data)
+    ElMessage.error('태그 정보를 불러오는 중 오류가 발생했습니다.')
+    tableData.value = []
+  } finally {
+    loading.value = false
+  }
+}
 
 function toggleEditMode() {
   if (isEditMode.value) {
@@ -2208,14 +2307,9 @@ async function saveSettingInfo() {
       PORT: convertNullToEmpty(settingInfoData.value[0]?.port)
     }
     
-    // JWT 토큰을 헤더에 포함
-    const token = sessionStorage.getItem('jwt_token')
-    const headers = {
-      'Authorization': token
-    }
-    
+    // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로 헤더 설정 불필요
     // 수정된 데이터로 API 호출
-    const res = await axios.put(`/tags/update_setting_${settingInfoData.value[0]?.ordNo}`, requestData, { headers })
+    const res = await axios.put(`/tags/update_setting_${settingInfoData.value[0]?.ordNo}`, requestData)
     
     // 백엔드 응답 구조에 맞게 성공 체크
     if (res.data.statusCode === 'OK' || res.data.statusCodeValue === 200 || res.status === 200) {
@@ -2247,369 +2341,3 @@ function getVersionDisplay(value) {
   return value.startsWith('v') ? value : `v${value}`
 }
 </script>
-
-<style scoped>
-.tag-management-page {
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  background: #f8f9fa;
-  overflow: auto;
-  margin: 0;
-  box-sizing: border-box;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.search-section {
-  margin-bottom: 20px;
-  padding: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.search-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.search-header h3 {
-  margin: 0;
-  color: #2c3e50;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.search-help-content {
-  line-height: 1.6;
-}
-
-.help-item {
-  margin-bottom: 15px;
-  padding: 10px;
-  background: #f8f9fa;
-  border-radius: 6px;
-  border-left: 4px solid #409eff;
-}
-
-.help-item h5 {
-  margin: 0 0 5px 0;
-  color: #2c3e50;
-  font-size: 1rem;
-}
-
-.help-item p {
-  margin: 0;
-  color: #666;
-  font-size: 0.9rem;
-}
-
-/* 검색 도움말 사이드바 */
-.search-help-sidebar {
-  position: fixed;
-  top: 0;
-  right: -400px;
-  width: 400px;
-  height: 100vh;
-  background: white;
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  transition: right 0.3s ease;
-  overflow-y: auto;
-  padding: 20px;
-}
-
-.search-help-sidebar.show {
-  right: 0;
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
-}
-
-.sidebar-header h3 {
-  margin: 0;
-  color: #2c3e50;
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.close-btn {
-  font-size: 18px;
-  color: #666;
-}
-
-.close-btn:hover {
-  color: #409eff;
-}
-
-.pagination-section {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-  background: white;
-  border-top: 1px solid #eee;
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-/* 테이블 스타일 조정 */
-:deep(.el-table) {
-  table-layout: fixed !important;
-}
-
-:deep(.el-table th) {
-  padding: 8px 0 !important;
-}
-
-:deep(.el-table td) {
-  padding: 8px 0 !important;
-}
-
-:deep(.el-table .cell) {
-  padding: 8px 0 !important;
-}
-
-/* el-scrollbar 영역 내 테이블 정렬 */
-:deep(.el-scrollbar .el-table th) {
-  text-align: center !important;
-}
-
-:deep(.el-scrollbar .el-table th .cell) {
-  text-align: center !important;
-}
-
-:deep(.el-scrollbar .el-table td) {
-  text-align: center !important;
-}
-
-:deep(.el-scrollbar .el-table td .cell) {
-  text-align: center !important;
-}
-
-.submenu-content {
-  padding: 32px;
-  background: white;
-  min-height: calc(100vh - 200px);
-}
-
-.submenu-content h2 {
-  margin: 0 0 10px 0;
-  color: #2c3e50;
-  font-size: 1.8rem;
-  font-weight: 600;
-}
-
-.submenu-content p {
-  margin: 0 0 30px 0;
-  color: #666;
-  font-size: 1rem;
-}
-
-.result-section {
-  margin-top: 30px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
-}
-
-.result-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.result-header h3 {
-  margin: 0;
-  color: #2c3e50;
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-/* 안내 메시지 스타일 */
-.info-message {
-  margin-top: 20px;
-}
-
-.info-message .el-alert {
-  border-radius: 8px;
-}
-
-/* 직접 검색 섹션 스타일 */
-.direct-search-section {
-  margin-top: 30px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
-}
-
-.direct-search-section h3 {
-  margin: 0 0 15px 0;
-  color: #2c3e50;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.direct-search-form {
-  margin-bottom: 0;
-}
-
-/* 태그 검색 결과 스타일 */
-.tag-search-results {
-  margin-top: 20px;
-  padding: 20px;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
-}
-
-.tag-search-results h3 {
-  margin: 0 0 15px 0;
-  color: #2c3e50;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.pagination-wrapper {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  padding: 15px 0;
-  border-top: 1px solid #e9ecef;
-}
-
-:deep(.editable-row) {
-  background-color: #f5f7fa;
-}
-
-/* 편집 가능한 테이블 스타일 */
-:deep(.editable-row .el-input) {
-  width: 100%;
-}
-
-:deep(.editable-row .el-input__inner) {
-  border: 1px solid #409eff;
-  background-color: #fff;
-  font-size: 12px;
-  padding: 4px 8px;
-}
-
-:deep(.editable-row .el-input__inner:focus) {
-  border-color: #409eff;
-  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
-}
-
-/* 편집 모드일 때 테이블 행 스타일 */
-:deep(.editable-row td) {
-  background-color: #f0f9ff !important;
-  border-color: #b3d8ff !important;
-}
-
-:deep(.editable-row td:hover) {
-  background-color: #e6f3ff !important;
-}
-
-/* 편집 불가능한 필드 스타일 */
-:deep(.editable-row .readonly-field) {
-  background-color: #f5f5f5;
-  color: #666;
-  font-style: italic;
-}
-
-/* 액션 버튼 스타일 */
-.action-buttons .el-button {
-  margin-left: 8px;
-}
-
-.action-buttons .el-button:first-child {
-  margin-left: 0;
-}
-
-/* 테이블 스크롤 스타일 */
-:deep(.el-table) {
-  overflow-x: auto;
-}
-
-:deep(.el-table__body-wrapper) {
-  overflow-x: auto;
-}
-
-/* 편집 모드 안내 메시지 */
-.edit-mode-notice {
-  margin-bottom: 15px;
-  padding: 10px 15px;
-  background-color: #e6f7ff;
-  border: 1px solid #91d5ff;
-  border-radius: 6px;
-  color: #1890ff;
-  font-size: 14px;
-}
-
-.edit-mode-notice .el-icon {
-  margin-right: 8px;
-  color: #1890ff;
-}
-
-:deep(.editable-descriptions) {
-  background-color: #f5f7fa;
-}
-
-:deep(.editable-descriptions .el-input) {
-  width: 100%;
-}
-
-:deep(.editable-descriptions .el-input__inner) {
-  border: 1px solid #409eff;
-  background-color: #fff;
-  font-size: 12px;
-  padding: 4px 8px;
-}
-
-:deep(.editable-descriptions .el-input__inner:focus) {
-  border-color: #409eff;
-  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
-}
-
-:deep(.editable-descriptions .el-descriptions-item) {
-  padding: 8px 0 !important;
-}
-
-:deep(.editable-descriptions .el-descriptions-item .label) {
-  font-weight: bold;
-}
-</style>

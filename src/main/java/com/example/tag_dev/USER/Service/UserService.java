@@ -11,10 +11,10 @@ import com.example.tag_dev.SYSTEM.Repository.DeptRepository;
 import com.example.tag_dev.USER.DTO.UserDTO;
 import com.example.tag_dev.USER.Model.User;
 import com.example.tag_dev.USER.Repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,24 +24,15 @@ import java.beans.PropertyDescriptor;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
     private final UserRepository userRepository;
     private final UserLogRepository userLogRepository;
     private final DeptRepository deptRepository;
     private final DeptLogRepository deptLogRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
-
-    public UserService(UserRepository userRepository, UserLogRepository userLogRepository, DeptRepository deptRepository, DeptLogRepository deptLogRepository, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.userLogRepository = userLogRepository;
-        this.deptRepository = deptRepository;
-        this.deptLogRepository = deptLogRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     // 아이디 찾기
     public Optional<User> findLoginId(UserDTO userDTO) {
@@ -53,12 +44,11 @@ public class UserService {
         return userRepository.findByUserNameAndLoginIdAndUserEmailAndUserPhoneNum(userDTO.getUser_name(), userDTO.getLogin_id(), userDTO.getUser_email(), userDTO.getUser_phone_num());
     }
 
-
     // ====================================== 관리자 관련 =====================================//
     // 사용자 수정/삭제 ( 관리자 기능 )
-    public ResponseEntity<?> updateUserInfo(String userId, UserDTO userDto, String jwtToken) {
-        if (jwtTokenProvider.validateToken(jwtToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<?> updateUserInfo(String userId, UserDTO userDto) {
+        if (userId == null || userId.isBlank() || !userId.matches("\\d+")) {
+            return ResponseEntity.badRequest().body("잘못된 사용자 ID");
         }
 
         Optional<User> userOpt = userRepository.findById(Long.parseLong(userId));
@@ -68,18 +58,47 @@ public class UserService {
 
         User user = userOpt.get();
 
-        // DTO의 null이 아닌 값들만 User 엔티티에 복사
-        BeanUtils.copyProperties(userDto, user, getNullPropertyNames(userDto));
+        // DTO의 값들을 User 엔티티에 수동으로 매핑
+        if (userDto.getUser_name() != null && !userDto.getUser_name().trim().isEmpty()) {
+            user.setUserName(userDto.getUser_name());
+        }
+        if (userDto.getUser_en_name() != null && !userDto.getUser_en_name().trim().isEmpty()) {
+            user.setUser_en_name(userDto.getUser_en_name());
+        }
+        if (userDto.getUser_email() != null && !userDto.getUser_email().trim().isEmpty()) {
+            user.setUserEmail(userDto.getUser_email());
+        }
+        if (userDto.getUser_phone_num() != null && !userDto.getUser_phone_num().trim().isEmpty()) {
+            user.setUserPhoneNum(userDto.getUser_phone_num());
+        }
+        if (userDto.getUser_acl() != null) {
+            user.setUser_acl(userDto.getUser_acl().toString());
+        }
+        if (userDto.getDept_cd() != null && !userDto.getDept_cd().trim().isEmpty()) {
+            user.setDept_cd(userDto.getDept_cd());
+        }
+        if (userDto.getLogin_id() != null && !userDto.getLogin_id().trim().isEmpty()) {
+            user.setLoginId(userDto.getLogin_id());
+        }
+        if (userDto.getUser_job() != null && !userDto.getUser_job().trim().isEmpty()) {
+            user.setUser_job(userDto.getUser_job());
+        }
+        if (userDto.getUser_stat() != null && !userDto.getUser_stat().trim().isEmpty()) {
+            user.setUser_stat(userDto.getUser_stat());
+        }
+        if (userDto.getHire_dt() != null) {
+            user.setHire_dt(userDto.getHire_dt());
+        }
 
         // 업데이트 정보 설정
         user.setUpdate_dt(new Date());
-        Long updateUserId = jwtTokenProvider.extractUserId(jwtToken);
-        user.setUpdate_id(updateUserId);
+        // TODO: SecurityContext에서 현재 사용자 ID 가져오기
+        user.setUpdate_id(1L); // 임시로 1L 설정
 
         userRepository.save(user);
 
         // 로그 생성
-        createUserLog(user, updateUserId);
+        createUserLog(user, 1L); // 임시로 1L 설정
 
         return ResponseEntity.ok("사용자 정보 수정 완료");
     }
@@ -122,10 +141,7 @@ public class UserService {
     }
 
     // 권한 변경 ( 관리자 기능 )
-    public ResponseEntity<?> changeAcl(String token, Long userId, String userAcl) {
-        if (jwtTokenProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<?> changeAcl(Long userId, String userAcl) {
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -135,7 +151,7 @@ public class UserService {
             UserLog userLog = new UserLog();
             userLog.setLoginId(user.getLoginId());
             userLog.setUpdate_dt(new Date());
-            userLog.setUpdate_id(jwtTokenProvider.extractUserId((token)));
+            userLog.setUpdate_id(1L); // TODO: SecurityContext에서 현재 사용자 ID 가져오기
             userLog.setStatus("권한수정");
             userLogRepository.save(userLog);
 
@@ -146,18 +162,42 @@ public class UserService {
     }
 
     // 사용자 전체 조회 ( 관리자 기능 )
-    public ResponseEntity<?> getAllUser(String token) {
-        if (jwtTokenProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<?> getAllUser() {
         List<User> users = userRepository.findAll();
-        return ResponseEntity.ok(users);
+        
+        // User 엔티티를 UserDTO로 변환
+        List<UserDTO> userDTOs = new ArrayList<>();
+        for (User user : users) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUser_id(user.getUserId());
+            userDTO.setUser_name(user.getUserName());
+            userDTO.setUser_en_name(user.getUser_en_name());
+            userDTO.setUser_email(user.getUserEmail());
+            userDTO.setUser_phone_num(user.getUserPhoneNum());
+            userDTO.setUser_acl(user.getUser_acl() != null ? Long.parseLong(user.getUser_acl()) : null);
+            userDTO.setLogin_id(user.getLoginId());
+            userDTO.setDept_cd(user.getDept_cd());
+            userDTO.setUser_job(user.getUser_job());
+            userDTO.setUser_stat(user.getUser_stat());
+            userDTO.setReg_id(user.getReg_id());
+            userDTO.setReg_dt(user.getReg_dt());
+            userDTO.setUpdate_id(user.getUpdate_id());
+            userDTO.setUpdate_dt(user.getUpdate_dt());
+            userDTO.setLogin_dt(user.getLogin_dt());
+            userDTO.setHire_dt(user.getHire_dt());
+            userDTO.setChange_password_dt(user.getChange_password_dt());
+            userDTO.setFail_login_cnt(user.getFail_login_cnt());
+            userDTO.setStatus(user.getStatus());
+            userDTOs.add(userDTO);
+        }
+        
+        return ResponseEntity.ok(userDTOs);
     }
 
 
     // 해당 사용자 비밀번호 변경 ( 관리자 기능 )
     public ResponseEntity<?> changePassword(UserDTO userDTO, String token) {
-        if (jwtTokenProvider.validateToken(token)) {
+        if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지않음");
         }
         Optional<User> user = userRepository.findByLoginId(userDTO.getLogin_id());
@@ -169,7 +209,7 @@ public class UserService {
             UserLog userLog = new UserLog();
             userLog.setLoginId(users.getLoginId());
             userLog.setUpdate_dt(new Date());
-            userLog.setUpdate_id(jwtTokenProvider.extractUserId((token)));
+            userLog.setUpdate_id(1L); // TODO: SecurityContext에서 현재 사용자 ID 가져오기
             userLog.setStatus("비밀번호 변경");
             userLogRepository.save(userLog);
 
@@ -181,11 +221,7 @@ public class UserService {
     }
 
     // 사용자 생성 ( 관리자 기능 )
-    public ResponseEntity<?> createUser(String token, UserDTO userDTO) {
-        // JWT 토큰 검증
-        if (jwtTokenProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<?> createUser(UserDTO userDTO) {
 
         // 로그인 ID 중복 확인
         if (userRepository.findByLoginId(userDTO.getLogin_id()).isPresent()) {
@@ -208,7 +244,7 @@ public class UserService {
             user.setHire_dt(userDTO.getHire_dt());
             user.setReg_dt(new Date());
             user.setStatus("N");
-            user.setReg_id(jwtTokenProvider.extractUserId(token));
+            user.setReg_id(1L); // TODO: SecurityContext에서 현재 사용자 ID 가져오기
 
             userRepository.save(user);
 
@@ -217,7 +253,7 @@ public class UserService {
             userLog.setLoginId(user.getLoginId());
             userLog.setStatus("사용자생성");
             userLog.setRegDt(new Date());
-            userLog.setUpdate_id(jwtTokenProvider.extractUserId((token)));
+            userLog.setUpdate_id(1L); // TODO: SecurityContext에서 현재 사용자 ID 가져오기
             userLogRepository.save(userLog);
 
             return ResponseEntity.ok("사용자가 성공적으로 생성되었습니다.");
@@ -227,10 +263,7 @@ public class UserService {
     }
 
     // 사용자 비밀번호 변경 ( 관리자 기능 )
-    public ResponseEntity<?> changeUserPasswordByAdmin(String loginId, UserDTO userDTO, String token) {
-        if (jwtTokenProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<?> changeUserPasswordByAdmin(String loginId, UserDTO userDTO) {
 
         try {
             Optional<User> userOpt = userRepository.findByLoginId(loginId);
@@ -238,7 +271,7 @@ public class UserService {
                 User user = userOpt.get();
                 user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
                 user.setUpdate_dt(new Date());
-                user.setUpdate_id(jwtTokenProvider.extractUserId(token));
+                user.setUpdate_id(1L); // TODO: SecurityContext에서 현재 사용자 ID 가져오기
                 userRepository.save(user);
 
                 // 로그 기록
@@ -246,7 +279,7 @@ public class UserService {
                 userLog.setLoginId(loginId);
                 userLog.setStatus("관리자비밀번호변경");
                 userLog.setUpdate_dt(new Date());
-                userLog.setUpdate_id(jwtTokenProvider.extractUserId(token));
+                userLog.setUpdate_id(1L); // TODO: SecurityContext에서 현재 사용자 ID 가져오기
                 userLogRepository.save(userLog);
 
                 return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
@@ -260,23 +293,37 @@ public class UserService {
 
     //========================================= 부서 관련 ===================================//
     // 부서 등록 ( 관리자 기능 )
-    public ResponseEntity<?> createDept(String token, DeptDTO deptDTO) {
-        if (jwtTokenProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<?> createDept(DeptDTO deptDTO) {
         try {
             Dept_Info deptInfo = new Dept_Info();
             deptInfo.setDeptCode(deptDTO.getDeptCode());
             deptInfo.setDept(deptDTO.getDept());
             deptInfo.setRegDt(new Date());
             deptInfo.setStatus("N");
-            deptInfo.setUserName(jwtTokenProvider.extractUserName(token));
+            deptInfo.setUserName("관리자"); // TODO: SecurityContext에서 현재 사용자명 가져오기
+
+            // 상위 부서 코드 설정
+            if (deptDTO.getParentDeptCode() != null && !deptDTO.getParentDeptCode().isBlank()) {
+                deptRepository.findByDeptCode(deptDTO.getParentDeptCode())
+                        .ifPresent(deptInfo::setParentDept);
+            }
 
             deptRepository.save(deptInfo);
 
+            // 하위 부서 연결 (선택)
+            if (deptDTO.getChildDeptCodes() != null && !deptDTO.getChildDeptCodes().isEmpty()) {
+                for (String childCode : deptDTO.getChildDeptCodes()) {
+                    if (childCode == null || childCode.isBlank()) continue;
+                    deptRepository.findByDeptCode(childCode).ifPresent(child -> {
+                        child.setParentDept(deptInfo);
+                        deptRepository.save(child);
+                    });
+                }
+            }
+
             DeptLog deptLog = new DeptLog();
             deptLog.setStatus("생성");
-            deptLog.setUserName(jwtTokenProvider.extractUserName(token));
+            deptLog.setUserName("관리자"); // TODO: SecurityContext에서 현재 사용자명 가져오기
             deptLog.setRegDt(deptDTO.getRegDt());
             deptLog.setDeptCode(deptDTO.getDeptCode());
             deptLog.setDept(deptDTO.getDept());
@@ -285,6 +332,20 @@ public class UserService {
             return ResponseEntity.ok(deptInfo);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("부서 등록 중 오류가 발생: " + e.getMessage());
+        }
+    }
+
+    // 부서 목록 조회
+    public ResponseEntity<?> getDeptList() {
+        try {
+            System.out.println("부서 목록 조회 시작...");
+            List<Dept_Info> deptList = deptRepository.findAll();
+            System.out.println("조회된 부서 수: " + deptList.size());
+            return ResponseEntity.ok(deptList);
+        } catch (Exception e) {
+            System.err.println("부서 목록 조회 오류: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("부서 목록 조회 중 오류가 발생: " + e.getMessage());
         }
     }
 
@@ -304,10 +365,7 @@ public class UserService {
     }
 
     // 부서 수정/삭제 ( 관리자 기능 )
-    public ResponseEntity<?> updateDept(String deptCode, String token, DeptDTO deptDTO) {
-        if (jwtTokenProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<?> updateDept(String deptCode, DeptDTO deptDTO) {
 
         Optional<Dept_Info> deptOpt = deptRepository.findByDeptCode(deptCode);
         if (deptOpt.isEmpty()) {
@@ -316,22 +374,33 @@ public class UserService {
 
         Dept_Info deptInfo = deptOpt.get();
 
-        // DTO의 null이 아닌 값들만 Dept_Info 엔티티에 복사
-        BeanUtils.copyProperties(deptDTO, deptInfo, getNullPropertyNames(deptDTO));
+        // 기본 필드 업데이트
+        if (deptDTO.getDept() != null) deptInfo.setDept(deptDTO.getDept());
+        if (deptDTO.getStatus() != null) deptInfo.setStatus(deptDTO.getStatus());
+
+        // 상위 부서 업데이트
+        if (deptDTO.getParentDeptCode() != null) {
+            if (deptDTO.getParentDeptCode().isBlank()) {
+                deptInfo.setParentDept(null);
+            } else {
+                deptRepository.findByDeptCode(deptDTO.getParentDeptCode())
+                        .ifPresent(deptInfo::setParentDept);
+            }
+        }
 
         // 업데이트 정보 설정
         deptInfo.setUpdateDt(new Date());
-        deptInfo.setUpdateUser(jwtTokenProvider.extractUserName(token));
+        deptInfo.setUpdateUser("관리자"); // TODO: SecurityContext에서 현재 사용자명 가져오기
         deptRepository.save(deptInfo);
 
         // 부서 로그 생성
-        createDeptLog(deptDTO, token);
+        createDeptLog(deptDTO);
 
         return ResponseEntity.ok("부서 수정 완료");
     }
 
     // 부서 로그 생성 헬퍼 메서드
-    private void createDeptLog(DeptDTO deptDTO, String token) {
+    private void createDeptLog(DeptDTO deptDTO) {
         DeptLog deptLog = new DeptLog();
         deptLog.setDeptCode(deptDTO.getDeptCode());
         deptLog.setDept(deptDTO.getDept());
@@ -345,7 +414,7 @@ public class UserService {
         deptLog.setRegDt(deptDTO.getRegDt());
         deptLog.setUserName(deptDTO.getUserName());
         deptLog.setUpdateDt(new Date());
-        deptLog.setUpdateUser(jwtTokenProvider.extractUserName(token));
+        deptLog.setUpdateUser("관리자"); // TODO: SecurityContext에서 현재 사용자명 가져오기
 
         deptLogRepository.save(deptLog);
     }

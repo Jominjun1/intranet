@@ -2,7 +2,7 @@
   <header class="app-header">
     <div class="header-content">
       <div class="logo">
-        <h1>스마트태그 인벤토리 관리</h1>
+        <h1>TEIA 인트라넷</h1>
       </div>
       
       <div class="user-section">

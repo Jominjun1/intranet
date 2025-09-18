@@ -6,33 +6,24 @@ import com.example.tag_dev.LOG.Repository.ProjectLogRepository;
 import com.example.tag_dev.SYSTEM.DTO.ProjectDTO;
 import com.example.tag_dev.SYSTEM.Model.Project_Info;
 import com.example.tag_dev.SYSTEM.Repository.ProjectRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.beans.PropertyDescriptor;
 import java.time.Year;
 import java.util.*;
 
 import static com.example.tag_dev.USER.Service.UserService.getStrings;
 
+@RequiredArgsConstructor
 @Service
 public class ProjectService {
 
-    @Autowired
     private final ProjectRepository projectRepository;
     private final ProjectLogRepository projectLogRepository;
     private final JwtTokenProvider jwtTokenProvider;
-
-    public ProjectService(ProjectRepository projectRepository, ProjectLogRepository projectLogRepository, JwtTokenProvider jwtTokenProvider) {
-        this.projectRepository = projectRepository;
-        this.projectLogRepository = projectLogRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
 
     // 프로젝트 생성
     public ResponseEntity<?> createProject(String token, ProjectDTO projectDTO) {

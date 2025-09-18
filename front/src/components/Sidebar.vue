@@ -108,6 +108,16 @@
             </div>
             
             <div 
+              v-if="userAcl >= 3"
+              class="menu-item submenu-item" 
+              :class="{ active: activeMenu === 'dept-management' }"
+              @click="handleMenuSelect('dept-management')"
+            >
+              <el-icon><OfficeBuilding /></el-icon>
+              <span v-show="!isCollapsed">부서 관리</span>
+            </div>
+            
+            <div 
               class="menu-item submenu-item" 
               :class="{ active: activeMenu === 'log-management' }"
               @click="handleMenuSelect('log-management')"
@@ -132,6 +142,7 @@ import {
   Expand,
   Fold,
   Histogram,
+  OfficeBuilding,
   Search,
   Setting,
   Tools,
@@ -213,6 +224,7 @@ function handleMenuSelect(key) {
   height: 70px;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   padding: 0 20px;
   border-bottom: 1px solid #e5e7eb;
   background: #f8fafc;
@@ -255,6 +267,7 @@ function handleMenuSelect(key) {
 .menu-group-header {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 12px;
   padding: 0 20px 16px;
   color: #6b7280;
@@ -291,6 +304,7 @@ function handleMenuSelect(key) {
 .menu-item {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 16px;
   padding: 12px 20px;
   cursor: pointer;
@@ -393,6 +407,10 @@ function handleMenuSelect(key) {
   padding-left: 16px;
   border-left: 2px solid #e5e7eb;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
 }
 
 .submenu-item:hover {

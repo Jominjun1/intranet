@@ -32,7 +32,17 @@ function handleLoginSuccess(userData) {
     ElMessage.warning('계정이 잠겨있습니다. 관리자에게 문의하세요.')
     return
   }
-  userInfo.value = userData
+  // 보안을 위해 최소한의 사용자 정보만 저장
+  const { accessToken, refreshToken, ...pureUserData } = userData
+  userInfo.value = pureUserData
+  
+  // 사용자 정보를 암호화하거나 최소한으로만 저장
+  const safeUserInfo = {
+    user_name: pureUserData.user_name,
+    user_acl: pureUserData.user_acl,
+    user_id: pureUserData.user_id
+  }
+  sessionStorage.setItem('user_info', JSON.stringify(safeUserInfo))
   isLoggedIn.value = true
   router.push('/tag-management')
 }
@@ -50,6 +60,9 @@ function handleMenuSelect(key) {
       break
     case 'log-management':
       router.push('/log-management')
+      break
+    case 'dept-management':
+      router.push('/dept-management')
       break
     default:
       if (key.startsWith('tag-')) {
@@ -86,7 +99,7 @@ function handleUserCommand(command) {
 }
 
 function logout() {
-  sessionStorage.removeItem('jwt_token')
+  // 쿠키 기반 인증 - 사용자 정보만 삭제, 토큰은 백엔드에서 처리
   sessionStorage.removeItem('user_info')
   isLoggedIn.value = false
   userInfo.value = {}
@@ -98,25 +111,26 @@ onMounted(() => {
   // 이벤트 리스너 등록
   window.addEventListener('beforeunload', handleBeforeUnload)
   
+  // 쿠키 기반 인증으로 변경 - 토큰은 httpOnly 쿠키로 관리됨
+  
   // 새로고침 여부 확인
   const isReloading = localStorage.getItem('isReloading')
   if (isReloading) {
-    // 새로고침인 경우 토큰 유지
+    // 새로고침인 경우 사용자 정보 유지
     localStorage.removeItem('isReloading')
   } else {
-    // 새로고침이 아닌 경우 (새 탭, 직접 URL 접근 등) 토큰 삭제
-    // 단, 이미 토큰이 있는 경우는 유지 (이미 로그인된 상태)
-    const existingToken = sessionStorage.getItem('jwt_token')
-    if (!existingToken) {
-      sessionStorage.removeItem('jwt_token')
+    // 새로고침이 아닌 경우 (새 탭, 직접 URL 접근 등) 사용자 정보 삭제
+    const existingUserInfo = sessionStorage.getItem('user_info')
+    if (!existingUserInfo) {
       sessionStorage.removeItem('user_info')
     }
   }
   
-  const token = sessionStorage.getItem('jwt_token')
+  // 보안을 위해 토큰은 httpOnly 쿠키로 관리되므로
+  // 클라이언트에서는 사용자 정보만으로 로그인 상태 판단
   const storedUserInfo = sessionStorage.getItem('user_info')
   
-  if (token && storedUserInfo) {
+  if (storedUserInfo) {
     try {
       userInfo.value = JSON.parse(storedUserInfo)
       

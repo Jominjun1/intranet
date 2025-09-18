@@ -55,57 +55,73 @@
 
     <!-- 테이블 영역 -->
     <div class="table-section">
-      <el-table :data="paginatedData" style="width:100%" v-loading="loading" :key="tableKey">
-        <el-table-column prop="userId" label="사용자ID" width="80" />
-        <el-table-column prop="userName" label="이름" width="100" />
-        <el-table-column prop="loginId" label="로그인ID" width="100" />
-        <el-table-column prop="userEmail" label="이메일" width="180" />
-        <el-table-column prop="userPhoneNum" label="전화번호" width="120" />
-        <el-table-column prop="dept_cd" label="부서" width="80" />
-        <el-table-column prop="user_job" label="직책" width="80" />
-        <el-table-column prop="user_acl" label="권한" width="80">
+      <el-table :data="paginatedData" style="width:100%" v-loading="loading" :key="tableKey" border resizable>
+        <el-table-column prop="user_id" label="사용자ID" width="80" resizable />
+        <el-table-column prop="user_name" label="이름" width="100" resizable />
+        <el-table-column prop="login_id" label="로그인ID" width="100" resizable />
+        <el-table-column prop="user_email" label="이메일" width="180" resizable />
+        <el-table-column prop="user_phone_num" label="전화번호" width="120" resizable />
+        <el-table-column prop="dept_cd" label="부서" width="80" resizable />
+        <el-table-column prop="user_job" label="직책" width="80" resizable />
+        <el-table-column prop="user_acl" label="권한" width="80" resizable>
           <template #default="{ row }">
             <el-tag :type="getAclType(row.user_acl)">
               {{ getAclText(row.user_acl) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="user_stat" label="상태" width="80">
+        <el-table-column prop="user_stat" label="상태" width="80" resizable>
           <template #default="{ row }">
             <el-tag :type="getStatusType(row.user_stat)">
               {{ getStatusLabel(row.user_stat) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="hire_dt" label="입사일" width="100">
+        <el-table-column prop="hire_dt" label="입사일" width="100" resizable>
           <template #default="{ row }">
             {{ formatDate(row.hire_dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="change_password_dt" label="비밀번호 변경일" width="160">
+        <el-table-column prop="change_password_dt" label="비밀번호 변경일" width="160" resizable>
           <template #default="{ row }">
             {{ formatDateTime(row.change_password_dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="login_dt" label="로그인일시" width="160">
+        <el-table-column prop="login_dt" label="로그인일시" width="160" resizable>
           <template #default="{ row }">
             {{ formatDateTime(row.login_dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="update_dt" label="수정일시" width="160">
+        <el-table-column prop="update_dt" label="수정일시" width="160" resizable>
           <template #default="{ row }">
             {{ formatDateTime(row.update_dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="update_id" label="수정한사람" width="100">
+        <el-table-column prop="update_id" label="수정한사람" width="100" resizable>
           <template #default="{ row }">
             {{ row.update_id || '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="작업" width="120">
+        <el-table-column label="작업" width="150" resizable>
           <template #default="{ row }">
-            <el-button size="small" @click="editUser(row)">수정</el-button>
-            <el-button size="small" type="danger" @click="deleteUser(row)">삭제</el-button>
+            <div class="action-buttons">
+              <el-button
+                type="primary"
+                size="small"
+                @click="editUser(row)"
+              >
+                <el-icon><Edit /></el-icon>
+                수정
+              </el-button>
+              <el-button
+                type="danger"
+                size="small"
+                @click="deleteUser(row)"
+              >
+                <el-icon><Delete /></el-icon>
+                삭제
+              </el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -128,7 +144,7 @@
     <div class="help-sidebar" :class="{ 'show': showHelp }">
       <div class="sidebar-header">
         <h3>사용자 관리 도움말</h3>
-        <el-button type="link"
+        <el-button type="text"
           :icon="Close" 
           @click="showHelp = false"
           class="close-btn"
@@ -209,7 +225,13 @@
           <el-input v-model="userForm.user_phone_num" placeholder="전화번호를 입력하세요" />
         </el-form-item>
         <el-form-item label="부서" prop="dept_cd">
-          <el-input v-model="userForm.dept_cd" placeholder="부서를 입력하세요" />
+          <div class="dept-input-group">
+            <el-input v-model="userForm.dept_cd" placeholder="부서명을 선택하세요" readonly />
+            <el-button type="primary" @click="openDeptModal">
+              <el-icon><Search /></el-icon>
+              부서 선택
+            </el-button>
+          </div>
         </el-form-item>
         <el-form-item label="직책" prop="user_job">
           <el-input v-model="userForm.user_job" placeholder="직책을 입력하세요" />
@@ -243,6 +265,34 @@
       </template>
     </el-dialog>
 
+    <!-- 부서 선택 모달 -->
+    <el-dialog v-model="showDeptModal" title="부서 선택" width="800px">
+      <div class="dept-modal-content">
+        <el-table 
+          :data="deptList" 
+          style="width: 100%" 
+          border 
+          resizable
+          @row-click="selectDept"
+          highlight-current-row
+        >
+          <el-table-column prop="deptCode" label="부서코드" width="120" resizable />
+          <el-table-column prop="dept" label="부서명" min-width="200" resizable />
+          <el-table-column prop="status" label="상태" width="100" resizable>
+            <template #default="scope">
+              <el-tag :type="scope.row.status === 'N' ? 'success' : 'danger'">
+                {{ scope.row.status === 'Y' ? '사용중' : '삭제됨' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="showDeptModal = false">취소</el-button>
+        </div>
+      </template>
+    </el-dialog>
 
   </div>
 </template>
@@ -250,8 +300,9 @@
 <script setup>
 import {computed, onMounted, ref} from 'vue'
 import axios from 'axios'
+import '../css/UserManagement.css'
 import {ElMessage, ElMessageBox} from 'element-plus'
-import {Close, Plus, QuestionFilled} from '@element-plus/icons-vue'
+import {Close, Plus, QuestionFilled, Edit, Delete, Search} from '@element-plus/icons-vue'
 
 // Props
 const props = defineProps({
@@ -276,6 +327,10 @@ const isEditMode = ref(false)
 const userFormRef = ref()
 const showHelp = ref(false)
 const tableKey = ref(0)
+
+// 부서 관련 상태
+const showDeptModal = ref(false)
+const deptList = ref([])
 
 // 검색 및 페이지네이션 상태
 const searchName = ref('')
@@ -401,12 +456,9 @@ const formatDateTime = (dateString) => {
 async function loadUsers() {
   loading.value = true
   try {
-    const token = sessionStorage.getItem("jwt_token"); 
-    if (!token) {
-      console.error("JWT 토큰이 없습니다.");
-      return;
-    }
-    const response = await axios.get('/Admin/all-user' , { headers: { Authorization: `Bearer ${token}`}})
+    // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로
+    // 클라이언트에서는 토큰을 직접 확인하지 않음
+    const response = await axios.get('/Admin/all-user')
     console.log("서버 응답 데이터:", response.data)
     
     // 원본 데이터 그대로 사용 (매핑 제거)
@@ -468,6 +520,39 @@ function addUser() {
   showAddUserForm.value = true
 }
 
+// 부서 목록 조회
+async function loadDeptList() {
+  try {
+    const response = await axios.get('/user/getDeptList')
+    if (response.data && response.data.body) {
+      deptList.value = Array.isArray(response.data.body) ? response.data.body : []
+    } else {
+      deptList.value = []
+    }
+  } catch (error) {
+    console.error('부서 목록 조회 오류:', error)
+    ElMessage.error('부서 목록을 불러오는데 실패했습니다.')
+    deptList.value = []
+  }
+}
+
+// 부서 모달 열기
+async function openDeptModal() {
+  showDeptModal.value = true
+  await loadDeptList()
+}
+
+// 부서 선택
+function selectDept(dept) {
+  if (dept.status === 'N') { // 사용중인 부서만 선택 가능
+    userForm.value.dept_cd = dept.dept  // 부서명을 입력
+    showDeptModal.value = false
+    ElMessage.success(`${dept.dept} 부서가 선택되었습니다.`)
+  } else {
+    ElMessage.warning('사용중인 부서를 선택해주세요.')
+  }
+}
+
 // 사용자 삭제
 async function deleteUser(user) {
   try {
@@ -495,10 +580,11 @@ async function deleteUser(user) {
       }
     )
     
-    const token = sessionStorage.getItem('jwt_token')
-    await axios.delete(`/Admin/deleteUser/${loginId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로 헤더 설정 불필요
+    await axios.put(`/Admin/update/${loginId}` ,{
+      status: "INACTIVE"
+        }
+    )
     
     ElMessage.success('사용자가 삭제되었습니다.')
     loadUsers() // 사용자 목록 새로고침
@@ -522,7 +608,7 @@ function editUser(user) {
     user_acl: user.user_acl || 1,    user_stat: user.user_stat || 'ACTIVE',
     hire_dt: user.hire_dt || null
   }
-  showAddUserForm.value = true
+  showAddUserForm.value = true  // 수정 모달 열기
 }
 
 // 사용자 저장
@@ -534,14 +620,12 @@ async function saveUser() {
     
     if (isEditMode.value) {
       // 수정
-      const token = sessionStorage.getItem('jwt_token')
+      // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로 헤더 설정 불필요
       
       // 비밀번호가 입력된 경우 비밀번호 변경 API 호출
       if (userForm.value.password && userForm.value.password.trim() !== '') {
         await axios.put(`/Admin/changePassword/${userForm.value.login_id}`, {
           password: userForm.value.password
-        }, {
-          headers: { Authorization: `Bearer ${token}` }
         })
         ElMessage.success('비밀번호가 변경되었습니다.')
       }
@@ -550,16 +634,12 @@ async function saveUser() {
       const userDataForUpdate = { ...userForm.value }
       delete userDataForUpdate.password // 비밀번호는 별도로 처리했으므로 제거
       
-      await axios.put(`/Admin/update/${userForm.value.user_id}`, userDataForUpdate, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      await axios.put(`/Admin/update/${userForm.value.user_id}`, userDataForUpdate)
       ElMessage.success('사용자 정보가 수정되었습니다.')
     } else {
       // 등록
-      const token = sessionStorage.getItem('jwt_token')
-      await axios.post('/Admin/createUser', userForm.value, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로 헤더 설정 불필요
+      await axios.post('/Admin/createUser', userForm.value)
       ElMessage.success('사용자가 등록되었습니다.')
     }
     
@@ -586,10 +666,6 @@ function resetUserForm() {
   isEditMode.value = false
 }
 
-
-
-
-
 // 도움말 토글
 function toggleHelp() {
   console.log('도움말 버튼 클릭됨')
@@ -612,292 +688,3 @@ onMounted(() => {
   loadUsers()
 })
 </script>
-
-<style scoped>
-.user-management-page {
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  background: #f8f9fa;
-  overflow: auto;
-  margin: 0;
-  box-sizing: border-box;
-}
-
-.search-section {
-  margin-bottom: 20px;
-  padding: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.search-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.search-header h3 {
-  margin: 0;
-  color: #2c3e50;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.search-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  align-items: flex-end;
-}
-
-.search-form .el-form-item {
-  margin-bottom: 0;
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 20px 0;
-}
-
-/* 테이블 스타일 개선 */
-.table-section {
-  margin-top: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-/* 테이블 헤더 중앙 정렬 */
-:deep(.el-table th) {
-  text-align: center !important;
-}
-
-:deep(.el-table th .cell) {
-  text-align: center !important;
-}
-
-:deep(.el-table__header-wrapper .el-table__header th) {
-  text-align: center !important;
-}
-
-:deep(.el-table__header-wrapper .el-table__header th .cell) {
-  text-align: center !important;
-}
-
-:deep(.el-table) {
-  table-layout: fixed !important;
-  width: 100% !important;
-}
-
-:deep(.el-table__header-wrapper) {
-  width: 100% !important;
-}
-
-:deep(.el-table__header) {
-  width: 100% !important;
-}
-
-:deep(.el-table__body-wrapper) {
-  width: 100% !important;
-}
-
-:deep(.el-table__row) {
-  width: 100% !important;
-}
-
-:deep(.el-scrollbar__view) {
-  width: 100% !important;
-}
-
-:deep(.el-table__body) {
-  width: 100% !important;
-}
-
-:deep(.el-table__inner-wrapper) {
-  width: 100% !important;
-}
-
-:deep(.el-table__fixed) {
-  width: 100% !important;
-}
-
-:deep(.el-table__fixed-right) {
-  width: 100% !important;
-}
-
-:deep(.el-table__fixed-header-wrapper) {
-  width: 100% !important;
-}
-
-:deep(.el-table__fixed-body-wrapper) {
-  width: 100% !important;
-}
-
-:deep(.el-table__body-wrapper) {
-  text-align: center !important;
-}
-
-:deep(.el-table__header-wrapper) {
-  text-align: center !important;
-}
-
-:deep(.el-table th) {
-  text-align: center !important;
-  padding: 8px 0 !important;
-}
-
-:deep(.el-table td) {
-  text-align: center !important;
-  padding: 8px 0 !important;
-}
-
-:deep(.el-table .cell) {
-  text-align: center !important;
-  padding: 8px 0 !important;
-}
-
-:deep(.el-table td) {
-  text-align: center !important;
-}
-
-:deep(.el-table td .cell) {
-  text-align: center !important;
-}
-
-/* 테이블 컨테이너 반응형 */
-.table-section {
-  margin-top: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow-x: auto; /* 가로 스크롤 추가 */
-  width: 100%;
-}
-
-/* 테이블 최소 너비 설정 */
-:deep(.el-table) {
-  min-width: 1200px; /* 테이블 최소 너비 */
-}
-
-.pagination-section {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-  background: white;
-  border-top: 1px solid #eee;
-}
-
-:deep(.el-button) {
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-:deep(.el-button:hover) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-:deep(.el-tag) {
-  border-radius: 6px;
-  font-weight: 500;
-  border: none;
-}
-
-:deep(.el-input) {
-  border-radius: 8px;
-}
-
-:deep(.el-select) {
-  border-radius: 8px;
-}
-
-/* 도움말 사이드바 스타일 */
-.help-sidebar {
-  position: fixed;
-  top: 0;
-  right: -400px;
-  width: 400px;
-  height: 100vh;
-  background: white;
-  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  transition: right 0.3s ease;
-  overflow-y: auto;
-  padding: 20px;
-}
-
-.help-sidebar.show {
-  right: 0;
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
-}
-
-.sidebar-header h3 {
-  margin: 0;
-  color: #2c3e50;
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.close-btn {
-  font-size: 18px;
-  color: #666;
-}
-
-.close-btn:hover {
-  color: #409eff;
-}
-
-.help-content {
-  padding: 0;
-}
-
-.help-section {
-  margin-bottom: 25px;
-}
-
-.help-section h4 {
-  color: #2c3e50;
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #f0f0f0;
-}
-
-.help-section ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.help-section li {
-  padding: 8px 0;
-  color: #555;
-  line-height: 1.5;
-  border-bottom: 1px solid #f9f9f9;
-}
-
-.help-section li:last-child {
-  border-bottom: none;
-}
-
-.help-section strong {
-  color: #2c3e50;
-  font-weight: 600;
-}
-</style> 

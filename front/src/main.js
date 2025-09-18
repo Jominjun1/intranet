@@ -11,10 +11,8 @@ import router from './router'
 axios.defaults.baseURL = 'http://localhost:8080'
 axios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('jwt_token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
+    // 쿠키 기반 인증 - withCredentials로 쿠키 자동 전송
+    config.withCredentials = true
     return config
   },
   (error) => {
@@ -28,8 +26,8 @@ axios.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('jwt_token')
-      localStorage.removeItem('user_info')
+      // 쿠키 기반 인증 - 사용자 정보만 삭제, 토큰은 백엔드에서 처리
+      sessionStorage.removeItem('user_info')
       window.location.reload()
     }
     return Promise.reject(error)

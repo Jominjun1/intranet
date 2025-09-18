@@ -2,24 +2,24 @@ package com.example.tag_dev.TAG.Controller;
 
 import com.example.tag_dev.TAG.DTO.TagSettingDTO;
 import com.example.tag_dev.TAG.Service.TagService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Map;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/tags")
 public class TagController {
 
-    @Autowired
     private final TagService tagService;
-
-    public TagController(TagService tagService) {
-        this.tagService = tagService;
-    }
 
     // 스마트태그 재고 목록 조회 (ORD_NO 기준 매칭, 검색조건 포함)
     @GetMapping("/getTagList")
@@ -52,9 +52,26 @@ public class TagController {
 
     // 세팅정보 수정/삭제 (제품버전 0.1 증가)
     @PutMapping("/update_setting_{ordNo}")
-    public ResponseEntity<?> updateSettingInfo(@PathVariable String ordNo, @RequestBody TagSettingDTO SettingDTO, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> updateSettingInfo(@PathVariable String ordNo, @RequestBody TagSettingDTO SettingDTO, HttpServletRequest request) {
         log.info("세팅정보 수정 요청 : {}", ordNo);
+        String token = extractTokenFromCookie(request);
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰이 없습니다.");
+        }
         return ResponseEntity.ok(tagService.updateSettingInfo(ordNo, SettingDTO, token));
+    }
+    
+    // 쿠키에서 토큰을 추출하는 헬퍼 메서드
+    private String extractTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("access_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 
     // AS 이력 조회 (생성일 순으로 정렬, MAC주소 포함, 삭제여부 필터링)

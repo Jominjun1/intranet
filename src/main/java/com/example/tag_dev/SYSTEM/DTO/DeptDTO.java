@@ -3,6 +3,7 @@ package com.example.tag_dev.SYSTEM.DTO;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class DeptDTO {
@@ -14,4 +15,7 @@ public class DeptDTO {
     private Date updateDt;
     private String updateUser;
     private String Status;
+
+    private String parentDeptCode; // 상위 부서 코드
+    private List<String> childDeptCodes; // 하위 부서 코드 목록(선택)
 }

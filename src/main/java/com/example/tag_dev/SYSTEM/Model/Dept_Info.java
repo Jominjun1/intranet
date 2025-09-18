@@ -1,14 +1,15 @@
 package com.example.tag_dev.SYSTEM.Model;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -30,4 +31,13 @@ public class Dept_Info {
     private Date updateDt; // 수정일
     @Column(name="UPDATE_USER")
     private String updateUser; // 수정자 명
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "PARENT_DEPT_CD") // 상위 부서 코드
+    private Dept_Info parentDept;
+
+    @OneToMany(mappedBy = "parentDept" , cascade = CascadeType.ALL , orphanRemoval = true)
+    @JsonManagedReference
+    private List<Dept_Info> childDepts = new ArrayList<>();
 }

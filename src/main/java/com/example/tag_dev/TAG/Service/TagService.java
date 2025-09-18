@@ -9,17 +9,18 @@ import com.example.tag_dev.LOG.Repository.*;
 import com.example.tag_dev.TAG.DTO.TagSettingDTO;
 import com.example.tag_dev.TAG.Model.*;
 import com.example.tag_dev.TAG.Repository.*;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
-import static com.example.tag_dev.USER.Service.UserService.getStrings;
 
 @Service
 public class TagService {
@@ -58,10 +59,11 @@ public class TagService {
 
     // 조회 (필터 - Mac주소 , 시리얼번호 , 공장코드 , 삭제 여부 )
     public ResponseEntity<?> getTagInventoryList(String macAddr, String facCd, String facNo, String delFilter) {
-        // 검색 조건이 없으면 빈 배열 반환
+        // delFilter가 있으면 모든 태그 조회 허용 (빈 검색 조건으로도 조회 가능)
         boolean hasSearchCondition = (macAddr != null && !macAddr.trim().isEmpty()) ||
                 (facCd != null && !facCd.trim().isEmpty()) ||
-                (facNo != null && !facNo.trim().isEmpty());
+                (facNo != null && !facNo.trim().isEmpty()) ||
+                (delFilter != null && !delFilter.trim().isEmpty());
 
         if (!hasSearchCondition) {
             return ResponseEntity.ok(new ArrayList<>());
@@ -78,17 +80,24 @@ public class TagService {
                     ))
                     .findFirst().orElse(null);
 
-            // 검색 조건에 맞는지 확인
-            if (common != null) {
-                if ((macAddr != null && !macAddr.trim().isEmpty() && !common.getMacAddr().contains(macAddr)) ||
-                        (facCd != null && !facCd.trim().isEmpty() && !common.getFacCd().contains(facCd)) ||
-                        (facNo != null && !facNo.trim().isEmpty() && !common.getFacNo().contains(facNo))) {
+            // 검색 조건에 맞는지 확인 (검색 조건이 없으면 모든 데이터 포함)
+            boolean hasSpecificSearchCondition = (macAddr != null && !macAddr.trim().isEmpty()) ||
+                    (facCd != null && !facCd.trim().isEmpty()) ||
+                    (facNo != null && !facNo.trim().isEmpty());
+            
+            if (hasSpecificSearchCondition) {
+                if (common != null) {
+                    if ((macAddr != null && !macAddr.trim().isEmpty() && !common.getMacAddr().contains(macAddr)) ||
+                            (facCd != null && !facCd.trim().isEmpty() && !common.getFacCd().contains(facCd)) ||
+                            (facNo != null && !facNo.trim().isEmpty() && !common.getFacNo().contains(facNo))) {
+                        continue;
+                    }
+                } else {
+                    // common이 null이고 검색 조건이 있으면 제외
                     continue;
                 }
-            } else {
-                // common이 null이어도 검색 조건이 없으면 포함
-                continue;
             }
+            // 검색 조건이 없으면 모든 데이터 포함
 
             // Status 필터링 적용
             String status = basic.getStatus();
@@ -102,7 +111,7 @@ public class TagService {
 
             Map<String, Object> row = new HashMap<>();
             row.put("tag_No", basic.getOrdNo());
-            row.put("ordNo", basic.getOrdNo()); // 호환성을 위해 ordNo도 추가
+            row.put("ordNo", basic.getOrdNo()); 
             row.put("tag_Type", basic.getTagType());
             row.put("erp_Code", basic.getErpCode());
             row.put("Mng_Category", basic.getMngCategory());
@@ -111,12 +120,12 @@ public class TagService {
             row.put("Project_code", basic.getProject_code());
             row.put("Project_manager", basic.getProject_manager());
             row.put("Mac_duple_yn", basic.getMac_duple_yn());
-            row.put("Status", status); // Status 추가
+            row.put("Status", status);
 
             // common 정보가 있으면 추가
-            row.put("mac_Addr", common.getMacAddr());
-            row.put("fac_Cd", common.getFacCd());
-            row.put("fac_No", common.getFacNo());
+            row.put("mac_Addr", common != null ? common.getMacAddr() : "");
+            row.put("fac_Cd", common != null ? common.getFacCd() : "");
+            row.put("fac_No", common != null ? common.getFacNo() : "");
             Optional<Version_Info> ver = versionInfoRepository.findAll().stream()
                     .filter(v -> v.getOrdNo() != null && v.getOrdNo().equals(basic.getOrdNo()))
                     .max(Comparator.comparing(Version_Info::getTag_version));
@@ -254,6 +263,23 @@ public class TagService {
         if (dto.getStatus() != null && !dto.getStatus().trim().isEmpty()) {
             setting.setStatus(dto.getStatus());
         }
+    }
+
+    // null이 아닌 프로퍼티만 가져오는 헬퍼 메서드
+    private String[] getNullPropertyNames(Object source) {
+        final BeanWrapper src = new BeanWrapperImpl(source);
+        PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        Set<String> emptyNames = new HashSet<>();
+        for (PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null || (srcValue instanceof String && ((String) srcValue).isEmpty())) {
+                emptyNames.add(pd.getName());
+            }
+        }
+
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
     }
 
     // 세팅정보 로그 생성 헬퍼 메서드

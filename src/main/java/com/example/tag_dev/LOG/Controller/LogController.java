@@ -1,8 +1,8 @@
 package com.example.tag_dev.LOG.Controller;
 
 import com.example.tag_dev.LOG.Service.LogService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,15 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @RequestMapping("/Log")
 public class LogController {
 
-    @Autowired
     private final LogService logService;
-
-    public LogController(LogService logService) {
-        this.logService = logService;
-    }
 
     @GetMapping("/getLog")
     public ResponseEntity<?> getLog(@RequestParam String type, @RequestParam(required = false) String startDate,

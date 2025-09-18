@@ -33,3 +33,14 @@ spring:
     metrics:
       tags:
         application: ${spring.application.name}
+  # mail:
+  #  host: smtp.gmail.com
+  #  port: 587
+  #  username: mmin0307g@gmail.com
+  #  password: alswns7159@
+  #  properties:
+  #    mail:
+  #      smtp:
+  #        auth: true
+  #        starttls:
+  #          enable: true

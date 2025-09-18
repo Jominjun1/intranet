@@ -1,19 +1,17 @@
 package com.example.tag_dev.Config;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.net.URI;
 
+@RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
 
     private final JwtTokenProvider jwtTokenProvider;
-
-    public WebSocketHandler(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
