@@ -1,0 +1,345 @@
+.user-management-page {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    background: #f8f9fa;
+    overflow: auto;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.search-section {
+    margin-bottom: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.search-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.search-form .el-form-item {
+    margin-bottom: 0;
+}
+
+.dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 0;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.action-buttons .el-button {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* 부서 입력 그룹 스타일 */
+.dept-input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.dept-input-group .el-input {
+    flex: 1;
+}
+
+/* 부서 모달 스타일 */
+.dept-modal-content {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.dept-modal-content .el-table {
+    cursor: pointer;
+}
+
+.dept-modal-content .el-table tbody tr:hover {
+    background-color: #f5f7fa;
+}
+
+/* 테이블 텍스트 오버플로우 처리 */
+:deep(.el-table .cell) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 8px 12px;
+}
+
+:deep(.el-table .el-table__cell) {
+    padding: 0;
+}
+
+:deep(.el-table .cell:hover) {
+    white-space: normal;
+    word-break: break-all;
+    background-color: #f5f7fa;
+    z-index: 10;
+    position: relative;
+}
+
+/* 테이블 스타일 개선 */
+.table-section {
+    margin-top: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* 테이블 헤더 중앙 정렬 */
+:deep(.el-table th) {
+    text-align: center !important;
+}
+
+:deep(.el-table th .cell) {
+    text-align: center !important;
+}
+
+:deep(.el-table__header-wrapper .el-table__header th) {
+    text-align: center !important;
+}
+
+:deep(.el-table__header-wrapper .el-table__header th .cell) {
+    text-align: center !important;
+}
+
+:deep(.el-table) {
+    table-layout: fixed !important;
+    width: 100% !important;
+}
+
+:deep(.el-table__header-wrapper) {
+    width: 100% !important;
+}
+
+:deep(.el-table__header) {
+    width: 100% !important;
+}
+
+:deep(.el-table__body-wrapper) {
+    width: 100% !important;
+}
+
+:deep(.el-table__row) {
+    width: 100% !important;
+}
+
+:deep(.el-scrollbar__view) {
+    width: 100% !important;
+}
+
+:deep(.el-table__body) {
+    width: 100% !important;
+}
+
+:deep(.el-table__inner-wrapper) {
+    width: 100% !important;
+}
+
+:deep(.el-table__fixed) {
+    width: 100% !important;
+}
+
+:deep(.el-table__fixed-right) {
+    width: 100% !important;
+}
+
+:deep(.el-table__fixed-header-wrapper) {
+    width: 100% !important;
+}
+
+:deep(.el-table__fixed-body-wrapper) {
+    width: 100% !important;
+}
+
+:deep(.el-table__body-wrapper) {
+    text-align: center !important;
+}
+
+:deep(.el-table__header-wrapper) {
+    text-align: center !important;
+}
+
+:deep(.el-table th) {
+    text-align: center !important;
+    padding: 8px 0 !important;
+}
+
+:deep(.el-table td) {
+    text-align: center !important;
+    padding: 8px 0 !important;
+}
+
+:deep(.el-table .cell) {
+    text-align: center !important;
+    padding: 8px 0 !important;
+}
+
+:deep(.el-table td) {
+    text-align: center !important;
+}
+
+:deep(.el-table td .cell) {
+    text-align: center !important;
+}
+
+/* 테이블 컨테이너 반응형 */
+.table-section {
+    margin-top: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* 가로 스크롤 추가 */
+    width: 100%;
+}
+
+/* 테이블 최소 너비 설정 */
+:deep(.el-table) {
+    min-width: 1200px; /* 테이블 최소 너비 */
+}
+
+.pagination-section {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background: white;
+    border-top: 1px solid #eee;
+}
+
+:deep(.el-button) {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.el-button:hover) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+:deep(.el-tag) {
+    border-radius: 6px;
+    font-weight: 500;
+    border: none;
+}
+
+:deep(.el-input) {
+    border-radius: 8px;
+}
+
+:deep(.el-select) {
+    border-radius: 8px;
+}
+
+/* 도움말 사이드바 스타일 */
+.help-sidebar {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100vh;
+    background: white;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.help-sidebar.show {
+    right: 0;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.close-btn {
+    font-size: 18px;
+    color: #666;
+}
+
+.close-btn:hover {
+    color: #409eff;
+}
+
+.help-content {
+    padding: 0;
+}
+
+.help-section {
+    margin-bottom: 25px;
+}
+
+.help-section h4 {
+    color: #2c3e50;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.help-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.help-section li {
+    padding: 8px 0;
+    color: #555;
+    line-height: 1.5;
+    border-bottom: 1px solid #f9f9f9;
+}
+
+.help-section li:last-child {
+    border-bottom: none;
+}
+
+.help-section strong {
+    color: #2c3e50;
+    font-weight: 600;
+}
