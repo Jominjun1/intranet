@@ -574,16 +574,24 @@ function resetSearch() {
 function handleSizeChange(val) {
   pageSize.value = val
   currentPage.value = 1
-  loadLogs()
 }
 
 function handleCurrentChange(val) {
   currentPage.value = val
-  loadLogs()
 }
 
 // 초기 로드
 onMounted(() => {
+  // 오늘 날짜 범위 설정 (00:00:00 ~ 23:59:59)
+  const today = new Date()
+  const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59)
+  
+  dateRange.value = [
+    startOfDay.toISOString().split('T')[0], // YYYY-MM-DD 형식
+    endOfDay.toISOString().split('T')[0]    // YYYY-MM-DD 형식
+  ]
+  
   loadLogs()
 })
 </script>

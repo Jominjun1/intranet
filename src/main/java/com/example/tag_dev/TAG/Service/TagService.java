@@ -9,6 +9,7 @@ import com.example.tag_dev.LOG.Repository.*;
 import com.example.tag_dev.TAG.DTO.TagSettingDTO;
 import com.example.tag_dev.TAG.Model.*;
 import com.example.tag_dev.TAG.Repository.*;
+import com.example.tag_dev.USER.Service.UserService;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class TagService {
 
     // 조회 (필터 - Mac주소 , 시리얼번호 , 공장코드 , 삭제 여부 )
     public ResponseEntity<?> getTagInventoryList(String macAddr, String facCd, String facNo, String delFilter) {
-        // delFilter가 있으면 모든 태그 조회 허용 (빈 검색 조건으로도 조회 가능)
+        // 모든 태그 조회 허용 (빈 검색 조건으로도 조회 가능)
         boolean hasSearchCondition = (macAddr != null && !macAddr.trim().isEmpty()) ||
                 (facCd != null && !facCd.trim().isEmpty()) ||
                 (facNo != null && !facNo.trim().isEmpty()) ||
@@ -80,7 +81,7 @@ public class TagService {
                     ))
                     .findFirst().orElse(null);
 
-            // 검색 조건에 맞는지 확인 (검색 조건이 없으면 모든 데이터 포함)
+            // 검색 조건에 맞는지 확인 (검색 조건이 없으면 모든 데이터 조회)
             boolean hasSpecificSearchCondition = (macAddr != null && !macAddr.trim().isEmpty()) ||
                     (facCd != null && !facCd.trim().isEmpty()) ||
                     (facNo != null && !facNo.trim().isEmpty());
@@ -93,13 +94,10 @@ public class TagService {
                         continue;
                     }
                 } else {
-                    // common이 null이고 검색 조건이 있으면 제외
                     continue;
                 }
             }
-            // 검색 조건이 없으면 모든 데이터 포함
-
-            // Status 필터링 적용
+            // 삭제 여부 필터링
             String status = basic.getStatus();
             if (delFilter != null && !delFilter.trim().isEmpty()) {
                 if ("active".equals(delFilter) && "Y".equals(status)) {
@@ -140,7 +138,6 @@ public class TagService {
         return ResponseEntity.ok(result);
     }
 
-    //
     public ResponseEntity<?> getProcStep(String ordNo) {
         Proc_Step result = procStepRepository.findAll().stream().filter(p -> ordNo.equals(p.getOrdNo())).findFirst().orElse(null);
         return ResponseEntity.ok(result);
@@ -161,17 +158,17 @@ public class TagService {
 
     public ResponseEntity<?> updateSettingInfo(String ordNo, TagSettingDTO dto, String token) {
         // 토큰에서 사용자 ID 추출
-        if (jwtTokenProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
+        if (!jwtTokenProvider.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰");
         }
         Long userId = jwtTokenProvider.extractUserId(token);
         if (userId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 ID를 추출할 수 없습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 ID를 추출할 수 없음");
         }
 
         Optional<Setting_Info> settingOpt = settingInfoRepository.findByOrdNo(ordNo);
         if (settingOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 태그의 세팅정보를 찾을 수 없습니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 태그 세팅정보를 찾을 수 없음");
         }
 
         Setting_Info setting = settingOpt.get();
@@ -181,14 +178,14 @@ public class TagService {
 
         // 수정 정보 설정
         setting.setUPDATE_DT(new Date());
-        setting.setUPDATE_ID(userId.toString()); // 토큰에서 추출한 실제 사용자 ID 사용
+        setting.setUPDATE_ID(userId.toString());
 
         settingInfoRepository.save(setting);
 
-        // 세팅정보 로그 생성 (토큰에서 추출한 사용자 ID 전달)
+        // 세팅정보 로그 생성
         createSettingInfoLog(ordNo, dto, userId);
 
-        // 버전 정보 업데이트 (토큰에서 추출한 사용자 ID 전달)
+        // 버전 정보 업데이트
         updateVersionInfo(ordNo, dto, userId);
 
         return ResponseEntity.ok(setting);
@@ -267,19 +264,7 @@ public class TagService {
 
     // null이 아닌 프로퍼티만 가져오는 헬퍼 메서드
     private String[] getNullPropertyNames(Object source) {
-        final BeanWrapper src = new BeanWrapperImpl(source);
-        PropertyDescriptor[] pds = src.getPropertyDescriptors();
-
-        Set<String> emptyNames = new HashSet<>();
-        for (PropertyDescriptor pd : pds) {
-            Object srcValue = src.getPropertyValue(pd.getName());
-            if (srcValue == null || (srcValue instanceof String && ((String) srcValue).isEmpty())) {
-                emptyNames.add(pd.getName());
-            }
-        }
-
-        String[] result = new String[emptyNames.size()];
-        return emptyNames.toArray(result);
+        return UserService.getStrings(source);
     }
 
     // 세팅정보 로그 생성 헬퍼 메서드
@@ -345,8 +330,7 @@ public class TagService {
         }
 
         versionInfoRepository.save(newVersion);
-
-        // 버전 정보 로그 생성
+        
         createVersionInfoLog(newVersion, userId);
     }
 
@@ -365,7 +349,6 @@ public class TagService {
         } else {
             versionInfoLog.setStatus("수정");
         }
-
         versionInfoLogRepository.save(versionInfoLog);
     }
 

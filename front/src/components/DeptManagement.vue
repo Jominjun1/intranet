@@ -5,7 +5,6 @@
       <p class="page-description">부서 정보를 등록, 수정, 삭제할 수 있습니다.</p>
     </div>
 
-    <!-- 검색 및 필터 영역 -->
     <div class="search-section">
       <div class="search-controls">
         <div class="search-group">
@@ -47,7 +46,6 @@
       </div>
     </div>
 
-    <!-- 액션 버튼 영역 -->
     <div class="action-section">
       <el-button type="primary" @click="showAddDeptForm" v-if="userAcl >= 3">
         <el-icon><Plus /></el-icon>
@@ -55,7 +53,6 @@
       </el-button>
     </div>
 
-    <!-- 부서 목록 테이블 -->
     <div class="table-section">
       <el-table
         :data="displayedDepts"
@@ -111,7 +108,6 @@
       </el-table>
     </div>
 
-    <!-- 부서 등록/수정 폼 -->
     <el-dialog
       v-model="showDeptForm"
       :title="isEditMode ? '부서 수정' : '부서 등록'"
@@ -172,7 +168,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Refresh, Plus, Edit, Delete } from '@element-plus/icons-vue'
 import axios from 'axios'
 
-// Props
 const props = defineProps({
   userInfo: {
     type: Object,
@@ -180,10 +175,8 @@ const props = defineProps({
   }
 })
 
-// Computed
 const userAcl = computed(() => parseInt(props.userInfo.user_acl || '0'))
 
-// Reactive data
 const loading = ref(false)
 const saving = ref(false)
 const depts = ref([])
@@ -192,13 +185,11 @@ const showDeptForm = ref(false)
 const isEditMode = ref(false)
 const deptFormRef = ref()
 
-// 검색 폼
 const searchForm = ref({
   dept: '',
   deptCode: '',
   status: 'all'
 })
-// 표시용 필터링 데이터
 const displayedDepts = computed(() => {
   const name = (searchForm.value.dept || '').trim()
   const code = (searchForm.value.deptCode || '').trim()
@@ -213,14 +204,12 @@ const displayedDepts = computed(() => {
 })
 
 
-// 부서 폼
 const deptForm = ref({
   deptCode: '',
   dept: '',
   parentDeptCode: ''
 })
 
-// 폼 검증 규칙
 const deptFormRules = {
   deptCode: [
     { required: true, message: '부서코드를 입력하세요', trigger: 'blur' },
@@ -232,7 +221,6 @@ const deptFormRules = {
   ]
 }
 
-// Methods
 async function loadDepts() {
   loading.value = true
   try {
@@ -240,15 +228,12 @@ async function loadDepts() {
     const response = await axios.get('/user/getDeptList')
     console.log('부서 목록 응답:', response)
     
-    // 응답 데이터 구조 확인 및 안전한 처리
     let responseData = response.data
     
-    // 응답이 래핑된 경우 body에서 추출
     if (responseData && typeof responseData === 'object' && responseData.body !== undefined) {
       responseData = responseData.body
     }
     
-    // 배열이 아닌 경우 빈 배열로 설정
     if (Array.isArray(responseData)) {
       depts.value = responseData
       parentOptions.value = responseData
@@ -259,7 +244,6 @@ async function loadDepts() {
     
     console.log('부서 목록 데이터:', depts.value)
     
-    // 데이터가 없으면 안내 메시지
     if (depts.value.length === 0) {
       ElMessage.info('등록된 부서가 없습니다.')
     }
@@ -267,7 +251,7 @@ async function loadDepts() {
     console.error('부서 목록 조회 오류:', error)
     console.error('오류 응답:', error.response)
     ElMessage.error(`부서 목록을 불러오는데 실패했습니다: ${error.response?.data || error.message}`)
-    depts.value = [] // 오류 시에도 빈 배열로 초기화
+    depts.value = []
   } finally {
     loading.value = false
   }
@@ -379,7 +363,6 @@ async function deleteDept(dept) {
       }
     )
     
-    // 부서 삭제 (상태를 'Y'로 변경)
     await axios.put(`/Admin/changeDept/${dept.deptCode}`, {
       dept: dept.dept,
       status: 'Y'
@@ -411,7 +394,6 @@ function formatDate(dateString) {
   }
 }
 
-// Lifecycle
 onMounted(() => {
   loadDepts()
 })
@@ -497,7 +479,6 @@ onMounted(() => {
   flex-wrap: nowrap;
 }
 
-/* 테이블 텍스트 오버플로우 처리 */
 :deep(.el-table .cell) {
   white-space: nowrap;
   overflow: hidden;
@@ -517,7 +498,6 @@ onMounted(() => {
   position: relative;
 }
 
-/* 반응형 */
 @media (max-width: 768px) {
   .search-controls {
     flex-direction: column;

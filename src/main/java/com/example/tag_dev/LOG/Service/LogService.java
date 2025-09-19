@@ -22,9 +22,10 @@ public class LogService {
     private final SettingInfoRepository settingInfoRepository;
     private final UserLogRepository userLogRepository;
     private final VersionInfoLogRepository versionInfoLogRepository;
-    private SettingInfoLogRepository settingInfoLogRepository;
+    private final SettingInfoLogRepository settingInfoLogRepository;
+    private final DailyReportLogRepository dailyReportLogRepository;
 
-    // 로그 조회 ( 동적 )
+    // 로그 조회
     public ResponseEntity<?> searchLog(String type, String startDate, String endDate) {
         try {
             List<Map<String, Object>> result = new ArrayList<>();

@@ -1,6 +1,5 @@
 <template>
   <div class="user-management-page">
-    <!-- 검색 영역 -->
     <div class="search-section">
       <div class="search-header">
         <h3>사용자 검색</h3>
@@ -53,7 +52,6 @@
       </el-form>
     </div>
 
-    <!-- 테이블 영역 -->
     <div class="table-section">
       <el-table :data="paginatedData" style="width:100%" v-loading="loading" :key="tableKey" border resizable>
         <el-table-column prop="user_id" label="사용자ID" width="80" resizable />
@@ -126,7 +124,6 @@
         </el-table-column>
       </el-table>
       
-      <!-- 페이지네이션 -->
       <div class="pagination-section" v-if="users.length > 0">
         <el-pagination
           v-model:current-page="currentPage"
@@ -140,7 +137,6 @@
       </div>
     </div>
 
-    <!-- 도움말 사이드바 -->
     <div class="help-sidebar" :class="{ 'show': showHelp }">
       <div class="sidebar-header">
         <h3>사용자 관리 도움말</h3>
@@ -195,7 +191,6 @@
       </div>
     </div>
 
-    <!-- 사용자 등록/수정 모달 -->
     <el-dialog v-model="showAddUserForm" :title="isEditMode ? '사용자 수정' : '사용자 등록'" width="600px">
       <el-form :model="userForm" ref="userFormRef" label-width="120">
         <el-form-item label="이름" prop="user_name">
@@ -265,7 +260,6 @@
       </template>
     </el-dialog>
 
-    <!-- 부서 선택 모달 -->
     <el-dialog v-model="showDeptModal" title="부서 선택" width="800px">
       <div class="dept-modal-content">
         <el-table 
@@ -304,7 +298,6 @@ import '../css/UserManagement.css'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {Close, Plus, QuestionFilled, Edit, Delete, Search} from '@element-plus/icons-vue'
 
-// Props
 const props = defineProps({
   userInfo: {
     type: Object,
@@ -316,10 +309,8 @@ const props = defineProps({
   }
 })
 
-// Emits
 const emit = defineEmits(['menu-select', 'user-command'])
 
-// 상태 관리
 const loading = ref(false)
 const users = ref([])
 const showAddUserForm = ref(false)
@@ -328,11 +319,9 @@ const userFormRef = ref()
 const showHelp = ref(false)
 const tableKey = ref(0)
 
-// 부서 관련 상태
 const showDeptModal = ref(false)
 const deptList = ref([])
 
-// 검색 및 페이지네이션 상태
 const searchName = ref('')
 const searchLoginId = ref('')
 const searchDeptCd = ref('')
@@ -341,14 +330,12 @@ const searchStat = ref('')
 const currentPage = ref(1)
 const pageSize = ref(20)
 
-// 페이지네이션된 데이터
 const paginatedData = computed(() => {
   const startIndex = (currentPage.value - 1) * pageSize.value
   const endIndex = startIndex + pageSize.value
   return filteredData.value.slice(startIndex, endIndex)
 })
 
-// 필터링된 데이터
 const filteredData = computed(() => {
   return users.value.filter(user => {
     const matchesName = searchName.value ? user.userName?.includes(searchName.value) : true
