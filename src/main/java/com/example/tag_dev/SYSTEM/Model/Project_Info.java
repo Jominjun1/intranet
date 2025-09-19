@@ -27,11 +27,9 @@ public class Project_Info {
     private String region; // 지역
     private String deptCd; // 담당 부서
     private String project_status; // 프로젝트 진행 상황
+    private String createDt; // 생성일
+    private String create_id; // 생성자
     private Date startDt; // 계약 날짜
     private Date endDt; // 종료 날짜
 
-    @Column(name="USER_NAME")
-    private String userName; // 등록한 사람
-    @Column(name="REG_DT")
-    private Date regDt; // 등록일
 }

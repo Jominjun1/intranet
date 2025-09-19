@@ -229,7 +229,30 @@ public class LogService {
                         result.add(logMap);
                     }
                     break;
-
+                case "project":
+                    List<ProjectLog> projectLogs;
+                    if (start != null && end != null) {
+                        projectLogs = projectLogRepository.findByCreateDtBetween(start, end);
+                    }else{
+                        projectLogs = projectLogRepository.findAll();
+                    }
+                    for (ProjectLog log : projectLogs) {
+                        Map<String, Object> logMap = new HashMap<>();
+                        logMap.put("logId", log.getLogseq());
+                    }
+                    break;
+                case "daily":
+                    List<DailyReportLog> dailyLogs;
+                    if (start != null && end != null) {
+                        dailyLogs = dailyReportLogRepository.findByCreateDtBetween(start, end);
+                    }else{
+                        dailyLogs = dailyReportLogRepository.findAll();
+                    }
+                    for (DailyReportLog log : dailyLogs) {
+                        Map<String, Object> logMap = new HashMap<>();
+                        logMap.put("logId" , log.getLog_seq());
+                    }
+                    break;
                 default:
                     return ResponseEntity.badRequest().body("지원하지 않는 로그 타입입니다: " + type);
             }

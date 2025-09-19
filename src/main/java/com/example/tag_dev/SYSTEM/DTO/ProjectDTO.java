@@ -18,6 +18,6 @@ public class ProjectDTO {
     private Date startDt; // 계약 날짜
     private Date endDt; // 종료 날짜
     private String Status;
-    private String userName; // 등록한 사람
-    private Date regDt; // 등록일
+    private String createDt; // 생성일
+    private String create_id; // 생성자
 }
