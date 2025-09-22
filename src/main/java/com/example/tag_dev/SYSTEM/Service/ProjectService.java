@@ -53,8 +53,8 @@ public class ProjectService {
         project_Info.setStartDt(projectDTO.getStartDt());
         project_Info.setEndDt(projectDTO.getEndDt());
         project_Info.setRegion(projectDTO.getRegion());
-        project_Info.setRegDt(new Date());
-        project_Info.setUserName(jwtTokenProvider.extractUserName(token));
+        project_Info.setCreateDt(new Date());
+        project_Info.setCreate_id(jwtTokenProvider.extractUserName(token));
         projectRepository.save(project_Info);
 
         ProjectLog projectLog = new ProjectLog();
@@ -66,8 +66,8 @@ public class ProjectService {
         projectLog.setStartDt(project_Info.getStartDt());
         projectLog.setEndDt(project_Info.getEndDt());
         projectLog.setRegion(project_Info.getRegion());
-        projectLog.setUserName(jwtTokenProvider.extractUserName(token));
-        projectLog.setRegDt(new Date());
+        projectLog.setCreate_id(jwtTokenProvider.extractUserName(token));
+        projectLog.setCreateDt(new Date());
 
         projectLogRepository.save(projectLog);
 
@@ -100,8 +100,8 @@ public class ProjectService {
         BeanUtils.copyProperties(projectDTO, projectInfo, getNullPropertyNames(projectDTO));
 
         // 업데이트 정보 설정
-        projectInfo.setRegDt(new Date());
-        projectInfo.setUserName(jwtTokenProvider.extractUserName(token));
+        projectInfo.setUpdateDt(new Date());
+        projectInfo.setUpdate_id(jwtTokenProvider.extractUserName(token));
         projectRepository.save(projectInfo);
 
         // 프로젝트 로그 생성
@@ -126,8 +126,8 @@ public class ProjectService {
         projectLog.setEndDt(projectInfo.getEndDt());
         projectLog.setRegion(projectInfo.getRegion());
         projectLog.setStatus(projectInfo.getStatus());
-        projectLog.setUserName(jwtTokenProvider.extractUserName(token));
-        projectLog.setRegDt(new Date());
+        projectLog.setCreateDt(new Date());
+        projectLog.setCreate_id(jwtTokenProvider.extractUserName(token));
 
         projectLogRepository.save(projectLog);
     }
