@@ -1,0 +1,215 @@
+.sidebar {
+    width: 280px;
+    height: 100%;
+    background: #ffffff;
+    border-right: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar.collapsed {
+    width: 64px;
+}
+
+.sidebar-header {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 20px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f8fafc;
+}
+
+.toggle-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    color: #6b7280;
+}
+
+.toggle-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.sidebar-header h3 {
+    margin: 0 0 0 16px;
+    font-size: 1.1rem;
+    font-weight: 200;
+    color: #374151;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 20px 0;
+    overflow-y: auto;
+}
+
+.menu-group {
+    margin-bottom: 32px;
+}
+
+.menu-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 0 20px 16px;
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.menu-group-header.expanded {
+    color: #3b82f6;
+}
+
+.menu-group-header .expand-icon {
+    transition: transform 0.3s ease;
+    font-size: 16px;
+}
+
+.menu-group-header .expand-icon.rotated {
+    transform: rotate(180deg);
+}
+
+.submenu-items {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 20px;
+    margin-top: 8px;
+    border-left: 1px solid #e5e7eb;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #6b7280;
+    border-radius: 0 8px 8px 0;
+    margin-right: 16px;
+}
+
+.menu-item:hover {
+    background: #f3f4f6;
+    color: #3b82f6;
+}
+
+.menu-item.active {
+    background: #eff6ff;
+    color: #3b82f6;
+    font-weight: 600;
+    border-right: 3px solid #3b82f6;
+}
+
+.menu-item .el-icon {
+    font-size: 18px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.menu-item span {
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+/* 스크롤바 스타일링 */
+.sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 2px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1001;
+        transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+}
+
+/* 서브메뉴 애니메이션 */
+.submenu-enter-active,
+.submenu-leave-active {
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.submenu-enter-from {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+}
+
+.submenu-enter-to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 300px;
+}
+
+.submenu-leave-from {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 300px;
+}
+
+.submenu-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+}
+
+/* 서브메뉴 아이템 스타일 */
+.submenu-item {
+    margin-left: 20px;
+    padding-left: 16px;
+    border-left: 2px solid #e5e7eb;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+}
+
+.submenu-item:hover {
+    border-left-color: #3b82f6;
+}
+
+.submenu-item.active {
+    border-left-color: #3b82f6;
+}

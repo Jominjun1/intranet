@@ -379,6 +379,7 @@ import {computed, onMounted, ref} from 'vue'
 import {ElMessage} from 'element-plus'
 import {Close, Download, QuestionFilled} from '@element-plus/icons-vue'
 import axios from 'axios'
+import Header from "./Header.vue";
 
 // Props
 const props = defineProps({

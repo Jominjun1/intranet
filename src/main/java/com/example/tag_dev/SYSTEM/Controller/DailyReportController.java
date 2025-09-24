@@ -1,6 +1,5 @@
 package com.example.tag_dev.SYSTEM.Controller;
 
-import com.example.tag_dev.Config.JwtTokenProvider;
 import com.example.tag_dev.SYSTEM.DTO.DailyDTO;
 import com.example.tag_dev.SYSTEM.Model.DailyReport_info;
 import com.example.tag_dev.SYSTEM.Service.DailyService;
