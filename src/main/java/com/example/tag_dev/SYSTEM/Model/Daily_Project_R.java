@@ -2,11 +2,14 @@ package com.example.tag_dev.SYSTEM.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import org.springframework.transaction.annotation.Transactional;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name="DAILY_PROJECT_R")
-public class Daily_ProJect_R {
+public class Daily_Project_R {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,11 +22,11 @@ public class Daily_ProJect_R {
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "DAILY_REPORT_ID")
+    @JoinColumn(name = "DailyReportInfoId")
     private DailyReport_info dailyReportInfo;
 
     @ManyToOne
-    @JoinColumn(name = "PROJECT_CODE")
+    @JoinColumn(name = "seq")
     private Project_Info project;
 
 }

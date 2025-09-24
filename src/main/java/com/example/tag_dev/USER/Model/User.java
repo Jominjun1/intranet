@@ -48,7 +48,5 @@ public class User {
     private Date hire_dt; // 입사일자
     private Date change_password_dt; // 비밀번호 변경 일자
     private Long fail_login_cnt; // 실패한 로그인 횟수
-    @Column(name= "Status")
-    private String Status; // 삭제여부
 
 }

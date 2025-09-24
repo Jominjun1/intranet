@@ -14,7 +14,8 @@ public class ProjectDTO {
     private String customer; // 고객사
     private String region; // 지역
     private String deptCd; // 담당 부서
-    private String project_status; // 프로젝트 진행 상황
+    private String project_status; // 프로젝트 삭제 여부
+    private String project_ing; // 프로젝트 진행 상황
     private Date startDt; // 계약 날짜
     private Date endDt; // 종료 날짜
     private String Status;

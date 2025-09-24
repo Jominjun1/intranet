@@ -26,7 +26,17 @@
     <!-- 태그번호 검색 결과 목록 -->
     <div v-if="tagNumberList.length > 0" class="tag-search-results">
       <h3>검색된 태그번호 목록 (총 {{ totalTagCount }}개)</h3>
-      <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber" border resizable>
+      <el-table 
+        :data="paginatedTagList" 
+        style="width: 100%" 
+        @row-click="selectTagNumber" 
+        border 
+        stripe
+        resizable
+        :table-layout="'auto'"
+        :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+        :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+      >
         <el-table-column prop="tag_No" label="태그번호" width="300" align="center" resizable />
         <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" resizable />
         <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" resizable />
@@ -62,7 +72,16 @@
         </div>
       </div>
 
-      <el-table :data="asInfoData" style="width: 100%" border resizable>
+      <el-table 
+        :data="asInfoData" 
+        style="width: 100%" 
+        border 
+        stripe
+        resizable
+        :table-layout="'auto'"
+        :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+        :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+      >
         <el-table-column prop="as_Cnt" label="AS 횟수" width="80" align="center" resizable />
         <el-table-column prop="mac_ADDR" label="MAC주소" width="150" align="center" resizable />
         <el-table-column prop="as_Doc" label="AS 문서번호" width="120" align="center" resizable />
@@ -133,10 +152,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import {computed, ref} from 'vue'
 import axios from 'axios'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Edit, Delete } from '@element-plus/icons-vue'
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {Delete, Edit, Plus} from '@element-plus/icons-vue'
 
 const userAcl = 3 // 권한 표시용(필요시 상위에서 주입하도록 변경 가능)
 
@@ -301,6 +320,76 @@ async function deleteAs(row) {
 .pagination-wrapper { margin-top: 10px; display: flex; justify-content: center; }
 .result-header { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; }
 .action-buttons { display: flex; gap: 6px; justify-content: center; }
+
+/* 테이블 통합 스타일 */
+:deep(.el-table) {
+  table-layout: auto !important;
+  font-size: 14px;
+  width: 100% !important;
+}
+
+/* 테이블 컨테이너 전체 너비 사용 */
+:deep(.el-table__header-wrapper),
+:deep(.el-table__body-wrapper) {
+  width: 100% !important;
+}
+
+/* 테이블 헤더와 바디 너비 맞춤 */
+:deep(.el-table__header table),
+:deep(.el-table__body table) {
+  width: 100% !important;
+  table-layout: auto !important;
+}
+
+/* 컬럼 너비 자동 조정 */
+:deep(.el-table__header th),
+:deep(.el-table__body td) {
+  min-width: auto !important;
+  max-width: none !important;
+}
+
+/* 셀 스타일 통일 */
+:deep(.el-table .cell) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+:deep(.el-table .el-table__header .cell) {
+  white-space: nowrap;
+  font-weight: bold;
+  color: #303133;
+  background-color: #f5f7fa;
+  text-align: center;
+}
+
+:deep(.el-table .el-table__body .cell) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+/* 테이블 행 호버 효과 */
+:deep(.el-table__row:hover > td) {
+  background-color: #f0f9ff !important;
+}
+
+/* 테이블 경계선 스타일 */
+:deep(.el-table--border) {
+  border: 1px solid #dcdfe6;
+}
+
+:deep(.el-table--border td, .el-table--border th) {
+  border-right: 1px solid #dcdfe6;
+}
+
+/* 스트라이프 행 색상 */
+:deep(.el-table--striped .el-table__body tr.el-table__row--striped td) {
+  background-color: #fafafa;
+}
 </style>
 
 

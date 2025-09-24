@@ -7,7 +7,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,11 +19,11 @@ public class DailyReport_info {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name ="seq")
+    private Long DailyReportInfoId;
 
     @Column(name ="USER_NAME")
     private String userName; // 작성자
-    private String loginId; // 작성자 ID
     @Column(name = "APPROVAL_NAME")
     private String approvalNm; // 승인자
     @Column(name = "APPROVAL_DATE")
@@ -49,6 +51,6 @@ public class DailyReport_info {
     private User user;
 
     @OneToMany(mappedBy = "dailyReportInfo", orphanRemoval = true)
-    private List<Daily_ProJect_R> reportProjects = new ArrayList<>();
+    private List<Daily_Project_R> reportProjects = new ArrayList<>();
 
 }

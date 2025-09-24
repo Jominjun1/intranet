@@ -61,4 +61,81 @@
   background: #f8fafc;
   border-radius: 12px;
   border: 2px dashed #cbd5e1;
+}
+
+/* 전역 테이블 통합 스타일 */
+.el-table {
+  table-layout: auto !important;
+  font-size: 14px;
+  width: 100% !important;
+}
+
+/* 테이블 컨테이너 전체 너비 사용 */
+.el-table__header-wrapper,
+.el-table__body-wrapper {
+  width: 100% !important;
+}
+
+/* 테이블 헤더와 바디 너비 맞춤 */
+.el-table__header table,
+.el-table__body table {
+  width: 100% !important;
+  table-layout: auto !important;
+}
+
+/* 컬럼 너비 자동 조정 */
+.el-table__header th,
+.el-table__body td {
+  min-width: auto !important;
+  max-width: none !important;
+}
+
+/* 셀 스타일 통일 */
+.el-table .cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+.el-table .el-table__header .cell {
+  white-space: nowrap;
+  font-weight: bold;
+  color: #303133;
+  background-color: #f5f7fa;
+  text-align: center;
+}
+
+.el-table .el-table__body .cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+/* 셀 호버 시 전체 텍스트 표시 */
+.el-table .cell:hover {
+  white-space: normal;
+  word-break: break-all;
+  background-color: #f0f9ff;
+}
+
+/* 테이블 행 호버 효과 */
+.el-table__row:hover > td {
+  background-color: #f0f9ff !important;
+}
+
+/* 테이블 경계선 스타일 */
+.el-table--border {
+  border: 1px solid #dcdfe6;
+}
+
+.el-table--border td, .el-table--border th {
+  border-right: 1px solid #dcdfe6;
+}
+
+/* 스트라이프 행 색상 */
+.el-table--striped .el-table__body tr.el-table__row--striped td {
+  background-color: #fafafa;
 } 

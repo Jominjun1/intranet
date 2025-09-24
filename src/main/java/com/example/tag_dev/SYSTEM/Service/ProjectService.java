@@ -13,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Year;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import static com.example.tag_dev.USER.Service.UserService.getStrings;
 
@@ -44,10 +46,9 @@ public class ProjectService {
         Project_Info project_Info = new Project_Info();
         project_Info.setProjectCode(newCode);
         project_Info.setProject_name(projectDTO.getProject_name());
-        project_Info.setProject_status(projectDTO.getProject_status());
         project_Info.setProject_leader(projectDTO.getProject_leader());
-        project_Info.setStatus("N");
-        project_Info.setProject_status(projectDTO.getProject_status());
+        project_Info.setProject_status("Y");
+        project_Info.setProject_ing(projectDTO.getProject_ing());
         project_Info.setCustomer(projectDTO.getCustomer());
         project_Info.setDeptCd(projectDTO.getDeptCd());
         project_Info.setStartDt(projectDTO.getStartDt());
@@ -62,7 +63,7 @@ public class ProjectService {
         projectLog.setProject_status(project_Info.getProject_status());
         projectLog.setCustomer(project_Info.getCustomer());
         projectLog.setDeptCd(project_Info.getDeptCd());
-        projectLog.setStatus(project_Info.getStatus());
+        projectLog.setProject_ing(project_Info.getProject_ing());
         projectLog.setStartDt(project_Info.getStartDt());
         projectLog.setEndDt(project_Info.getEndDt());
         projectLog.setRegion(project_Info.getRegion());
@@ -125,7 +126,7 @@ public class ProjectService {
         projectLog.setStartDt(projectInfo.getStartDt());
         projectLog.setEndDt(projectInfo.getEndDt());
         projectLog.setRegion(projectInfo.getRegion());
-        projectLog.setStatus(projectInfo.getStatus());
+        projectLog.setProject_ing(projectInfo.getProject_ing());
         projectLog.setCreateDt(new Date());
         projectLog.setCreate_id(jwtTokenProvider.extractUserName(token));
 

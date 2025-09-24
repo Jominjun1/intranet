@@ -16,6 +16,6 @@ public class JwtConfig {
     private String secretKey;
 
     @Value("${spring.security.jwt.token.expire-length}")
-    private long validityInMilliseconds = 1000 * 60 * 15;
+    private long validityInMilliseconds = 360000;
 
 }

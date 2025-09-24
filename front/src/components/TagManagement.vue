@@ -53,11 +53,21 @@
       <!-- 태그 검색 결과 테이블 -->
       <div v-if="tableData.length > 0">
         <h3>검색된 태그 목록</h3>
-        <el-table :data="paginatedData" style="width:100%" v-loading="loading" border resizable>
-          <el-table-column prop="tag_No" label="태그번호" width="150" resizable />
-          <el-table-column prop="mac_Addr" label="MAC주소" width="150" resizable />
-          <el-table-column prop="fac_Cd" label="공장코드" width="100" resizable />
-          <el-table-column prop="fac_No" label="시리얼번호" width="120" resizable />
+        <el-table 
+          :data="paginatedData" 
+          style="width:100%" 
+          v-loading="loading" 
+          border 
+          stripe
+          resizable
+          :table-layout="'auto'"
+          :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+          :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+        >
+          <el-table-column prop="tag_No" label="태그번호" width="150" align="center" resizable />
+          <el-table-column prop="mac_Addr" label="MAC주소" width="150" align="center" resizable />
+          <el-table-column prop="fac_Cd" label="공장코드" width="100" align="center" resizable />
+          <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" resizable />
           <el-table-column prop="Status" label="삭제여부" width="100" resizable>
             <template #default="{ row }">
               <el-tag :type="row.Status === 'Y' ? 'danger' : 'success'">
@@ -137,7 +147,17 @@
       <!-- 태그번호 검색 결과 -->
       <div v-if="tagNumberList.length > 0" class="tag-search-results">
         <h3>검색된 태그번호 목록 (총 {{ totalTagCount }}개)</h3>
-        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber" border resizable>
+        <el-table 
+          :data="paginatedTagList" 
+          style="width: 100%" 
+          @row-click="selectTagNumber" 
+          border 
+          stripe
+          resizable
+          :table-layout="'auto'"
+          :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+          :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+        >
           <el-table-column prop="tag_No" label="태그번호" width="300" align="center" resizable />
           <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" resizable />
           <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" resizable />
@@ -500,7 +520,17 @@
       <!-- 태그번호 검색 결과 -->
       <div v-if="tagNumberList.length > 0" class="tag-search-results">
         <h3>검색된 태그번호 목록 (총 {{ totalTagCount }}개)</h3>
-        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber" border resizable>
+        <el-table 
+          :data="paginatedTagList" 
+          style="width: 100%" 
+          @row-click="selectTagNumber" 
+          border 
+          stripe
+          resizable
+          :table-layout="'auto'"
+          :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+          :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+        >
           <el-table-column prop="tag_No" label="태그번호" width="300" align="center" resizable />
           <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" resizable />
           <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" resizable />
@@ -537,16 +567,25 @@
             </el-button>
           </div>
         </div>
-        <el-table :data="versionHistoryData || []" style="width: 100%" border resizable>
-          <el-table-column prop="tag_version" label="버전" width="100" resizable />
-          <el-table-column prop="HW_VERSION" label="하드웨어버전" width="120" resizable />
-          <el-table-column prop="FW_VERSION" label="펌웨어버전" width="120" resizable />
+        <el-table 
+          :data="versionHistoryData || []" 
+          style="width: 100%" 
+          border 
+          stripe
+          resizable
+          :table-layout="'auto'"
+          :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+          :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+        >
+          <el-table-column prop="tag_version" label="버전" width="100" align="center" resizable />
+          <el-table-column prop="HW_VERSION" label="하드웨어버전" width="120" align="center" resizable />
+          <el-table-column prop="FW_VERSION" label="펌웨어버전" width="120" align="center" resizable />
           <el-table-column prop="create_Dt" label="생성일" width="120" resizable>
             <template #default="{ row }">
               {{ formatDate(row.create_Dt) }}
             </template>
           </el-table-column>
-          <el-table-column prop="create_Id" label="생성자" width="100" resizable />
+          <el-table-column prop="create_Id" label="생성자" width="100" align="center" resizable />
         </el-table>
       </div>
     </div>
@@ -578,7 +617,17 @@
       <!-- 태그번호 검색 결과 -->
       <div v-if="tagNumberList.length > 0" class="tag-search-results">
         <h3>검색된 태그번호 목록 (총 {{ totalTagCount }}개)</h3>
-        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber" border resizable>
+        <el-table 
+          :data="paginatedTagList" 
+          style="width: 100%" 
+          @row-click="selectTagNumber" 
+          border 
+          stripe
+          resizable
+          :table-layout="'auto'"
+          :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+          :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+        >
           <el-table-column prop="tag_No" label="태그번호" width="300" align="center" resizable />
           <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" resizable />
           <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" resizable />
@@ -617,22 +666,31 @@
             </el-button>
           </div>
         </div>
-        <el-table :data="Array.isArray(commonHistoryData) ? commonHistoryData : [commonHistoryData]" style="width: 100%" border resizable>
-          <el-table-column prop="mac_ADDR" label="MAC주소" width="180" resizable />
-          <el-table-column prop="fac_CD" label="공장코드" width="100" resizable />
-          <el-table-column prop="fac_NO" label="시리얼번호" width="100" resizable />
+        <el-table 
+          :data="Array.isArray(commonHistoryData) ? commonHistoryData : [commonHistoryData]" 
+          style="width: 100%" 
+          border 
+          stripe
+          resizable
+          :table-layout="'auto'"
+          :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+          :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+        >
+          <el-table-column prop="mac_ADDR" label="MAC주소" width="180" align="center" resizable />
+          <el-table-column prop="fac_CD" label="공장코드" width="100" align="center" resizable />
+          <el-table-column prop="fac_NO" label="시리얼번호" width="100" align="center" resizable />
           <el-table-column prop="create_DT" label="생성일" width="140" resizable>
             <template #default="{ row }">
               {{ formatDate(row.create_DT) }}
             </template>
           </el-table-column>
-          <el-table-column prop="create_ID" label="생성자" width="80" resizable />
+          <el-table-column prop="create_ID" label="생성자" width="80" align="center" resizable />
           <el-table-column prop="update_DT" label="수정일" width="140" resizable>
             <template #default="{ row }">
               {{ formatDate(row.update_DT) }}
             </template>
           </el-table-column>
-          <el-table-column prop="update_ID" label="수정자" width="80" resizable />
+          <el-table-column prop="update_ID" label="수정자" width="80" align="center" resizable />
         </el-table>
       </div>
       
@@ -676,7 +734,17 @@
       <!-- 태그번호 검색 결과 -->
       <div v-if="tagNumberList.length > 0" class="tag-search-results">
         <h3>검색된 태그번호 목록 (총 {{ totalTagCount }}개)</h3>
-        <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber" border resizable>
+        <el-table 
+          :data="paginatedTagList" 
+          style="width: 100%" 
+          @row-click="selectTagNumber" 
+          border 
+          stripe
+          resizable
+          :table-layout="'auto'"
+          :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+          :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+        >
           <el-table-column prop="tag_No" label="태그번호" width="300" align="center" resizable />
           <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" resizable />
           <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" resizable />
@@ -707,7 +775,16 @@
       <!-- AS이력 조회 결과 -->
       <div v-if="asInfoData && asInfoData.length > 0" class="result-section">
         <h3>AS 이력</h3>
-        <el-table :data="asInfoData" style="width: 100%" border resizable>
+        <el-table 
+          :data="asInfoData" 
+          style="width: 100%" 
+          border 
+          stripe
+          resizable
+          :table-layout="'auto'"
+          :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+          :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+        >
           <el-table-column prop="as_Cnt" label="AS 횟수" width="80" align="center" resizable />
           <el-table-column prop="mac_ADDR" label="MAC주소" width="150" align="center" resizable />
           <el-table-column prop="as_Doc" label="AS 문서번호" width="120" align="center" resizable />
@@ -795,7 +872,17 @@
       <!-- 태그 검색 결과 테이블 -->
       <div v-if="tableData.length > 0">
         <h3>검색된 태그 목록</h3>
-        <el-table :data="paginatedData" style="width:100%" v-loading="loading" border resizable>
+        <el-table 
+          :data="paginatedData" 
+          style="width:100%" 
+          v-loading="loading" 
+          border 
+          stripe
+          resizable
+          :table-layout="'auto'"
+          :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+          :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+        >
           <el-table-column prop="tag_No" label="태그번호" width="150" align="center" resizable />
           <el-table-column prop="mac_Addr" label="MAC주소" width="150" align="center" resizable />
           <el-table-column prop="fac_Cd" label="공장코드" width="100" align="center" resizable />
@@ -817,29 +904,28 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="작업" width="320" align="center" resizable>
+          <el-table-column label="작업 선택" width="200" align="center" resizable>
             <template #default="{ row }">
-              <div class="action-buttons">
-                <el-button size="small" @click="showProcStep(row.tag_No)">
-                  <el-icon><Setting /></el-icon>
-                  처리단계
-                </el-button>
-                <el-button size="small" @click="showSettingInfo(row.tag_No)">
-                  <el-icon><Tools /></el-icon>
-                  세팅정보
-                </el-button>
-                <el-button size="small" @click="showVersionHistory(row.tag_No)">
-                  <el-icon><Document /></el-icon>
-                  버전이력
-                </el-button>
-                <el-button size="small" @click="showCommonHistory(row.tag_No)">
-                  <el-icon><InfoFilled /></el-icon>
-                  공통정보
-                </el-button>
-                <el-button size="small" @click="showAsInfo(row.tag_No)">
-                  <el-icon><Warning /></el-icon>
-                  AS이력
-                </el-button>
+              <div class="action-select">
+                <el-select 
+                  v-model="selectedAction[row.tag_No]" 
+                  placeholder="작업 선택"
+                  @change="handleActionChange(row.tag_No, $event)"
+                  style="width: 180px;"
+                  clearable
+                >
+                  <el-option
+                    v-for="action in actionOptions"
+                    :key="action.value"
+                    :label="action.label"
+                    :value="action.value"
+                  >
+                    <span style="float: left">
+                      <el-icon><component :is="action.icon" /></el-icon>
+                      {{ action.label }}
+                    </span>
+                  </el-option>
+                </el-select>
               </div>
             </template>
           </el-table-column>
@@ -929,16 +1015,24 @@
       <div class="version-actions" v-if="userAcl >= 2">
         <el-button type="primary" @click="addNewVersion">새 버전 등록</el-button>
       </div>
-      <el-table :data="versionHistoryData || []" style="width: 100%" border resizable>
-        <el-table-column prop="TAG_VER" label="버전" width="100" resizable />
-        <el-table-column prop="HW_VER" label="하드웨어버전" width="120" resizable />
-        <el-table-column prop="FW_VER" label="펌웨어버전" width="120" resizable />
+      <el-table 
+        :data="versionHistoryData || []" 
+        style="width: 100%" 
+        border 
+        resizable
+        :table-layout="'auto'"
+        :cell-style="{ 'white-space': 'nowrap' }"
+        :header-cell-style="{ 'white-space': 'nowrap' }"
+      >
+        <el-table-column prop="TAG_VER" label="버전" width="100" align="center" resizable />
+        <el-table-column prop="HW_VER" label="하드웨어버전" width="120" align="center" resizable />
+        <el-table-column prop="FW_VER" label="펌웨어버전" width="120" align="center" resizable />
         <el-table-column prop="CREATE_DT" label="생성일" width="120" resizable>
           <template #default="{ row }">
             {{ formatDate(row.CREATE_DT) }}
           </template>
         </el-table-column>
-        <el-table-column prop="CREATE_ID" label="생성자" width="100" resizable />
+        <el-table-column prop="CREATE_ID" label="생성자" width="100" align="center" resizable />
         <el-table-column label="작업" width="150" v-if="userAcl >= 2" resizable>
           <template #default="{ row }">
             <el-button size="small" @click="editVersion(row)">수정</el-button>
@@ -952,16 +1046,24 @@
       <div class="common-actions" v-if="userAcl >= 2">
         <el-button type="primary" @click="addNewCommon">새 공통정보 등록</el-button>
       </div>
-      <el-table :data="commonHistoryData" style="width: 100%" border resizable>
-        <el-table-column prop="mac_ADDR" label="MAC주소" width="150" resizable />
-        <el-table-column prop="fac_CD" label="공장코드" width="100" resizable />
-        <el-table-column prop="fac_NO" label="시리얼번호" width="120" resizable />
+      <el-table 
+        :data="commonHistoryData" 
+        style="width: 100%" 
+        border 
+        resizable
+        :table-layout="'auto'"
+        :cell-style="{ 'white-space': 'nowrap' }"
+        :header-cell-style="{ 'white-space': 'nowrap' }"
+      >
+        <el-table-column prop="mac_ADDR" label="MAC주소" width="150" align="center" resizable />
+        <el-table-column prop="fac_CD" label="공장코드" width="100" align="center" resizable />
+        <el-table-column prop="fac_NO" label="시리얼번호" width="120" align="center" resizable />
         <el-table-column prop="CREATE_DT" label="생성일" width="120" resizable>
           <template #default="{ row }">
             {{ formatDate(row.CREATE_DT) }}
           </template>
         </el-table-column>
-        <el-table-column prop="CREATE_ID" label="생성자" width="100" resizable />
+        <el-table-column prop="CREATE_ID" label="생성자" width="100" align="center" resizable />
         <el-table-column label="작업" width="150" v-if="userAcl >= 2" resizable>
           <template #default="{ row }">
             <el-button size="small" @click="editCommon(row)">수정</el-button>
@@ -978,7 +1080,15 @@
             새 AS 등록
           </el-button>
         </div>
-      <el-table :data="asInfoData" style="width: 100%; margin: 0 auto;" border resizable>
+      <el-table 
+        :data="asInfoData" 
+        style="width: 100%; margin: 0 auto;" 
+        border 
+        resizable
+        :table-layout="'auto'"
+        :cell-style="{ 'white-space': 'nowrap' }"
+        :header-cell-style="{ 'white-space': 'nowrap' }"
+      >
         <el-table-column prop="as_Cnt" label="AS 횟수" width="80" align="center" resizable />
         <el-table-column prop="mac_ADDR" label="MAC주소" width="150" align="center" resizable />
         <el-table-column prop="as_Doc" label="AS 문서번호" width="120" align="center" resizable />
@@ -1137,13 +1247,23 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import {computed, onMounted, ref, watch} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
 import axios from 'axios'
 import '../css/TagManagement.css'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { QuestionFilled, Close, InfoFilled, Setting, Tools, Document, Warning, Edit, Delete, Plus } from '@element-plus/icons-vue'
-
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {
+  Close,
+  Delete,
+  Document,
+  Edit,
+  InfoFilled,
+  Plus,
+  QuestionFilled,
+  Setting,
+  Tools,
+  Warning
+} from '@element-plus/icons-vue'
 
 
 // Props
@@ -1217,6 +1337,37 @@ const originalSettingData = ref(null)
 const searchTagNo = ref('')
 const tagNumberList = ref([])
 
+// 작업 선택 관련 상태
+const selectedAction = ref({})
+
+const actionOptions = [
+  { 
+    value: 'proc-step', 
+    label: '처리단계', 
+    icon: 'Setting' 
+  },
+  { 
+    value: 'setting', 
+    label: '세팅정보', 
+    icon: 'Tools' 
+  },
+  { 
+    value: 'version', 
+    label: '버전이력', 
+    icon: 'Document' 
+  },
+  { 
+    value: 'common', 
+    label: '공통정보', 
+    icon: 'InfoFilled' 
+  },
+  { 
+    value: 'as', 
+    label: 'AS이력', 
+    icon: 'Warning' 
+  }
+]
+
 
 
 const filteredData = computed(() => {
@@ -1259,14 +1410,7 @@ function handleCurrentChange(page) {
 }
 
 async function doSearch() {
-  console.log('검색 시작:', { 
-    searchTagNo: searchTagNo.value,
-    searchMac: searchMac.value, 
-    searchSn: searchSn.value, 
-    searchFacCd: searchFacCd.value,
-    searchDelFilter: searchDelFilter.value 
-  })
-  
+
   // 태그번호 전체가 입력된 경우 자동으로 분해
   let macAddr = searchMac.value.trim()
   let facCd = searchFacCd.value.trim()
@@ -1282,14 +1426,11 @@ async function doSearch() {
       facCd = ordNo.substring(12, 18)
       // 시리얼번호 부분 (나머지)
       facNo = ordNo.substring(18)
-      
-      console.log('태그번호 분해:', { macAddr, facCd, facNo })
     } else {
       // 20자 미만이면 MAC주소 검색에 사용
       macAddr = ordNo
     }
   }
-  
   // 검색 조건이 없으면 경고 메시지 표시
   const hasSearchCondition = (searchTagNo.value && searchTagNo.value.trim()) || 
                            (macAddr && macAddr.trim()) || 
@@ -1317,8 +1458,7 @@ async function doSearch() {
     if (searchDelFilter.value && searchDelFilter.value !== 'all') {
       params.delFilter = searchDelFilter.value
     }
-    
-    console.log('API 요청 파라미터:', params)
+
     const res = await axios.get('/tags/getTagList', { params })
     
     // API 응답 구조에 맞게 데이터 추출
@@ -1334,10 +1474,7 @@ async function doSearch() {
     
     // 검색 후 첫 페이지로 이동
     currentPage.value = 1
-    
-    console.log('검색 결과:', responseData)
-    console.log('결과 개수:', tableData.value.length)
-    
+
     // 검색 결과가 있으면 첫 번째 태그의 태그번호를 저장
     if (tableData.value.length > 0 && tableData.value[0].ordNo) {
       const ordNo = tableData.value[0].ordNo
@@ -1862,21 +1999,23 @@ async function loadAsForFirstTag() {
 }
 
 // 이벤트 핸들러
-async function showProcStep(ordNo) {
-  // 라우터를 사용해서 URL 변경
-  router.push(`/tag-management/proc-step/${ordNo}`)
-}
-
-async function showVersionHistory(ordNo) {
-  router.push(`/tag-management/version/${ordNo}`)
-}
-
-async function showCommonHistory(ordNo) {
-  router.push(`/tag-management/common/${ordNo}`)
-}
-
-async function showSettingInfo(ordNo) {
-  router.push(`/tag-management/setting/${ordNo}`)
+function handleActionChange(tagNo, action) {
+  if (!action) return
+  
+  const routeMap = {
+    'proc-step': `/tag-management/proc-step/${tagNo}`,
+    'setting': `/tag-management/setting/${tagNo}`,
+    'version': `/tag-management/version/${tagNo}`,
+    'common': `/tag-management/common/${tagNo}`,
+    'as': `/tag-management/as/${tagNo}`
+  }
+  
+  const route = routeMap[action]
+  if (route) {
+    router.push(route)
+    // 선택 후 선택박스 초기화
+    selectedAction.value[tagNo] = ''
+  }
 }
 
 // 처리단계 관련 함수들
@@ -1953,9 +2092,6 @@ function deleteSettingInfo() {
   })
 }
 
-async function showAsInfo(ordNo) {
-  router.push(`/tag-management/as/${ordNo}`)
-}
 
 // AS 관련 함수들
 function editAs(row) {

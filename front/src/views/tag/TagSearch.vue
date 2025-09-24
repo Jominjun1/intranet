@@ -48,7 +48,17 @@
 
     <div v-if="tableData.length > 0">
       <h3>검색된 태그 목록</h3>
-      <el-table :data="paginatedData" style="width:100%" v-loading="loading" border resizable>
+      <el-table 
+        :data="paginatedData" 
+        style="width:100%" 
+        v-loading="loading" 
+        border 
+        stripe
+        resizable
+        :table-layout="'auto'"
+        :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+        :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+      >
         <el-table-column prop="tag_No" label="태그번호" width="150" align="center" resizable />
         <el-table-column prop="mac_Addr" label="MAC주소" width="150" align="center" resizable />
         <el-table-column prop="fac_Cd" label="공장코드" width="100" align="center" resizable />
@@ -70,29 +80,28 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="작업" width="320" align="center" resizable>
+        <el-table-column label="작업 선택" width="200" align="center" resizable>
           <template #default="{ row }">
-            <div class="action-buttons">
-              <el-button size="small" @click="showProcStep(row.tag_No)">
-                <el-icon><Setting /></el-icon>
-                처리단계
-              </el-button>
-              <el-button size="small" @click="showSettingInfo(row.tag_No)">
-                <el-icon><Tools /></el-icon>
-                세팅정보
-              </el-button>
-              <el-button size="small" @click="showVersionHistory(row.tag_No)">
-                <el-icon><Document /></el-icon>
-                버전이력
-              </el-button>
-              <el-button size="small" @click="showCommonHistory(row.tag_No)">
-                <el-icon><InfoFilled /></el-icon>
-                공통정보
-              </el-button>
-              <el-button size="small" @click="showAsInfo(row.tag_No)">
-                <el-icon><Warning /></el-icon>
-                AS이력
-              </el-button>
+            <div class="action-select">
+              <el-select 
+                v-model="selectedAction[row.tag_No]" 
+                placeholder="작업 선택"
+                @change="handleActionChange(row.tag_No, $event)"
+                style="width: 180px;"
+                clearable
+              >
+                <el-option
+                  v-for="action in actionOptions"
+                  :key="action.value"
+                  :label="action.label"
+                  :value="action.value"
+                >
+                  <span style="float: left">
+                    <el-icon><component :is="action.icon" /></el-icon>
+                    {{ action.label }}
+                  </span>
+                </el-option>
+              </el-select>
             </div>
           </template>
         </el-table-column>
@@ -147,11 +156,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import {computed, ref} from 'vue'
+import {useRouter} from 'vue-router'
 import axios from 'axios'
-import { ElMessage } from 'element-plus'
-import { QuestionFilled, Close, InfoFilled, Setting, Tools, Document, Warning } from '@element-plus/icons-vue'
+import {ElMessage} from 'element-plus'
+import {Close, Document, InfoFilled, QuestionFilled, Setting, Tools, Warning} from '@element-plus/icons-vue'
 
 const router = useRouter()
 
@@ -172,6 +181,35 @@ const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const showSearchHelp = ref(false)
+const selectedAction = ref({})
+
+const actionOptions = [
+  { 
+    value: 'proc-step', 
+    label: '처리단계', 
+    icon: 'Setting' 
+  },
+  { 
+    value: 'setting', 
+    label: '세팅정보', 
+    icon: 'Tools' 
+  },
+  { 
+    value: 'version', 
+    label: '버전이력', 
+    icon: 'Document' 
+  },
+  { 
+    value: 'common', 
+    label: '공통정보', 
+    icon: 'InfoFilled' 
+  },
+  { 
+    value: 'as', 
+    label: 'AS이력', 
+    icon: 'Warning' 
+  }
+]
 
 const filteredData = computed(() => {
   if (!Array.isArray(tableData.value)) return []
@@ -257,19 +295,108 @@ function resetSearch() {
   currentPage.value = 1
 }
 
-function showProcStep(ordNo) { router.push(`/tag-management/proc-step/${ordNo}`) }
-function showSettingInfo(ordNo) { router.push(`/tag-management/setting/${ordNo}`) }
-function showVersionHistory(ordNo) { router.push(`/tag-management/version/${ordNo}`) }
-function showCommonHistory(ordNo) { router.push(`/tag-management/common/${ordNo}`) }
-function showAsInfo(ordNo) { router.push(`/tag-management/as/${ordNo}`) }
+function handleActionChange(tagNo, action) {
+  if (!action) return
+  
+  const routeMap = {
+    'proc-step': `/tag-management/proc-step/${tagNo}`,
+    'setting': `/tag-management/setting/${tagNo}`,
+    'version': `/tag-management/version/${tagNo}`,
+    'common': `/tag-management/common/${tagNo}`,
+    'as': `/tag-management/as/${tagNo}`
+  }
+  
+  const route = routeMap[action]
+  if (route) {
+    router.push(route)
+    // 선택 후 선택박스 초기화
+    selectedAction.value[tagNo] = ''
+  }
+}
 </script>
 
 <style scoped>
 .tag-search-page { padding: 16px; }
 .search-section { margin-top: 12px; }
 .search-header { display: flex; align-items: center; justify-content: space-between; }
-.action-buttons { display: flex; gap: 6px; justify-content: center; }
+.action-select { display: flex; justify-content: center; }
 .pagination-section { margin-top: 12px; display: flex; justify-content: center; }
+
+/* 테이블 통합 스타일 */
+:deep(.el-table) {
+  table-layout: auto !important;
+  font-size: 14px;
+  width: 100% !important;
+}
+
+/* 테이블 컨테이너 전체 너비 사용 */
+:deep(.el-table__header-wrapper),
+:deep(.el-table__body-wrapper) {
+  width: 100% !important;
+}
+
+/* 테이블 헤더와 바디 너비 맞춤 */
+:deep(.el-table__header table),
+:deep(.el-table__body table) {
+  width: 100% !important;
+  table-layout: auto !important;
+}
+
+/* 컬럼 너비 자동 조정 */
+:deep(.el-table__header th),
+:deep(.el-table__body td) {
+  min-width: auto !important;
+  max-width: none !important;
+}
+
+:deep(.el-table .cell) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+:deep(.el-table .el-table__header .cell) {
+  white-space: nowrap;
+  font-weight: bold;
+  color: #303133;
+  background-color: #f5f7fa;
+  text-align: center;
+}
+
+:deep(.el-table .el-table__body .cell) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+/* 셀 호버 시 전체 텍스트 표시 */
+:deep(.el-table .cell:hover) {
+  white-space: normal;
+  word-break: break-all;
+  background-color: #f0f9ff;
+}
+
+/* 테이블 행 호버 효과 */
+:deep(.el-table__row:hover > td) {
+  background-color: #f0f9ff !important;
+}
+
+/* 테이블 경계선 스타일 */
+:deep(.el-table--border) {
+  border: 1px solid #dcdfe6;
+}
+
+:deep(.el-table--border td, .el-table--border th) {
+  border-right: 1px solid #dcdfe6;
+}
+
+/* 스트라이프 행 색상 */
+:deep(.el-table--striped .el-table__body tr.el-table__row--striped td) {
+  background-color: #fafafa;
+}
 .search-help-sidebar { position: fixed; top: 64px; right: -380px; width: 360px; transition: right .2s; background: #fff; border-left: 1px solid #eee; height: calc(100% - 64px); padding: 12px; overflow: auto; }
 .search-help-sidebar.show { right: 0; }
 .sidebar-header { display: flex; align-items: center; justify-content: space-between; }

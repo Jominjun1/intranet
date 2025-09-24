@@ -64,6 +64,16 @@ function handleMenuSelect(key) {
     case 'dept-management':
       router.push('/dept-management')
       break
+    case 'project-search':
+    case 'project-step':
+    case 'project-management':
+      router.push('/project-management')
+      break
+    case 'daily-list':
+    case 'daily-step':
+    case 'dailyReport-management':
+      router.push('/daily-management')
+      break
     default:
       if (key.startsWith('tag-')) {
         // 태그 서브메뉴는 태그 검색처럼 바로 해당 페이지로 이동

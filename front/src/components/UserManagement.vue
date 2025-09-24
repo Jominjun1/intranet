@@ -39,6 +39,7 @@
             <el-option label="대기" value="PENDING" />
             <el-option label="잠금" value="LOCK" />
             <el-option label="비활성" value="INACTIVE" />
+            <el-option label="삭제" value="N" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -53,54 +54,65 @@
     </div>
 
     <div class="table-section">
-      <el-table :data="paginatedData" style="width:100%" v-loading="loading" :key="tableKey" border resizable>
-        <el-table-column prop="user_id" label="사용자ID" width="80" resizable />
-        <el-table-column prop="user_name" label="이름" width="100" resizable />
-        <el-table-column prop="login_id" label="로그인ID" width="100" resizable />
-        <el-table-column prop="user_email" label="이메일" width="180" resizable />
-        <el-table-column prop="user_phone_num" label="전화번호" width="120" resizable />
-        <el-table-column prop="dept_cd" label="부서" width="80" resizable />
-        <el-table-column prop="user_job" label="직책" width="80" resizable />
-        <el-table-column prop="user_acl" label="권한" width="80" resizable>
+      <el-table 
+        :data="paginatedData" 
+        style="width:100%" 
+        v-loading="loading" 
+        :key="tableKey" 
+        border 
+        stripe
+        resizable
+        :table-layout="'auto'"
+        :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+        :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+      >
+        <el-table-column prop="user_id" label="사용자ID" width="80" align="center" resizable />
+        <el-table-column prop="user_name" label="이름" width="100" align="center" resizable />
+        <el-table-column prop="login_id" label="로그인ID" width="100" align="center" resizable />
+        <el-table-column prop="user_email" label="이메일" width="180" align="center" resizable />
+        <el-table-column prop="user_phone_num" label="전화번호" width="120" align="center" resizable />
+        <el-table-column prop="dept_cd" label="부서" width="80" align="center" resizable />
+        <el-table-column prop="user_job" label="직책" width="80" align="center" resizable />
+        <el-table-column prop="user_acl" label="권한" width="80" align="center" resizable>
           <template #default="{ row }">
             <el-tag :type="getAclType(row.user_acl)">
               {{ getAclText(row.user_acl) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="user_stat" label="상태" width="80" resizable>
+        <el-table-column prop="user_stat" label="상태" width="80" align="center" resizable>
           <template #default="{ row }">
             <el-tag :type="getStatusType(row.user_stat)">
               {{ getStatusLabel(row.user_stat) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="hire_dt" label="입사일" width="100" resizable>
+        <el-table-column prop="hire_dt" label="입사일" width="100" align="center" resizable>
           <template #default="{ row }">
             {{ formatDate(row.hire_dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="change_password_dt" label="비밀번호 변경일" width="160" resizable>
+        <el-table-column prop="change_password_dt" label="비밀번호 변경일" width="160" align="center" resizable>
           <template #default="{ row }">
             {{ formatDateTime(row.change_password_dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="login_dt" label="로그인일시" width="160" resizable>
+        <el-table-column prop="login_dt" label="로그인일시" width="160" align="center" resizable>
           <template #default="{ row }">
             {{ formatDateTime(row.login_dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="update_dt" label="수정일시" width="160" resizable>
+        <el-table-column prop="update_dt" label="수정일시" width="160" align="center" resizable>
           <template #default="{ row }">
             {{ formatDateTime(row.update_dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="update_id" label="수정한사람" width="100" resizable>
+        <el-table-column prop="update_id" label="수정한사람" width="100" align="center" resizable>
           <template #default="{ row }">
             {{ row.update_id || '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="작업" width="150" resizable>
+        <el-table-column label="작업" width="150" align="center" resizable>
           <template #default="{ row }">
             <div class="action-buttons">
               <el-button
@@ -246,6 +258,7 @@
             <el-option label="대기" value="PENDING" />
             <el-option label="잠금" value="LOCK" />
             <el-option label="비활성" value="INACTIVE" />
+            <el-option label="삭제" value="N" />
           </el-select>
         </el-form-item>
         <el-form-item label="입사일" prop="hire_dt">
@@ -274,7 +287,7 @@
           <el-table-column prop="dept" label="부서명" min-width="200" resizable />
           <el-table-column prop="status" label="상태" width="100" resizable>
             <template #default="scope">
-              <el-tag :type="scope.row.status === 'N' ? 'success' : 'danger'">
+              <el-tag :type="scope.row.status === 'Y' ? 'success' : 'danger'">
                 {{ scope.row.status === 'Y' ? '사용중' : '삭제됨' }}
               </el-tag>
             </template>
@@ -296,7 +309,7 @@ import {computed, onMounted, ref} from 'vue'
 import axios from 'axios'
 import '../css/UserManagement.css'
 import {ElMessage, ElMessageBox} from 'element-plus'
-import {Close, Plus, QuestionFilled, Edit, Delete, Search} from '@element-plus/icons-vue'
+import {Close, Delete, Edit, Plus, QuestionFilled, Search} from '@element-plus/icons-vue'
 
 const props = defineProps({
   userInfo: {
@@ -395,7 +408,8 @@ const getStatusLabel = (status) => {
     'ACTIVE': '활성', 
     'PENDING': '활성', 
     'LOCK': '잠금',
-    'INACTIVE': '비활성'
+    'INACTIVE': '비활성',
+    'N' : '삭제'
   }
   return labels[status] || '알수없음'
 }
@@ -405,7 +419,8 @@ const getStatusType = (status) => {
     'ACTIVE': 'success', 
     'PENDING': 'success', 
     'LOCK': 'danger',
-    'INACTIVE': 'info'
+    'INACTIVE': 'info',
+    'N' : 'delete'
   }
   return types[status] || 'info'
 }
@@ -531,7 +546,7 @@ async function openDeptModal() {
 
 // 부서 선택
 function selectDept(dept) {
-  if (dept.status === 'N') { // 사용중인 부서만 선택 가능
+  if (dept.status === 'Y') { // 사용중인 부서만 선택 가능
     userForm.value.dept_cd = dept.dept  // 부서명을 입력
     showDeptModal.value = false
     ElMessage.success(`${dept.dept} 부서가 선택되었습니다.`)
@@ -568,8 +583,9 @@ async function deleteUser(user) {
     )
     
     // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로 헤더 설정 불필요
-    await axios.put(`/Admin/update/${loginId}` ,{
-      status: "INACTIVE"
+    await axios.put(`/Admin/update/${user.loginId}` ,{
+      user: user.user,
+      user_stat: "N"
         }
     )
     

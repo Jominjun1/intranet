@@ -4,6 +4,8 @@ import TagManagement from '../components/TagManagement.vue'
 import LogManagement from '../components/LogManagement.vue'
 import DeptManagement from '../components/DeptManagement.vue'
 import LoginFrom from '../components/LoginForm.vue'
+import DailyReportManagement from "../components/dailyReportManagement.vue";
+import ProjectManagement from "../components/ProjectManagement.vue";
 
 const routes = [
   {
@@ -110,6 +112,18 @@ const routes = [
     name: 'DeptManagement',
     component: DeptManagement,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/daily-management',
+    name: 'DailyManagement',
+    component: DailyReportManagement,
+    meta: {requiresAuth: true}
+  },
+  {
+    path: '/project-management',
+    name: 'ProjectManagement',
+    component: ProjectManagement,
+    meta: {requiresAuth: true}
   }
 ]
 

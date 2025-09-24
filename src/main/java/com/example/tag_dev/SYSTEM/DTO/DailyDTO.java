@@ -3,9 +3,11 @@ package com.example.tag_dev.SYSTEM.DTO;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class DailyDTO {
+    private Long dailyReportInfoId;   // 보고 ID (수정/조회용)
 
     private String userName; // 작성자
     private String approvalNm; // 승인자
@@ -24,4 +26,14 @@ public class DailyDTO {
 
     private String dailyStatus; // 승인 여부
     private String status; // 삭제 여부
+
+    private List<TaskDTO> tasks;
+
+    @Data
+    public static class TaskDTO {
+        private String taskDescription;   // 업무내용
+        private String hour;              // 시간 (시)
+        private String minute;            // 시간 (분)
+        private String status;            // 삭제 여부
+    }
 }

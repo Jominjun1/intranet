@@ -12,7 +12,6 @@ import com.example.tag_dev.USER.DTO.UserDTO;
 import com.example.tag_dev.USER.Model.User;
 import com.example.tag_dev.USER.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.http.HttpStatus;
@@ -103,43 +102,6 @@ public class UserService {
         return ResponseEntity.ok("사용자 정보 수정 완료");
     }
 
-    // null이 아닌 프로퍼티만 가져오는 헬퍼 메서드
-    private String[] getNullPropertyNames(Object source) {
-        return getStrings(source);
-    }
-
-    public static String[] getStrings(Object source) {
-        final BeanWrapper src = new BeanWrapperImpl(source);
-        PropertyDescriptor[] pds = src.getPropertyDescriptors();
-
-        Set<String> emptyNames = new HashSet<>();
-        for (PropertyDescriptor pd : pds) {
-            Object srcValue = src.getPropertyValue(pd.getName());
-            if (srcValue == null || (srcValue instanceof String && ((String) srcValue).isEmpty())) {
-                emptyNames.add(pd.getName());
-            }
-        }
-
-        String[] result = new String[emptyNames.size()];
-        return emptyNames.toArray(result);
-    }
-
-    // 사용자 로그 생성 헬퍼 메서드
-    private void createUserLog(User user, Long updateUserId) {
-        UserLog userLog = new UserLog();
-        userLog.setLoginId(user.getLoginId());
-        userLog.setUpdate_dt(new Date());
-        userLog.setUpdate_id(updateUserId);
-
-        if ("Y".equals(user.getStatus())) {
-            userLog.setStatus("삭제");
-        } else {
-            userLog.setStatus("정보수정");
-        }
-
-        userLogRepository.save(userLog);
-    }
-
     // 권한 변경 ( 관리자 기능 )
     public ResponseEntity<?> changeAcl(Long userId, String userAcl) {
         Optional<User> userOpt = userRepository.findById(userId);
@@ -187,7 +149,6 @@ public class UserService {
             userDTO.setHire_dt(user.getHire_dt());
             userDTO.setChange_password_dt(user.getChange_password_dt());
             userDTO.setFail_login_cnt(user.getFail_login_cnt());
-            userDTO.setStatus(user.getStatus());
             userDTOs.add(userDTO);
         }
         
@@ -243,7 +204,6 @@ public class UserService {
             user.setUser_stat(userDTO.getUser_stat());
             user.setHire_dt(userDTO.getHire_dt());
             user.setReg_dt(new Date());
-            user.setStatus("N");
             user.setReg_id(1L); // TODO: SecurityContext에서 현재 사용자 ID 가져오기
 
             userRepository.save(user);
@@ -299,7 +259,7 @@ public class UserService {
             deptInfo.setDeptCode(deptDTO.getDeptCode());
             deptInfo.setDept(deptDTO.getDept());
             deptInfo.setRegDt(new Date());
-            deptInfo.setStatus("N");
+            deptInfo.setStatus("Y");
             deptInfo.setUserName("관리자"); // TODO: SecurityContext에서 현재 사용자명 가져오기
 
             // 상위 부서 코드 설정
@@ -397,6 +357,43 @@ public class UserService {
         createDeptLog(deptDTO);
 
         return ResponseEntity.ok("부서 수정 완료");
+    }
+
+    // null이 아닌 프로퍼티만 가져오는 헬퍼 메서드
+    private String[] getNullPropertyNames(Object source) {
+        return getStrings(source);
+    }
+
+    public static String[] getStrings(Object source) {
+        final BeanWrapper src = new BeanWrapperImpl(source);
+        PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        Set<String> emptyNames = new HashSet<>();
+        for (PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null || (srcValue instanceof String && ((String) srcValue).isEmpty())) {
+                emptyNames.add(pd.getName());
+            }
+        }
+
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
+    }
+
+    // 사용자 로그 생성 헬퍼 메서드
+    private void createUserLog(User user, Long updateUserId) {
+        UserLog userLog = new UserLog();
+        userLog.setLoginId(user.getLoginId());
+        userLog.setUpdate_dt(new Date());
+        userLog.setUpdate_id(updateUserId);
+
+        if ("N".equals(user.getUser_stat())) {
+            userLog.setStatus("삭제");
+        } else {
+            userLog.setStatus("정보수정");
+        }
+
+        userLogRepository.save(userLog);
     }
 
     // 부서 로그 생성 헬퍼 메서드

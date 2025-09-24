@@ -25,6 +25,7 @@ public class RefreshToken {
     @Column(nullable = false)
     private Date expiresAt;
 
-    private Date createdAt = new Date();
+    @Column(nullable = false)
+    private Date createdAt;
 
 }

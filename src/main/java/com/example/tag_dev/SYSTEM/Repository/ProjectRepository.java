@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface ProjectRepository extends JpaRepository<Project_Info , String> {
+public interface ProjectRepository extends JpaRepository<Project_Info , Long> {
 
     @Query("SELECT MAX(p.projectCode) FROM Project_Info p WHERE p.projectCode LIKE CONCAT(:yearSuffix, '%')")
     String findMaxCodeByYear(@Param("yearSuffix") String yearSuffix);

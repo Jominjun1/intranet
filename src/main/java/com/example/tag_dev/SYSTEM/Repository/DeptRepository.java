@@ -13,7 +13,4 @@ public interface DeptRepository extends JpaRepository<Dept_Info , String> {
     @Query("SELECT d FROM Dept_Info d WHERE d.deptCode =:deptCode")
     Optional<Dept_Info> findByDeptCode(@Param("deptCode") String deptCode);
 
-    @Modifying
-    @Query("DELETE FROM Dept_Info d WHERE d.deptCode =:deptCode")
-    void deleteByDeptCode(String deptCode);
 }

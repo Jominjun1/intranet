@@ -25,5 +25,4 @@ public class UserDTO {
     private Date hire_dt;
     private Date change_password_dt;
     private Long fail_login_cnt;
-    private String Status;
 }
