@@ -112,9 +112,9 @@
 <script setup>
 import {onMounted, reactive, ref} from 'vue'
 import {ElMessage} from 'element-plus'
-import api from '../utils/axios.js'
-import loginBg from '../image/login_img.jpg'
-import '../css/LoginForm.css'
+import loginBg from '../../../../image/login_img.jpg'
+import '../../../../css/System/User/Login/LoginForm.css'
+import LoginForm from '../Login/LoginForm.js'
 
 const emit = defineEmits(['login-success'])
 const loginForm = reactive({ login_id: '', password: '' })
@@ -156,17 +156,16 @@ function handleRememberIdChange(checked) {
     localStorage.removeItem('remember_id')
   }
 }
-
+// 로그인
 async function handleLogin() {
   if (!loginFormRef.value) return
   try {
     await loginFormRef.value.validate()
     loading.value = true
-    
-    const response = await api.post('/user/login', loginForm)
-    
+
+    const response = await LoginForm.login(loginForm)
+
     if (response.data) {
-      // 로그인 성공 시 아이디 저장 처리
       if (rememberId.value && loginForm.login_id.trim()) {
         localStorage.setItem('saved_login_id', loginForm.login_id.trim())
         localStorage.setItem('remember_id', 'true')
@@ -174,18 +173,12 @@ async function handleLogin() {
         localStorage.removeItem('saved_login_id')
         localStorage.removeItem('remember_id')
       }
-      const tokenData = response.data?.data || response.data || {}
 
-      // 쿠키 기반 인증으로 변경 - 백엔드에서 httpOnly 쿠키로 토큰 관리
-      // 클라이언트에서는 토큰을 저장하지 않음
-
-      
       ElMessage.success('로그인 성공')
       emit('login-success', response.data)
     }
   } catch (error) {
     console.error('로그인 오류:', error)
-    console.error('오류 응답:', error.response?.data)
     if (error.response?.status === 401) {
       ElMessage.error('아이디 또는 비밀번호가 일치하지 않습니다.')
     } else if (error.response?.status === 403) {
@@ -197,12 +190,10 @@ async function handleLogin() {
     loading.value = false
   }
 }
-
+// 아이디 찾기
 async function findId() {
   try {
-    const response = await api.get('/user/findID', {
-      params: findIdForm 
-    })
+    const response = await LoginForm.findID(findIdForm)
     if (response.data) {
       ElMessage.success(`찾은 아이디: ${response.data}`)
     } else {
@@ -214,9 +205,10 @@ async function findId() {
   }
 }
 
+// 비밀번호 찾기
 async function findPassword() {
   try {
-    const response = await api.put('/user/findPassword', findPasswordForm)
+    const response = await LoginForm.findPassword(findPasswordForm)
     if (response.data) {
       ElMessage.success(`찾은 비밀번호: ${response.data}`)
     } else {

@@ -1,11 +1,11 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import UserManagement from '../components/UserManagement.vue'
-import TagManagement from '../components/TagManagement.vue'
-import LogManagement from '../components/LogManagement.vue'
-import DeptManagement from '../components/DeptManagement.vue'
-import LoginFrom from '../components/LoginForm.vue'
-import DailyReportManagement from "../components/dailyReportManagement.vue";
-import ProjectManagement from "../components/ProjectManagement.vue";
+import UserManagement from '../views/System/User/UserManagement.vue'
+import TagManagement from '../views/tag/TagManagement.vue'
+import LogManagement from '../views/System/Log/LogManagement.vue'
+import DeptManagement from '../views/System/Dept/DeptManagement.vue'
+import LoginFrom from '../views/System/User/Login/LoginForm.vue'
+import DailyReportManagement from "../views/DailyReport/dailyReportManagement.vue";
+import ProjectManagement from "../views/Project/ProjectManagement.vue";
 
 const routes = [
   {

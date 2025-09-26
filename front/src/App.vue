@@ -1,11 +1,11 @@
 <script setup>
 import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import LoginForm from './components/LoginForm.vue'
+import LoginForm from './views/System/User/Login/LoginForm.vue'
 import Header from './components/Header.vue'
 import Sidebar from './components/Sidebar.vue'
 import {ElMessage} from 'element-plus'
-import './css/App.css'
+import './css/VUE/App.css'
 
 // 라우터 설정
 const router = useRouter()
@@ -44,7 +44,7 @@ function handleLoginSuccess(userData) {
   }
   sessionStorage.setItem('user_info', JSON.stringify(safeUserInfo))
   isLoggedIn.value = true
-  router.push('/tag-management')
+  router.push('/daily-management')
 }
 
 function handleMenuSelect(key) {

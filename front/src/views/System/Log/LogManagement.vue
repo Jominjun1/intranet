@@ -378,8 +378,8 @@
 import {computed, onMounted, ref} from 'vue'
 import {ElMessage} from 'element-plus'
 import {Close, Download, QuestionFilled} from '@element-plus/icons-vue'
-import axios from 'axios'
-import Header from "./Header.vue";
+import LogManagement from '../Log/LogManagement.js'
+import Header from "../../../components/Header.vue";
 
 // Props
 const props = defineProps({
@@ -501,34 +501,17 @@ async function loadLogs() {
 
   loading.value = true
   try {
-    currentPage.value = 1 // 페이지 초기화
-    const params = {
-      type: selectedLogType.value
-    }
-
-    if (dateRange.value && dateRange.value.length === 2) {
+    const params = { type: selectedLogType.value }
+    if (dateRange.value.length === 2) {
       params.startDate = dateRange.value[0]
       params.endDate = dateRange.value[1]
     }
 
-    const response = await axios.get('/Log/getLog', { params })
-    
-    // 백엔드 응답 구조에 맞게 데이터 추출
-    let responseData = response.data
-    
-    // 응답이 래핑된 경우 body에서 추출
-    if (responseData && typeof responseData === 'object' && responseData.body !== undefined) {
-      responseData = responseData.body
-    }
-    
-    logs.value = Array.isArray(responseData) ? responseData : []
-    tableKey.value++ // 테이블 키 업데이트로 강제 리렌더링
-
+    logs.value = await LogManagement.fetchLogs(params)
     ElMessage.success('로그를 성공적으로 조회했습니다.')
-  } catch (error) {
-    console.error('로그 조회 오류:', error)
-    ElMessage.error('로그 조회 중 오류가 발생했습니다.')
+  } catch (err) {
     logs.value = []
+    ElMessage.error('로그 조회 중 오류가 발생했습니다.')
   } finally {
     loading.value = false
   }

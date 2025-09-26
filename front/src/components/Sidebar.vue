@@ -258,7 +258,7 @@ import {
   Tools,
   User
 } from '@element-plus/icons-vue'
-import '../css/Sidebar.css'
+import '../css/VUE/Sidebar.css'
 // Props
 const props = defineProps({
   activeMenu: {

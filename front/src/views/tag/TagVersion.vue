@@ -40,6 +40,7 @@
 import {ref} from 'vue'
 import axios from 'axios'
 import {ElMessage} from 'element-plus'
+import '../../css/Tag/TagVersion.css'
 
 const userAcl = 3
 const searchTagNo = ref('')
@@ -60,11 +61,5 @@ async function searchVersionHistory() {
 
 function addNewVersion() { ElMessage.info('버전 등록 기능은 개발 중입니다.') }
 </script>
-
-<style scoped>
-.tag-version-page { padding: 16px; }
-.result-header { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; }
-.action-buttons { display: flex; gap: 8px; }
-</style>
 
 

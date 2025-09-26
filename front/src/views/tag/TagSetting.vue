@@ -180,6 +180,8 @@
 import {ref} from 'vue'
 import axios from 'axios'
 import {ElMessage} from 'element-plus'
+import '../../css/Tag/TagSetting.css'
+
 
 const userAcl = 3
 
@@ -302,12 +304,4 @@ function getVersionDisplay(value) { if (!value || value === '-') return '-'; ret
 
 function formatDate(dateString) { if (!dateString) return '-'; try { const d = new Date(dateString); return d.toLocaleDateString('ko-KR', {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) } catch { return dateString } }
 </script>
-
-<style scoped>
-.tag-setting-page { padding: 16px; }
-.result-header { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; }
-.action-buttons { display: flex; gap: 8px; }
-.edit-mode-notice { margin-bottom: 8px; color: #409eff }
-</style>
-
 

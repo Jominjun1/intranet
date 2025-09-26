@@ -122,7 +122,7 @@
 import {computed, onMounted, ref, watch} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import axios from 'axios'
-import '../css/TagManagement.css'
+import '../../css/Tag/TagManagement.css'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {
   Close,

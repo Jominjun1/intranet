@@ -1,9 +1,22 @@
 <template>
-  <div class="report-calendar p-6">
+  <div class="report-calendar">
     <h3 class="text-2xl font-bold mb-4">일일 업무 보고</h3>
 
     <!-- 달력 -->
-    <el-calendar v-model="currentDate" @input="handleDateClick" />
+    <el-calendar v-model="currentDate" >
+      <template #date-cell="{ data }"  @mousedown.prevent="onDateClick(toDate(data.day))">
+       <div
+            class="calendar-day"
+            :class="[
+        isHoliday(data.day) ? 'Holiday' : '',
+        isSunday(data.day) ? 'isSunday' : '',
+        isSaturday(data.day) ? 'isSaturday' : ''
+      ]"  @mousedown.prevent="onDateClick(toDate(data.day))"
+        >
+          {{ toDate(data.day).getDate() }}
+        </div>
+      </template>
+    </el-calendar>
 
     <!-- 선택된 날짜 모달 -->
     <el-dialog
@@ -13,7 +26,6 @@
         append-to-body
         class="custom-dialog"
     >
-      <!-- 보고 리스트 -->
       <div v-if="reports[selectedDate]?.length" class="mb-4">
         <el-card
             v-for="(report, index) in reports[selectedDate]"
@@ -38,7 +50,6 @@
         등록된 보고가 없습니다.
       </div>
 
-      <!-- 보고 작성 폼 -->
       <el-form :model="newReport" label-width="80px" class="mt-4">
         <el-form-item label="제목">
           <el-input v-model="newReport.title" placeholder="제목을 입력하세요" />
@@ -90,7 +101,7 @@
         width="800px"
         append-to-body
         :close-on-click-modal="false"
-        custom-class="dept-dialog"
+        class="dept-dialog"
     >
       <div class="dept-modal-content">
         <el-table
@@ -122,10 +133,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import api from 'axios'
 import { Search } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+import DeptManagement from "../System/Dept/DeptManagement.js";
+import DailyReportManagement from "./DailyReportManagement.js";
+
 
 const currentDate = ref(new Date())
 const dialogVisible = ref(false)
@@ -133,6 +147,7 @@ const selectedDate = ref('')
 const reports = ref({})
 const showDeptModal = ref(false)
 const deptList = ref([])
+const holidays = ref([])
 
 const newReport = ref({
   dailyReportInfoId: null,
@@ -142,30 +157,53 @@ const newReport = ref({
   content: ""
 })
 
+// ------------------ 날짜 관련 ------------------
 const formatDate = (date) => {
-  if (!date) return ""
   const d = new Date(date)
-  return `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}`
+  return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}`
+}
+function toDate(dateObj) {
+  // dateObj가 Date면 그대로, 아니면 new Date()
+  return dateObj instanceof Date ? dateObj : new Date(dateObj)
 }
 
-const handleDateClick = async (date) => {
+function isSunday(dateObj) {
+  return toDate(dateObj).getDay() === 0
+}
+
+function isSaturday(dateObj) {
+  return toDate(dateObj).getDay() === 6
+}
+
+function isHoliday(dateObj) {
+  const d = toDate(dateObj)
+  const str = formatDate(d)
+  return holidays.value.includes(str)
+}
+
+// ------------------ 달력 클릭 ------------------
+const onDateClick = async (date) => {
   selectedDate.value = formatDate(date)
   dialogVisible.value = true
   newReport.value = { dailyReportInfoId: null, title: "", time: [], deptCode: "", content: "" }
   await fetchReports(selectedDate.value)
 }
 
+// ------------------ 보고 CRUD ------------------
+
 const fetchReports = async (date) => {
   try {
-    const res = await api.get('/daily/list', { params: { date } })
-    reports.value[date] = res.data.map(r => ({
+    const data = DailyReportManagement.fetchReportsByDate(date)
+    reports.value[date] = data.map(r => ({
       dailyReportInfoId: r.dailyReportInfoId,
       title: r.txt.slice(0,10),
       time: [`${r.hour.toString().padStart(2,'0')}:${r.minute.toString().padStart(2,'0')}`],
       content: r.txt,
       deptCode: r.deptCode
     }))
-  } catch (err) { console.error(err) }
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 const saveReport = async () => {
@@ -174,18 +212,28 @@ const saveReport = async () => {
       txt: newReport.value.content,
       hour: newReport.value.time[0]?.split(':')[0] || '',
       minute: newReport.value.time[0]?.split(':')[1] || '',
-      deptCode: newReport.value.deptCode,
-      project_name: '',
-      project_leader: ''
+      deptCode: newReport.value.deptCode
     }
     if (newReport.value.dailyReportInfoId) {
-      await api.put(`/daily/update/${newReport.value.dailyReportInfoId}`, payload)
+      await DailyReportManagement.updateReport(newReport.value.dailyReportInfoId, payload)
     } else {
-      await api.post('/daily/create', payload)
+      await DailyReportManagement.createReport(payload)
     }
     await fetchReports(selectedDate.value)
     dialogVisible.value = false
-  } catch (err) { console.error(err) }
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const deleteReportByIndex = async (index) => {
+  const report = reports.value[selectedDate.value][index]
+  try {
+    await DailyReportManagement.deleteReport(report.dailyReportInfoId)
+    await DailyReportManagement.fetchReportsByDate(selectedDate.value)
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 const editReport = (index) => {
@@ -194,16 +242,27 @@ const editReport = (index) => {
   dialogVisible.value = true
 }
 
-const deleteReport = async (index) => {
-  const report = reports.value[selectedDate.value][index]
+// ------------------ 공휴일 ------------------
+async function fetchHolidays(year) {
   try {
-    await api.delete(`/daily/delete/${report.dailyReportInfoId}`)
-    await fetchReports(selectedDate.value)
-  } catch (err) { console.error(err) }
+    const response = await api.get(`/sys/holiday/${year}`)
+    const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
+    const items = data.response?.body?.items?.item || []
+    holidays.value = items
+        .filter(i => i.isHoliday === 'Y')
+        .map(i => {
+          const y = i.locdate.toString().slice(0,4)
+          const m = i.locdate.toString().slice(4,6)
+          const d = i.locdate.toString().slice(6,8)
+          return `${y}-${m}-${d}`
+        })
+  } catch (err) {
+    console.error('공휴일 불러오기 실패:', err)
+    holidays.value = []
+  }
 }
 
-onMounted(() => { fetchReports(formatDate(currentDate.value)) })
-
+// ------------------ 부서 모달 ------------------
 async function openDeptModal() {
   showDeptModal.value = true
   await loadDeptList()
@@ -229,4 +288,16 @@ async function loadDeptList() {
     ElMessage.error('부서 목록을 불러오는데 실패했습니다.')
   }
 }
+
+// ------------------ 생명주기 ------------------
+onMounted(() => {
+  const year = new Date().getFullYear()
+  fetchHolidays(year)
+  fetchReports(formatDate(currentDate.value))
+})
+
+watch(currentDate, (newDate) => {
+  const year = new Date(newDate).getFullYear()
+  fetchHolidays(year)
+})
 </script>

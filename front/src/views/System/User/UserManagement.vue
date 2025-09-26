@@ -307,7 +307,7 @@
 <script setup>
 import {computed, onMounted, ref} from 'vue'
 import axios from 'axios'
-import '../css/UserManagement.css'
+import '../../../css/System/User/UserManagement.css'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {Close, Delete, Edit, Plus, QuestionFilled, Search} from '@element-plus/icons-vue'
 
@@ -583,7 +583,7 @@ async function deleteUser(user) {
     )
     
     // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로 헤더 설정 불필요
-    await axios.put(`/Admin/update/${user.loginId}` ,{
+    await axios.put(`/Admin/update/${user.user_id}` ,{
       user: user.user,
       user_stat: "N"
         }
