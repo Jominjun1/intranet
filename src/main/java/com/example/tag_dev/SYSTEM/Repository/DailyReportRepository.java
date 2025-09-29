@@ -11,4 +11,7 @@ public interface DailyReportRepository extends JpaRepository<DailyReport_info, I
 
     @Query("SELECT d FROM DailyReport_info d WHERE d.userName=:name")
     Optional<DailyReport_info> findById(String name);
+
+    @Query("SELECT d FROM DailyReport_info d WHERE d.DailyReportInfoId=:id")
+    Optional<DailyReport_info> findById(Long id);
 }

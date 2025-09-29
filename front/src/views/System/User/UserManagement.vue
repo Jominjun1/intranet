@@ -3,10 +3,10 @@
     <div class="search-section">
       <div class="search-header">
         <h3>사용자 검색</h3>
-        <el-button 
-          type="info" 
-          :icon="QuestionFilled" 
-          circle 
+        <el-button
+          type="info"
+          :icon="QuestionFilled"
+          circle
           size="small"
           @click="toggleHelp"
           title="사용자 관리 도움말"
@@ -54,12 +54,12 @@
     </div>
 
     <div class="table-section">
-      <el-table 
-        :data="paginatedData" 
-        style="width:100%" 
-        v-loading="loading" 
-        :key="tableKey" 
-        border 
+      <el-table
+        :data="paginatedData"
+        style="width:100%"
+        v-loading="loading"
+        :key="tableKey"
+        border
         stripe
         resizable
         :table-layout="'auto'"
@@ -135,7 +135,7 @@
           </template>
         </el-table-column>
       </el-table>
-      
+
       <div class="pagination-section" v-if="users.length > 0">
         <el-pagination
           v-model:current-page="currentPage"
@@ -153,7 +153,7 @@
       <div class="sidebar-header">
         <h3>사용자 관리 도움말</h3>
         <el-button type="text"
-          :icon="Close" 
+          :icon="Close"
           @click="showHelp = false"
           class="close-btn"
         />
@@ -169,7 +169,7 @@
             <li><strong>상태:</strong> 활성, 비활성 상태로 필터링할 수 있습니다.</li>
           </ul>
         </div>
-        
+
         <div class="help-section">
           <h4>👥 권한 레벨</h4>
           <ul>
@@ -180,7 +180,7 @@
             <li><strong>잠금 (0):</strong> 로그인이 차단된 상태</li>
           </ul>
         </div>
-        
+
         <div class="help-section">
           <h4>📊 사용자 상태</h4>
           <ul>
@@ -189,7 +189,7 @@
             <li><strong>비활성 (INACTIVE):</strong> 사용이 제한된 상태</li>
           </ul>
         </div>
-        
+
         <div class="help-section">
           <h4>💡 사용 팁</h4>
           <ul>
@@ -218,9 +218,9 @@
           <el-input v-model="userForm.password" type="password" placeholder="비밀번호를 입력하세요" />
         </el-form-item>
         <el-form-item label="비밀번호 변경" v-if="isEditMode">
-          <el-input 
-            v-model="userForm.password" 
-            type="password" 
+          <el-input
+            v-model="userForm.password"
+            type="password"
             placeholder="변경할 비밀번호를 입력하세요 (변경하지 않으려면 비워두세요)"
             show-password
           />
@@ -275,10 +275,10 @@
 
     <el-dialog v-model="showDeptModal" title="부서 선택" width="800px">
       <div class="dept-modal-content">
-        <el-table 
-          :data="deptList" 
-          style="width: 100%" 
-          border 
+        <el-table
+          :data="deptList"
+          style="width: 100%"
+          border
           resizable
           @row-click="selectDept"
           highlight-current-row
@@ -379,10 +379,10 @@ const userForm = ref({
 const getAclText = (acl) => {
   // 문자열을 숫자로 변환
   const aclNum = parseInt(acl)
-  const labels = { 
-    0: '잠금', 
-    1: '일반사용자', 
-    2: '관리자', 
+  const labels = {
+    0: '잠금',
+    1: '일반사용자',
+    2: '관리자',
     3: '시스템관리자',
     4: '운영자'
   }
@@ -392,10 +392,10 @@ const getAclText = (acl) => {
 const getAclType = (acl) => {
   // 문자열을 숫자로 변환
   const aclNum = parseInt(acl)
-  const types = { 
-    0: 'danger', 
-    1: 'info', 
-    2: 'warning', 
+  const types = {
+    0: 'danger',
+    1: 'info',
+    2: 'warning',
     3: 'success',
     4: 'primary'
   }
@@ -404,9 +404,9 @@ const getAclType = (acl) => {
 
 // 상태별 라벨과 타입
 const getStatusLabel = (status) => {
-  const labels = { 
-    'ACTIVE': '활성', 
-    'PENDING': '활성', 
+  const labels = {
+    'ACTIVE': '활성',
+    'PENDING': '활성',
     'LOCK': '잠금',
     'INACTIVE': '비활성',
     'N' : '삭제'
@@ -415,9 +415,9 @@ const getStatusLabel = (status) => {
 }
 
 const getStatusType = (status) => {
-  const types = { 
-    'ACTIVE': 'success', 
-    'PENDING': 'success', 
+  const types = {
+    'ACTIVE': 'success',
+    'PENDING': 'success',
     'LOCK': 'danger',
     'INACTIVE': 'info',
     'N' : 'delete'
@@ -462,20 +462,20 @@ async function loadUsers() {
     // 클라이언트에서는 토큰을 직접 확인하지 않음
     const response = await axios.get('/Admin/all-user')
     console.log("서버 응답 데이터:", response.data)
-    
+
     // 원본 데이터 그대로 사용 (매핑 제거)
     users.value = response.data.body || []
-    
+
     // 사용자 데이터 디버깅
     if (users.value.length > 0) {
       console.log("첫 번째 사용자 데이터:", users.value[0])
       console.log("hire_dt 값:", users.value[0].hire_dt, "타입:", typeof users.value[0].hire_dt)
       console.log("모든 키:", Object.keys(users.value[0]))
     }
-    
+
     // 테이블 키 업데이트로 강제 재렌더링
     tableKey.value++
-    
+
 
   } catch (error) {
     console.error('사용자 목록 조회 오류:', error)
@@ -562,16 +562,16 @@ async function deleteUser(user) {
     console.log('삭제할 사용자 데이터:', user)
     console.log('loginId 값:', user.loginId, '타입:', typeof user.loginId)
     console.log('login_id 값:', user.login_id, '타입:', typeof user.login_id)
-    
+
     // login_id 값 사용
     const loginId = user.login_id
-    
+
     // loginId가 null이거나 undefined인 경우 처리
     if (!loginId) {
       ElMessage.error('로그인 ID가 없어 삭제할 수 없습니다.')
       return
     }
-    
+
     await ElMessageBox.confirm(
       `정말 사용자 "${user.user_name}" (${loginId})을(를) 삭제하시겠습니까?`,
       '사용자 삭제 확인',
@@ -581,14 +581,14 @@ async function deleteUser(user) {
         type: 'warning'
       }
     )
-    
+
     // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로 헤더 설정 불필요
     await axios.put(`/Admin/update/${user.user_id}` ,{
       user: user.user,
       user_stat: "N"
         }
     )
-    
+
     ElMessage.success('사용자가 삭제되었습니다.')
     loadUsers() // 사용자 목록 새로고침
   } catch (error) {
@@ -617,14 +617,14 @@ function editUser(user) {
 // 사용자 저장
 async function saveUser() {
   if (!userFormRef.value) return
-  
+
   try {
     await userFormRef.value.validate()
-    
+
     if (isEditMode.value) {
       // 수정
       // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로 헤더 설정 불필요
-      
+
       // 비밀번호가 입력된 경우 비밀번호 변경 API 호출
       if (userForm.value.password && userForm.value.password.trim() !== '') {
         await axios.put(`/Admin/changePassword/${userForm.value.login_id}`, {
@@ -632,11 +632,11 @@ async function saveUser() {
         })
         ElMessage.success('비밀번호가 변경되었습니다.')
       }
-      
+
       // 사용자 정보 수정 (비밀번호 제외)
       const userDataForUpdate = { ...userForm.value }
       delete userDataForUpdate.password // 비밀번호는 별도로 처리했으므로 제거
-      
+
       await axios.put(`/Admin/update/${userForm.value.user_id}`, userDataForUpdate)
       ElMessage.success('사용자 정보가 수정되었습니다.')
     } else {
@@ -645,7 +645,7 @@ async function saveUser() {
       await axios.post('/Admin/createUser', userForm.value)
       ElMessage.success('사용자가 등록되었습니다.')
     }
-    
+
     showAddUserForm.value = false
     isEditMode.value = false
     resetUserForm()

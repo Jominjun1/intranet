@@ -4,7 +4,7 @@
 
     <!-- 달력 -->
     <el-calendar v-model="currentDate" >
-      <template #date-cell="{ data }"  @mousedown.prevent="onDateClick(toDate(data.day))">
+      <template #date-cell="{ data }" >
        <div
             class="calendar-day"
             :class="[
@@ -103,51 +103,40 @@
         :close-on-click-modal="false"
         class="dept-dialog"
     >
-      <div class="dept-modal-content">
-        <el-table
-            :data="deptList"
-            style="width: 100%"
-            border
-            resizable
-            @row-click="selectDept"
-            highlight-current-row
-        >
-          <el-table-column prop="deptCode" label="부서코드" width="120" resizable />
-          <el-table-column prop="dept" label="부서명" min-width="200" resizable />
-          <el-table-column prop="status" label="상태" width="100" resizable>
-            <template #default="scope">
-              <el-tag :type="scope.row.status === 'Y' ? 'success' : 'danger'">
-                {{ scope.row.status === 'Y' ? '사용중' : '삭제됨' }}
-              </el-tag>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="showDeptModal = false">취소</el-button>
-        </div>
-      </template>
+      <SearchDept
+          v-model="searchForm"
+          :loading="loading"
+          @search="loadDepts"
+          @reset="resetSearch"
+      />
+      <SelectDept
+          v-model="showDeptModal"
+          :search-form="searchForm"
+          @select="selectDept"
+
+      />
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import {ref, onMounted, watch, computed} from 'vue'
 import api from 'axios'
-import { Search } from "@element-plus/icons-vue";
+import {Delete, Edit, Search} from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import DeptManagement from "../System/Dept/DeptManagement.js";
 import DailyReportManagement from "./DailyReportManagement.js";
-
+import SearchDept from "../Common/SearchDept.vue";
+import SelectDept from "../Common/SelectDept.vue";
 
 const currentDate = ref(new Date())
 const dialogVisible = ref(false)
 const selectedDate = ref('')
 const reports = ref({})
 const showDeptModal = ref(false)
-const deptList = ref([])
 const holidays = ref([])
+const loading = ref(false)
+const depts = ref([])
 
 const newReport = ref({
   dailyReportInfoId: null,
@@ -155,6 +144,23 @@ const newReport = ref({
   title: "",
   time: [],
   content: ""
+})
+const searchForm = ref({
+  dept: '',
+  deptCode: '',
+  status: 'all'
+})
+const displayedDepts = computed(() => {
+  const name = (searchForm.value.dept || '').trim()
+  const code = (searchForm.value.deptCode || '').trim()
+  const stat = searchForm.value.status || 'all'
+
+  return depts.value.filter(row => {
+    const nameOk = name ? (row.dept || '').includes(name) : true
+    const codeOk = code ? (row.deptCode || '').includes(code) : true
+    const statusOk = stat === 'all' ? true : ((row.status || '').toUpperCase() === stat)
+    return nameOk && codeOk && statusOk
+  })
 })
 
 // ------------------ 날짜 관련 ------------------
@@ -180,6 +186,15 @@ function isHoliday(dateObj) {
   const str = formatDate(d)
   return holidays.value.includes(str)
 }
+function resetSearch() {
+  searchForm.value = {
+    dept: '',
+    deptCode: '',
+    status: 'all'
+  }
+  loadDepts()
+}
+
 
 // ------------------ 달력 클릭 ------------------
 const onDateClick = async (date) => {
@@ -193,7 +208,7 @@ const onDateClick = async (date) => {
 
 const fetchReports = async (date) => {
   try {
-    const data = DailyReportManagement.fetchReportsByDate(date)
+    const data =  await DailyReportManagement.fetchReportsByDate(date)
     reports.value[date] = data.map(r => ({
       dailyReportInfoId: r.dailyReportInfoId,
       title: r.txt.slice(0,10),
@@ -226,20 +241,22 @@ const saveReport = async () => {
   }
 }
 
-const deleteReportByIndex = async (index) => {
-  const report = reports.value[selectedDate.value][index]
-  try {
-    await DailyReportManagement.deleteReport(report.dailyReportInfoId)
-    await DailyReportManagement.fetchReportsByDate(selectedDate.value)
-  } catch (err) {
-    console.error(err)
-  }
-}
-
 const editReport = (index) => {
   newReport.value = { ...reports.value[selectedDate.value][index] }
   reports.value[selectedDate.value].splice(index, 1)
-  dialogVisible.value = true
+ // dialogVisible.value = true
+}
+
+const deleteReport = async (index) => {
+  const report = reports.value[selectedDate.value][index]
+  try {
+    await DailyReportManagement.deleteReport(report.dailyReportInfoId)
+    await fetchReports(selectedDate.value)
+    ElMessage.success("삭제되었습니다.")
+  } catch (err) {
+    console.error(err)
+    ElMessage.error("삭제 실패")
+  }
 }
 
 // ------------------ 공휴일 ------------------
@@ -265,7 +282,7 @@ async function fetchHolidays(year) {
 // ------------------ 부서 모달 ------------------
 async function openDeptModal() {
   showDeptModal.value = true
-  await loadDeptList()
+  await loadDepts()
 }
 
 function selectDept(dept) {
@@ -278,17 +295,20 @@ function selectDept(dept) {
   }
 }
 
-async function loadDeptList() {
+async function loadDepts() {
+  loading.value = true
   try {
-    const response = await api.get('/user/getDeptList')
-    deptList.value = response.data?.body || []
-  } catch (err) {
-    console.error(err)
-    deptList.value = []
+    const data = await DeptManagement.getDepts()
+    depts.value = data
+    if (!data.length) ElMessage.info('등록된 부서가 없습니다.')
+  } catch (error) {
+    console.error('부서 목록 조회 오류:', error)
     ElMessage.error('부서 목록을 불러오는데 실패했습니다.')
+    depts.value = []
+  } finally {
+    loading.value = false
   }
 }
-
 // ------------------ 생명주기 ------------------
 onMounted(() => {
   const year = new Date().getFullYear()

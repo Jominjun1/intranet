@@ -94,11 +94,16 @@ public class DailyService {
     }
 
     // 보고 삭제 (상태 변경)
-    public void deleteReport(String userName) {
-        DailyReport_info report = dailyReportRepository.findById(userName)
-                .orElseThrow(() -> new RuntimeException("보고가 존재하지 않습니다."));
+    public DailyReport_info deleteReport(String userName, Long id) {
+        DailyReport_info report = dailyReportRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("보고서를 찾을 수 없음 ID=" + id));
 
+        if (!report.getUserName().equals(userName)) {
+            throw new SecurityException("삭제 권한이 없습니다.");
+        }
+        // 상태만 N으로 변경
         report.setStatus("N");
-        dailyReportRepository.save(report);
+
+        return dailyReportRepository.save(report);
     }
 }

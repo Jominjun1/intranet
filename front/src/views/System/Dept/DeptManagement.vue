@@ -5,46 +5,12 @@
       <p class="page-description">부서 정보를 등록, 수정, 삭제할 수 있습니다.</p>
     </div>
 
-    <div class="search-section">
-      <div class="search-controls">
-        <div class="search-group">
-          <label>부서명</label>
-          <el-input
-            v-model="searchForm.dept"
-            placeholder="부서명을 입력하세요"
-            clearable
-            @keyup.enter="loadDepts"
-          />
-        </div>
-        <div class="search-group">
-          <label>부서코드</label>
-          <el-input
-            v-model="searchForm.deptCode"
-            placeholder="부서코드를 입력하세요"
-            clearable
-            @keyup.enter="loadDepts"
-          />
-        </div>
-        <div class="search-group">
-          <label>상태</label>
-          <el-select v-model="searchForm.status" placeholder="상태 선택" clearable>
-            <el-option label="전체" :value="'all'" />
-            <el-option label="사용중" :value="'Y'" />
-            <el-option label="삭제됨" :value="'N'" />
-          </el-select>
-        </div>
-        <div class="search-actions">
-          <el-button type="primary" @click="loadDepts" :loading="loading">
-            <el-icon :component="Search" />
-            검색
-          </el-button>
-          <el-button @click="resetSearch">
-            <el-icon><Refresh /></el-icon>
-            초기화
-          </el-button>
-        </div>
-      </div>
-    </div>
+    <SearchDept
+        v-model="searchForm"
+        :loading="loading"
+        @search="loadDepts"
+        @reset="resetSearch"
+    />
 
     <div class="action-section">
       <el-button type="primary" @click="showAddDeptForm" v-if="userAcl >= 3">
@@ -168,6 +134,7 @@ import {ElMessage, ElMessageBox} from 'element-plus'
 import {Delete, Edit, Plus, Refresh, Search} from '@element-plus/icons-vue'
 import '../../../css/System/Dept/DeptManagement.css'
 import DeptManagement from '../Dept/DeptManagement.js'
+import SearchDept from "../../Common/SearchDept.vue";
 
 
 const props = defineProps({

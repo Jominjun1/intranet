@@ -14,7 +14,8 @@ export default {
         return axios.put(`/daily/update/${id}`, payload);
     },
 
-    async deleteReport(id) {
-        return axios.delete(`/daily/delete/${id}`);
+    async deleteReport(id){
+        return axios.put(`/daily/delete/${id}`);
     }
+
 }

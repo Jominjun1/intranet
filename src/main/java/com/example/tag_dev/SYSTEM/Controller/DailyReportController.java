@@ -37,7 +37,7 @@ public class DailyReportController {
         return ResponseEntity.ok(list);
     }
 
-    // 보고 수정/삭제
+    // 보고 수정
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateReport(HttpSession session,
                                           @RequestBody DailyDTO dto) {
@@ -45,5 +45,11 @@ public class DailyReportController {
         DailyReport_info report = dailyService.updateReport(userName , dto);
         return ResponseEntity.ok(report);
     }
-
+    // 보고 삭제
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> deleteReport(HttpSession session, @PathVariable Long id) {
+        String userName = (String) session.getAttribute("user_name");
+        DailyReport_info report = dailyService.deleteReport(userName, id);
+        return ResponseEntity.ok(report);
+    }
 }
