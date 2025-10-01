@@ -8,31 +8,12 @@
       </el-button>
     </div>
     <el-form :inline="true" class="search-form">
-      <el-form-item label="프로젝트">
-        <el-input v-model="searchProject" placeholder="프로젝트 명 입력(예: 테이아 인트라넷)" clearable style="width: 300px;" />
-      </el-form-item>
-      <el-form-item label="PM">
-        <el-input v-model="searchProjectPM" placeholder="PM 입력" clearable />
-      </el-form-item>
-      <el-form-item label="삭제여부">
-        <el-select
-            v-model="searchDelFilter"
-            placeholder="삭제여부 선택"
-            style="width: 150px;"
-            clearable
-        >
-          <el-option
-              v-for="option in delFilterOptions"
-              :key="option.value"
-              :label="option.label"
-              :value="option.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="doSearch">검색</el-button>
-        <el-button @click="resetSearch">초기화</el-button>
-      </el-form-item>
+      <SearchProject
+          v-model="doSearch"
+          :loading="loading"
+          @search="loadProject"
+          @reset="resetSearch"
+      />
     </el-form>
   </div>
   <div v-if="tableData.length >0">
@@ -119,47 +100,24 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref, watch} from 'vue'
+import {computed, ref,} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import axios from 'axios'
 import '../../css/Tag/TagManagement.css'
-import {ElMessage, ElMessageBox} from 'element-plus'
+import {ElMessage} from 'element-plus'
 import {
   Close,
-  Delete,
-  Document,
-  Edit,
-  InfoFilled,
-  Plus,
-  QuestionFilled,
-  Setting,
-  Tools,
-  Warning
+  QuestionFilled
 } from '@element-plus/icons-vue'
+import SearchProject from "../Common/SearchProject.vue";
 const showSearchHelp = ref(false)
 
 // Emits
 const emit = defineEmits(['menu-select', 'user-command'])
 
-// 라우터 설정
-const router = useRouter()
-const route = useRoute()
-
 // 사용자 정보
 const userInfo = computed(() => props.userInfo)
 const userAcl = computed(() => parseInt(userInfo.value.user_acl || 0))
-
-// 검색 조건
-const searchProject = ref('')
-const searchProjectPM = ref('')
-const searchDelFilter = ref('')
-
-// 삭제여부 옵션
-const delFilterOptions = [
-  { label: '전체', value: 'all' },
-  { label: '사용중', value: 'active' },
-  { label: '삭제됨', value: 'deleted' }
-]
 
 // 테이블 데이터
 const tableData = ref([])
@@ -168,10 +126,6 @@ const loading = ref(false)
 // 페이지네이션 상태
 const currentPage = ref(1)
 const pageSize = ref(10)
-const totalTagCount = ref(0)
-
-// 서브메뉴 관련 상태
-const currentSubMenu = ref(null)
 
 const paginatedData = computed(() => {
   const startIndex = (currentPage.value - 1) * pageSize.value
@@ -197,46 +151,18 @@ function handleSizeChange(size) {
 function handleCurrentChange(page) {
   currentPage.value = page
 }
-async function doSearch(){
-  // 검색 조건이 없으면 경고 메시지 표시
-  const hasSearchCondition = (searchProject.value && searchProject.value.trim()) ||
-      (searchProjectPM.value && searchProjectPM.trim()) ||
-      (searchDelFilter.value && searchDelFilter.trim())
-
-  if (!hasSearchCondition) {
+async function doSearch(form) {
+  if (!form.searchProject && !form.searchProjectPM && !form.searchDelFilter) {
     ElMessage.warning('검색 조건을 하나 이상 입력해주세요.')
     return
   }
-  loading.value= true
+
+  loading.value = true
   try {
-    const params = {}
-    if (searchProject.value && searchProject.value.trim()) {
-      params.project_name = searchProject.value.trim()
-    }
-    if (searchProjectPM.value && searchProjectPM.value.trim()) {
-      params.project_leader = searchProjectPM.value.trim()
-    }
-    if (searchDelFilter.value && searchDelFilter.value !== 'all') {
-      params.delFilter = searchDelFilter.value
-    }
-
-    const res = await axios.get('/project/searchAll', {params})
-
-    let responseData = res.data
-
-    // 응답이 래핑된 경우 body에서 추출
-    if (responseData && typeof responseData === 'object' && responseData.body !== undefined) {
-      responseData = responseData.body
-    }
-
-    // 배열이 아닌 경우 빈 배열로 설정
-    tableData.value = Array.isArray(responseData) ? responseData : []
-
-    // 검색 후 첫 페이지로 이동
-    currentPage.value = 1
-  }catch{
-    console.error('검색 오류:', error)
-    console.error('오류 응답:', error.response?.data)
+    const res = await axios.get('/project/searchAll', { params: form })
+    tableData.value = res.data.body ?? []
+  } catch (error) {
+    console.error(error)
     ElMessage.error('검색 중 오류가 발생했습니다.')
   } finally {
     loading.value = false
@@ -244,36 +170,9 @@ async function doSearch(){
 }
 
 function resetSearch() {
-  searchProject.value = ''
-  searchProjectPM.value = ''
-  searchDelFilter.value = 'all'
+  searchForm.value = { searchProject: '', searchProjectPM: '', searchDelFilter: 'all' }
   tableData.value = []
-  currentPage.value = 1 // 초기화 시 첫 페이지로 이동
 }
 
-// 헤더 이벤트 핸들러
-function handleMenuSelect(key) {
-  emit('menu-select', key)
-}
-
-function handleUserCommand(command) {
-  emit('user-command', command)
-}
-// 날짜 포맷팅 함수
-const formatDate = (dateString) => {
-  if (!dateString) return '-'
-  try {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  } catch (e) {
-    return dateString
-  }
-}
 
 </script>
