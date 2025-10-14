@@ -30,8 +30,8 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="doSearch">검색</el-button>
-          <el-button @click="resetSearch">초기화</el-button>
+          <el-button type="primary" @click="doSearch"><el-icon><Search /></el-icon> 검색</el-button>
+          <el-button @click="resetSearch"><el-icon><Refresh /></el-icon> 초기화</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -49,48 +49,48 @@
           :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
           :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
       >
-        <el-table-column prop="user_id" label="사용자ID" width="80" align="center" resizable />
-        <el-table-column prop="user_name" label="이름" width="100" align="center" resizable />
-        <el-table-column prop="login_id" label="로그인ID" width="100" align="center" resizable />
+        <el-table-column prop="user_id" label="사용자ID" align="center" resizable />
+        <el-table-column prop="user_name" label="이름" align="center" resizable />
+        <el-table-column prop="login_id" label="로그인ID" align="center" resizable />
         <el-table-column prop="user_email" label="이메일" width="180" align="center" resizable />
-        <el-table-column prop="user_phone_num" label="전화번호" width="120" align="center" resizable />
-        <el-table-column prop="dept_cd" label="부서" width="80" align="center" resizable />
-        <el-table-column prop="user_job" label="직책" width="80" align="center" resizable />
-        <el-table-column prop="user_acl" label="권한" width="80" align="center" resizable>
+        <el-table-column prop="user_phone_num" label="전화번호" align="center" resizable />
+        <el-table-column prop="dept_cd" label="부서" align="center" resizable />
+        <el-table-column prop="user_job" label="직책" align="center" resizable />
+        <el-table-column prop="user_acl" label="권한" align="center" resizable>
           <template #default="{ row }">
             <el-tag :type="getAclType(row.user_acl)">
               {{ getAclText(row.user_acl) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="user_stat" label="상태" width="80" align="center" resizable>
+        <el-table-column prop="user_stat" label="상태" align="center" resizable>
           <template #default="{ row }">
             <el-tag :type="getStatusType(row.user_stat)">
               {{ getStatusLabel(row.user_stat) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="hire_dt" label="입사일" width="100" align="center" resizable>
+        <el-table-column prop="hire_dt" label="입사일" align="center" resizable>
           <template #default="{ row }">
             {{ formatDate(row.hire_dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="change_password_dt" label="비밀번호 변경일" width="160" align="center" resizable>
+        <el-table-column prop="change_password_dt" label="비밀번호 변경일" align="center" resizable>
           <template #default="{ row }">
             {{ formatDateTime(row.change_password_dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="login_dt" label="로그인일시" width="160" align="center" resizable>
+        <el-table-column prop="login_dt" label="로그인일시" align="center" resizable>
           <template #default="{ row }">
             {{ formatDateTime(row.login_dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="update_dt" label="수정일시" width="160" align="center" resizable>
+        <el-table-column prop="update_dt" label="수정일시" align="center" resizable>
           <template #default="{ row }">
             {{ formatDateTime(row.update_dt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="update_id" label="수정한사람" width="100" align="center" resizable>
+        <el-table-column prop="update_id" label="수정한사람" align="center" resizable>
           <template #default="{ row }">
             {{ row.update_id || '-' }}
           </template>
@@ -266,9 +266,9 @@
             @row-click="selectDept"
             highlight-current-row
         >
-          <el-table-column prop="deptCode" label="부서코드" width="120" resizable />
-          <el-table-column prop="dept" label="부서명" min-width="200" resizable />
-          <el-table-column prop="status" label="상태" width="100" resizable>
+          <el-table-column prop="deptCode" label="부서코드" resizable />
+          <el-table-column prop="dept" label="부서명" min-resizable />
+          <el-table-column prop="status" label="상태" resizable>
             <template #default="scope">
               <el-tag :type="scope.row.status === 'Y' ? 'success' : 'danger'">
                 {{ scope.row.status === 'Y' ? '사용중' : '삭제됨' }}

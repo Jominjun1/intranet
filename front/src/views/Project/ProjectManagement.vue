@@ -2,19 +2,12 @@
   <div class="search-section">
     <div class="search-header">
       <h3>🔍 프로젝트 목록</h3>
-      <el-button type="text" @click="showSearchHelp = !showSearchHelp">
-        <el-icon><QuestionFilled /></el-icon>
-        검색 도움말
-      </el-button>
+      <el-button type="info" :icon="QuestionFilled" circle size="small" @click="showSearchHelp" title="프로젝트 관리 도움말"/>
     </div>
     <el-form :inline="true" class="search-form">
-      <SearchProject
-          v-model="doSearch"
-          :loading="loading"
-          @search="loadProject"
-          @reset="resetSearch"
-      />
+      <SearchProject v-model="doSearch" :loading="loading" @search="loadProject" @reset="resetSearch"/>
     </el-form>
+
   </div>
   <div v-if="tableData.length >0">
     <h3>검색된 프로젝트 목록</h3>
@@ -55,7 +48,7 @@
       <h3>🔍 검색 도움말</h3>
       <el-button type="text"
                  :icon="Close"
-                 @click="showSearchHelp = false"
+                 @click="showHelp = false"
                  class="close-btn"
       />
     </div>
@@ -173,6 +166,5 @@ function resetSearch() {
   searchForm.value = { searchProject: '', searchProjectPM: '', searchDelFilter: 'all' }
   tableData.value = []
 }
-
 
 </script>

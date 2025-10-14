@@ -4,24 +4,9 @@
     <p>태그번호를 입력하여 AS 이력을 관리하세요.</p>
 
     <!-- 태그번호 검색 -->
-    <div class="direct-search-section">
-      <h3>🔍 태그번호 검색</h3>
-      <el-form :inline="true" class="direct-search-form">
-        <el-form-item label="태그번호">
-          <el-input 
-            v-model="searchTagNo" 
-            placeholder="태그번호 일부 입력 (예: AABB)"
-            clearable 
-            style="width: 350px;"
-            @keyup.enter="searchTagNumbers"
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="success" @click="searchTagNumbers">검색</el-button>
-          <el-button @click="clearTagSearch">초기화</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+    <SearchTag
+        v-model="searchTagNo"
+    />
 
     <!-- 태그번호 검색 결과 목록 -->
     <div v-if="tagNumberList.length > 0" class="tag-search-results">
@@ -38,10 +23,10 @@
         :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
       >
         <el-table-column prop="tag_No" label="태그번호" width="300" align="center" resizable />
-        <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" resizable />
-        <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" resizable />
-        <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" resizable />
-        <el-table-column label="작업" width="120" align="center" resizable>
+        <el-table-column prop="mac_Addr" label="MAC주소" align="center" resizable />
+        <el-table-column prop="fac_Cd" label="공장코드" align="center" resizable />
+        <el-table-column prop="fac_No" label="시리얼번호" align="center" resizable />
+        <el-table-column label="작업" align="center" resizable>
           <template #default="{ row }">
             <el-button size="small" type="primary" @click.stop="selectTagNumber(row)">선택</el-button>
           </template>
@@ -82,36 +67,36 @@
         :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
         :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
       >
-        <el-table-column prop="as_Cnt" label="AS 횟수" width="80" align="center" resizable />
+        <el-table-column prop="as_Cnt" label="AS 횟수" align="center" resizable />
         <el-table-column prop="mac_ADDR" label="MAC주소" width="150" align="center" resizable />
-        <el-table-column prop="as_Doc" label="AS 문서번호" width="120" align="center" resizable />
-        <el-table-column prop="occr_Dt" label="AS 발생일" width="120" align="center" resizable>
+        <el-table-column prop="as_Doc" label="AS 문서번호" align="center" resizable />
+        <el-table-column prop="occr_Dt" label="AS 발생일" align="center" resizable>
           <template #default="{ row }">{{ formatDate(row.occr_Dt) }}</template>
         </el-table-column>
         <el-table-column prop="occr_RSN" label="AS 발생사유" width="150" align="center" resizable />
-        <el-table-column prop="close_Dt" label="AS 종결일" width="120" align="center" resizable>
+        <el-table-column prop="close_Dt" label="AS 종결일" align="center" resizable>
           <template #default="{ row }">{{ formatDate(row.close_Dt) }}</template>
         </el-table-column>
         <el-table-column prop="close_RSLT" label="AS 처리결과" width="150" align="center" resizable />
-        <el-table-column prop="delivery_DT" label="납품일" width="120" align="center" resizable>
+        <el-table-column prop="delivery_DT" label="납품일" align="center" resizable>
           <template #default="{ row }">{{ formatDate(row.delivery_DT) }}</template>
         </el-table-column>
-        <el-table-column prop="create_DT" label="생성일" width="120" align="center" resizable>
+        <el-table-column prop="create_DT" label="생성일" align="center" resizable>
           <template #default="{ row }">{{ formatDate(row.create_DT) }}</template>
         </el-table-column>
-        <el-table-column prop="create_ID" label="생성자" width="100" align="center" resizable />
-        <el-table-column prop="update_DT" label="수정일" width="120" align="center" resizable>
+        <el-table-column prop="create_ID" label="생성자" align="center" resizable />
+        <el-table-column prop="update_DT" label="수정일" align="center" resizable>
           <template #default="{ row }">{{ formatDate(row.update_DT) }}</template>
         </el-table-column>
-        <el-table-column prop="update_ID" label="수정자" width="100" align="center" resizable />
-        <el-table-column prop="del_YN" label="삭제여부" width="100" align="center" resizable>
+        <el-table-column prop="update_ID" label="수정자" align="center" resizable />
+        <el-table-column prop="del_YN" label="삭제여부" align="center" resizable>
           <template #default="{ row }">
             <el-tag :type="row.del_YN === 'Y' ? 'danger' : 'success'">
               {{ row.del_YN === 'Y' ? '삭제됨' : '사용중' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="작업" width="200" align="center" v-if="userAcl >= 2" resizable>
+        <el-table-column label="작업" align="center" v-if="userAcl >= 2" resizable>
           <template #default="{ row }">
             <div class="action-buttons">
               <el-button size="small" @click="editAs(row)"><el-icon><Edit /></el-icon>수정</el-button>
@@ -156,12 +141,9 @@ import {computed, ref} from 'vue'
 import axios from 'axios'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {Delete, Edit, Plus} from '@element-plus/icons-vue'
+import SearchTag from "../Common/SearchDept.vue";
 
 const userAcl = 3 // 권한 표시용(필요시 상위에서 주입하도록 변경 가능)
-
-const searchTagNo = ref('')
-const tagNumberList = ref([])
-const totalTagCount = ref(0)
 
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -188,38 +170,6 @@ function formatDate(dateString) {
     const date = new Date(dateString)
     return date.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
   } catch { return dateString }
-}
-
-async function searchTagNumbers() {
-  if (!searchTagNo.value.trim()) { ElMessage.warning('태그번호를 입력해주세요.'); return }
-  try {
-    const res = await axios.get('/tags/tag-numbers', { params: { query: searchTagNo.value.trim() } })
-    const tagNumbers = res.data.body || res.data || []
-    const detailedList = []
-    for (const ordNo of tagNumbers) {
-      let macAddr = '', facCd = '', facNo = ''
-      if (ordNo && ordNo.length >= 20) {
-        macAddr = ordNo.substring(0, 12)
-        facCd = ordNo.substring(12, 18)
-        facNo = ordNo.substring(18)
-      } else {
-        macAddr = ordNo || ''
-      }
-      detailedList.push({ tag_No: ordNo, mac_Addr: macAddr, fac_Cd: facCd, fac_No: facNo })
-    }
-    tagNumberList.value = detailedList
-    totalTagCount.value = detailedList.length
-    if (tagNumberList.value.length === 0) ElMessage.info('검색 결과가 없습니다.')
-  } catch (e) {
-    console.error('태그번호 검색 오류:', e)
-    ElMessage.error('검색 중 오류가 발생했습니다.')
-  }
-}
-
-function clearTagSearch() {
-  searchTagNo.value = ''
-  tagNumberList.value = []
-  totalTagCount.value = 0
 }
 
 function selectTagNumber(row) {

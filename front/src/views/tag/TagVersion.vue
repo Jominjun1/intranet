@@ -3,18 +3,10 @@
     <h2>버전 이력 관리</h2>
     <p>태그번호를 입력하여 버전 이력을 관리하세요.</p>
 
-    <div class="direct-search-section">
-      <h3>🔍 태그번호 검색</h3>
-      <el-form :inline="true" class="direct-search-form">
-        <el-form-item label="태그번호">
-          <el-input v-model="searchTagNo" placeholder="태그번호 일부 입력 (예: AABB)" clearable style="width: 350px;" @keyup.enter="searchVersionHistory" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="success" @click="searchVersionHistory">검색</el-button>
-          <el-button @click="clearTagSearch">초기화</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+    <!-- 태그번호 검색 -->
+    <SearchTag
+        v-model="searchTagNo"
+    />
 
     <div v-if="versionHistoryData && versionHistoryData.length > 0" class="result-section">
       <div class="result-header">
@@ -24,13 +16,13 @@
         </div>
       </div>
       <el-table :data="versionHistoryData || []" style="width: 100%" border resizable>
-        <el-table-column prop="tag_version" label="버전" width="100" resizable />
-        <el-table-column prop="HW_VERSION" label="하드웨어버전" width="120" resizable />
-        <el-table-column prop="FW_VERSION" label="펌웨어버전" width="120" resizable />
-        <el-table-column prop="create_Dt" label="생성일" width="120" resizable>
+        <el-table-column prop="tag_version" label="버전" resizable />
+        <el-table-column prop="HW_VERSION" label="하드웨어버전" resizable />
+        <el-table-column prop="FW_VERSION" label="펌웨어버전" resizable />
+        <el-table-column prop="create_Dt" label="생성일" resizable>
           <template #default="{ row }">{{ formatDate(row.create_Dt) }}</template>
         </el-table-column>
-        <el-table-column prop="create_Id" label="생성자" width="100" resizable />
+        <el-table-column prop="create_Id" label="생성자" resizable />
       </el-table>
     </div>
   </div>
@@ -41,6 +33,7 @@ import {ref} from 'vue'
 import axios from 'axios'
 import {ElMessage} from 'element-plus'
 import '../../css/Tag/TagVersion.css'
+import SearchTag from "../Common/SearchDept.vue";
 
 const userAcl = 3
 const searchTagNo = ref('')

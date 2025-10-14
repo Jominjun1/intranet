@@ -5,13 +5,6 @@ const api = axios.create({
     withCredentials: true,
 })
 
-// 쿠키에서 토큰을 읽어오는 함수
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return null;
-}
 
 api.interceptors.request.use(config => {
         // 쿠키 기반 인증 - withCredentials로 쿠키 자동 전송

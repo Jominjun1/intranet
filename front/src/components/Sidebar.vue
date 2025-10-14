@@ -9,7 +9,6 @@
       </div>
       <h3 v-show="!isCollapsed">메뉴</h3>
     </div>
-
     <!-- 일일보고 메뉴 그룹 -->
     <nav class="sidebar-nav">
       <div class="menu-group">
@@ -71,17 +70,6 @@
 
         <transition name="submenu">
           <div v-show="isProjectExpanded" class="submenu-items">
-            <div
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'project-search' }"
-                @click="handleMenuSelect('project-search')"
-            >
-              <el-icon>
-                <Search/>
-              </el-icon>
-              <span v-show="!isCollapsed">프로젝트 검색</span>
-            </div>
-
             <div
                 class="menu-item submenu-item"
                 :class="{ active: activeMenu === 'project-step' }"

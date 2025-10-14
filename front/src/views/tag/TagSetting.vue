@@ -4,33 +4,18 @@
     <p>태그번호를 입력하여 세팅정보를 관리하세요.</p>
 
     <!-- 태그번호 검색 -->
-    <div class="direct-search-section">
-      <h3>🔍 태그번호 검색</h3>
-      <el-form :inline="true" class="direct-search-form">
-        <el-form-item label="태그번호">
-          <el-input
-              v-model="searchTagNo"
-              placeholder="태그번호 일부 입력 (예: AABB)"
-              clearable
-              style="width: 350px;"
-              @keyup.enter="searchTagNumbers"
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="success" @click="searchSettingInfo">검색</el-button>
-          <el-button @click="clearTagSearch">초기화</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+    <SearchTag
+        v-model="searchTagNo"
+    />
 
     <div v-if="tagNumberList.length > 0" class="tag-search-results">
       <h3>검색된 태그번호 목록 (총 {{ totalTagCount }}개)</h3>
       <el-table :data="paginatedTagList" style="width: 100%" @row-click="selectTagNumber" border resizable>
         <el-table-column prop="tag_No" label="태그번호" width="300" align="center" resizable />
-        <el-table-column prop="mac_Addr" label="MAC주소" width="200" align="center" resizable />
-        <el-table-column prop="fac_Cd" label="공장코드" width="120" align="center" resizable />
-        <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" resizable />
-        <el-table-column label="작업" width="120" align="center" resizable>
+        <el-table-column prop="mac_Addr" label="MAC주소" align="center" resizable />
+        <el-table-column prop="fac_Cd" label="공장코드" align="center" resizable />
+        <el-table-column prop="fac_No" label="시리얼번호" align="center" resizable />
+        <el-table-column label="작업" align="center" resizable>
           <template #default="{ row }">
             <el-button size="small" type="primary" @click.stop="selectTagNumber(row)">선택</el-button>
           </template>
@@ -181,6 +166,7 @@ import {ref} from 'vue'
 import axios from 'axios'
 import {ElMessage} from 'element-plus'
 import '../../css/Tag/TagSetting.css'
+import SearchTag from "../Common/SearchDept.vue";
 
 
 const userAcl = 3

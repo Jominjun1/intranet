@@ -17,9 +17,9 @@
           empty-text="등록된 부서가 없습니다."
           @row-click="onSelectDept"
       >
-        <el-table-column prop="deptCode" label="부서코드" width="120" align="center" resizable />
-        <el-table-column prop="dept" label="부서명" min-width="200" align="center" resizable />
-        <el-table-column prop="status" label="상태" width="100" align="center" resizable>
+        <el-table-column prop="deptCode" label="부서코드" align="center" resizable />
+        <el-table-column prop="dept" label="부서명" min-align="center" resizable />
+        <el-table-column prop="status" label="상태" align="center" resizable>
           <template #default="scope">
             <el-tag :type="scope.row.status === 'Y' ? 'success' : 'danger'">
               {{ scope.row.status === 'Y' ? '사용중' : '삭제됨' }}

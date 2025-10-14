@@ -6,10 +6,14 @@
     <div class="search-section">
       <div class="search-header">
         <h3>🔍 태그 검색</h3>
-        <el-button type="text" @click="showSearchHelp = !showSearchHelp">
-          <el-icon><QuestionFilled /></el-icon>
-          검색 도움말
-        </el-button>
+        <el-button
+            type="info"
+            :icon="QuestionFilled"
+            circle
+            size="small"
+            @click="showSearchHelp"
+            title="검색 도움말"
+        />
       </div>
       <el-form :inline="true" class="search-form">
         <el-form-item label="태그번호">
@@ -61,26 +65,26 @@
       >
         <el-table-column prop="tag_No" label="태그번호" width="150" align="center" resizable />
         <el-table-column prop="mac_Addr" label="MAC주소" width="150" align="center" resizable />
-        <el-table-column prop="fac_Cd" label="공장코드" width="100" align="center" resizable />
-        <el-table-column prop="fac_No" label="시리얼번호" width="120" align="center" resizable />
-        <el-table-column prop="tag_Version" label="제품버전" width="100" align="center" resizable />
-        <el-table-column prop="tag_Type" label="태그타입" width="100" align="center" resizable />
-        <el-table-column prop="erp_Code" label="ERP코드" width="120" align="center" resizable />
-        <el-table-column prop="Mng_Category" label="관리카테고리" width="120" align="center" resizable />
-        <el-table-column prop="Lot" label="LOT번호" width="120" align="center" resizable />
-        <el-table-column prop="Prod_order" label="생산지시" width="120" align="center" resizable />
-        <el-table-column prop="Project_code" label="프로젝트코드" width="120" align="center" resizable />
-        <el-table-column prop="Project_manager" label="프로젝트매니저" width="120" align="center" resizable />
-        <el-table-column prop="Mac_duple_yn" label="MAC중복여부" width="120" align="center" resizable />
-        <el-table-column prop="as_Cnt" label="AS횟수" width="80" align="center" resizable />
-        <el-table-column prop="Status" label="삭제여부" width="100" align="center" resizable>
+        <el-table-column prop="fac_Cd" label="공장코드" align="center" resizable />
+        <el-table-column prop="fac_No" label="시리얼번호" align="center" resizable />
+        <el-table-column prop="tag_Version" label="제품버전" align="center" resizable />
+        <el-table-column prop="tag_Type" label="태그타입" align="center" resizable />
+        <el-table-column prop="erp_Code" label="ERP코드" align="center" resizable />
+        <el-table-column prop="Mng_Category" label="관리카테고리" align="center" resizable />
+        <el-table-column prop="Lot" label="LOT번호" align="center" resizable />
+        <el-table-column prop="Prod_order" label="생산지시" align="center" resizable />
+        <el-table-column prop="Project_code" label="프로젝트코드" align="center" resizable />
+        <el-table-column prop="Project_manager" label="프로젝트매니저" align="center" resizable />
+        <el-table-column prop="Mac_duple_yn" label="MAC중복여부" align="center" resizable />
+        <el-table-column prop="as_Cnt" label="AS횟수" align="center" resizable />
+        <el-table-column prop="Status" label="삭제여부" align="center" resizable>
           <template #default="{ row }">
             <el-tag :type="row.Status === 'Y' ? 'danger' : 'success'">
               {{ row.Status === 'Y' ? '삭제됨' : '사용중' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="작업 선택" width="200" align="center" resizable>
+        <el-table-column label="작업 선택" align="center" resizable>
           <template #default="{ row }">
             <div class="action-select">
               <el-select 

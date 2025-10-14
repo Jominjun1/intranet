@@ -1,24 +1,23 @@
 <template>
   <div class="dept-management">
     <div class="page-header">
-      <h1>부서 관리</h1>
-      <p class="page-description">부서 정보를 등록, 수정, 삭제할 수 있습니다.</p>
+      <div style="justify-content: flex-end;">
+        <h1>부서 관리</h1>
+        <p class="page-description">부서 정보를 등록, 수정, 삭제할 수 있습니다.</p>
+      </div>
+      <div style="display: flex; justify-content: flex-end;">
+        <el-button type="primary" @click="showAddDeptForm" v-if="userAcl >= 3">
+          <el-icon><Plus /></el-icon>
+          부서 등록
+        </el-button>
+      </div>
     </div>
-
     <SearchDept
         v-model="searchForm"
         :loading="loading"
         @search="loadDepts"
         @reset="resetSearch"
     />
-
-    <div class="action-section">
-      <el-button type="primary" @click="showAddDeptForm" v-if="userAcl >= 3">
-        <el-icon><Plus /></el-icon>
-        부서 등록
-      </el-button>
-    </div>
-
     <div class="table-section">
       <el-table
         :data="displayedDepts"
@@ -29,16 +28,16 @@
         style="width: 100%"
         empty-text="등록된 부서가 없습니다."
       >
-        <el-table-column prop="deptCode" label="부서코드" width="120" align="center" resizable />
-        <el-table-column prop="dept" label="부서명" min-width="200" align="center" resizable />
-        <el-table-column prop="status" label="상태" width="100" align="center" resizable>
+        <el-table-column prop="deptCode" label="부서코드" align="center" resizable />
+        <el-table-column prop="dept" label="부서명" min-align="center" resizable />
+        <el-table-column prop="status" label="상태" align="center" resizable>
           <template #default="scope">
             <el-tag :type="scope.row.status === 'Y' ? 'success' : 'danger'">
               {{ scope.row.status === 'Y' ? '사용중' : '삭제됨' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="userName" label="등록자" width="120" align="center" resizable />
+        <el-table-column prop="userName" label="등록자" align="center" resizable />
         <el-table-column prop="regDt" label="등록일" width="180" align="center" resizable>
           <template #default="scope">
             {{ formatDate(scope.row.regDt) }}
@@ -118,10 +117,10 @@
       
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="cancelDeptForm">취소</el-button>
           <el-button type="primary" @click="saveDept" :loading="saving">
             {{ isEditMode ? '수정' : '등록' }}
           </el-button>
+          <el-button @click="cancelDeptForm">취소</el-button>
         </div>
       </template>
     </el-dialog>

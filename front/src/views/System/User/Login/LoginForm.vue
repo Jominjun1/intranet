@@ -12,26 +12,34 @@
       <el-form :model="loginForm" :rules="rules" ref="loginFormRef" class="login-form-bizon">
         <el-form-item prop="login_id">
           <el-input
-            v-model="loginForm.login_id"
-            placeholder="아이디를 입력하세요"
-            prefix-icon="el-icon-user"
-            size="large"
-            clearable
-            class="input-bizon"
-          />
+              v-model="loginForm.login_id"
+              placeholder="아이디를 입력하세요"
+              size="large"
+              clearable
+              class="input-bizon"
+          >
+            <template #prefix>
+              <el-icon>
+                <User />
+              </el-icon>
+            </template>
+          </el-input>
         </el-form-item>
         <el-form-item prop="password">
           <el-input
             v-model="loginForm.password"
             type="password"
             placeholder="비밀번호를 입력하세요"
-            prefix-icon="el-icon-lock"
             size="large"
             show-password
             clearable
             class="input-bizon"
             @keyup.enter="handleLogin"
-          />
+          >
+            <template #prefix>
+              <el-icon><Lock /></el-icon>
+            </template>
+          </el-input>
         </el-form-item>
         <el-form-item>
           <el-button

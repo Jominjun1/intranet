@@ -90,7 +90,6 @@
 
 .sidebar-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
     padding-bottom: 15px;
@@ -458,17 +457,6 @@
     text-align: center;
 }
 
-/* 셀 호버 시 전체 텍스트 표시 */
-:deep(.el-table .cell:hover) {
-    white-space: normal;
-    word-break: break-all;
-    background-color: #f0f9ff;
-}
-
-/* 테이블 행 호버 효과 */
-:deep(.el-table__row:hover > td) {
-    background-color: #f0f9ff !important;
-}
 
 /* 테이블 경계선 스타일 */
 :deep(.el-table--border) {

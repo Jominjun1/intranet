@@ -17,14 +17,15 @@
       </el-select>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="() => emit('search', localForm)">검색</el-button>
-      <el-button @click="resetSearch">초기화</el-button>
+      <el-button type="primary" @click="() => emit('search', localForm)"><el-icon><Search /></el-icon> 검색</el-button>
+      <el-button @click="resetSearch"><el-icon><Refresh /></el-icon> 초기화</el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <script setup>
 import { reactive, watch } from 'vue'
+import {Search} from "@element-plus/icons-vue";
 
 const props = defineProps({
   modelValue: Object,

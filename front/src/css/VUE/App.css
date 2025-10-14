@@ -114,18 +114,6 @@
   text-align: center;
 }
 
-/* 셀 호버 시 전체 텍스트 표시 */
-.el-table .cell:hover {
-  white-space: normal;
-  word-break: break-all;
-  background-color: #f0f9ff;
-}
-
-/* 테이블 행 호버 효과 */
-.el-table__row:hover > td {
-  background-color: #f0f9ff !important;
-}
-
 /* 테이블 경계선 스타일 */
 .el-table--border {
   border: 1px solid #dcdfe6;

@@ -81,27 +81,13 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 8px 12px;
+    padding: 12px;
 }
 
 :deep(.el-table .el-table__cell) {
     padding: 0;
 }
 
-:deep(.el-table .cell:hover) {
-    white-space: normal;
-    word-break: break-all;
-    background-color: #f5f7fa;
-    z-index: 10;
-    position: relative;
-}
-
-/* 테이블 통합 스타일 */
-:deep(.el-table) {
-    table-layout: auto !important;
-    font-size: 14px;
-    width: 100% !important;
-}
 
 /* 테이블 컨테이너 전체 너비 사용 */
 :deep(.el-table__header-wrapper),
@@ -128,7 +114,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 8px 12px;
     text-align: center;
 }
 
@@ -147,10 +132,6 @@
     text-align: center;
 }
 
-/* 테이블 행 호버 효과 */
-:deep(.el-table__row:hover > td) {
-    background-color: #f0f9ff !important;
-}
 
 /* 테이블 경계선 스타일 */
 :deep(.el-table--border) {

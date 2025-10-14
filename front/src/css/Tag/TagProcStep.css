@@ -55,11 +55,6 @@
     text-align: center;
 }
 
-/* 테이블 행 호버 효과 */
-:deep(.el-table__row:hover > td) {
-    background-color: #f0f9ff !important;
-}
-
 /* 테이블 경계선 스타일 */
 :deep(.el-table--border) {
     border: 1px solid #dcdfe6;

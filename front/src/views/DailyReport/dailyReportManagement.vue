@@ -5,14 +5,7 @@
     <!-- 달력 -->
     <el-calendar v-model="currentDate" >
       <template #date-cell="{ data }" >
-       <div
-            class="calendar-day"
-            :class="[
-        isHoliday(data.day) ? 'Holiday' : '',
-        isSunday(data.day) ? 'isSunday' : '',
-        isSaturday(data.day) ? 'isSaturday' : ''
-      ]"  @mousedown.prevent="onDateClick(toDate(data.day))"
-        >
+       <div class="calendar-day" @click="onDateClick(toDate(data.day))">
           {{ toDate(data.day).getDate() }}
         </div>
       </template>
@@ -46,51 +39,47 @@
           </div>
         </el-card>
       </div>
-      <div v-else class="text-gray-500 text-center py-5">
-        등록된 보고가 없습니다.
+      <div class="text-gray-500 text-center py-5"  v-if="dailyFlag === false">
+        <p>등록된 보고가 없습니다.</p>
+        <el-button type="primary" size="small" @click="dailyFlag = true"><el-icon><Plus/></el-icon>추가</el-button>
       </div>
 
-      <el-form :model="newReport" label-width="80px" class="mt-4">
-        <el-form-item label="제목">
-          <el-input v-model="newReport.title" placeholder="제목을 입력하세요" />
-        </el-form-item>
+      <div v-if="dailyFlag === true">
+        <br>
+        <el-form :model="newReport" label-width="80px" class="mt-4">
+          <el-form-item label="제목">
+            <el-input v-model="newReport.title" placeholder="제목을 입력하세요" />
+          </el-form-item>
 
-        <el-form-item label="시간">
-          <el-time-picker
-              v-model="newReport.time"
-              is-range
-              range-separator="~"
-              start-placeholder="시작 시간"
-              end-placeholder="종료 시간"
-              format="HH:mm"
-              value-format="HH:mm"
-              style="width: 100%;"
-          />
-        </el-form-item>
+          <el-form-item label="시간">
+            <el-time-picker
+                v-model="newReport.time" is-range range-separator="~"
+                start-placeholder="시작 시간" end-placeholder="종료 시간" format="HH:mm" value-format="HH:mm" style="width: 100%;"
+            />
+          </el-form-item>
 
-        <el-form-item label="부서" prop="dept_cd">
-          <div class="dept-input-group">
-            <el-input v-model="newReport.deptCode" placeholder="부서명을 선택하세요" readonly />
-            <el-button type="primary" @click="openDeptModal">
-              <el-icon><Search /></el-icon>
-              부서 선택
-            </el-button>
-          </div>
-        </el-form-item>
+          <el-form-item label="부서" prop="dept_cd">
+            <div class="dept-input-group">
+              <el-input v-model="newReport.deptCode" placeholder="부서명을 선택하세요" readonly />
+              <el-button type="primary" @click="openDeptModal">
+                <el-icon><Search /></el-icon>부서 선택 </el-button>
+            </div>
+          </el-form-item>
 
-        <el-form-item label="내용">
-          <el-input
-              type="textarea"
-              v-model="newReport.content"
-              placeholder="보고 내용을 입력하세요"
-              rows="4"
-          />
-        </el-form-item>
-      </el-form>
+          <el-form-item label="내용">
+            <el-input
+                type="textarea"
+                v-model="newReport.content"
+                placeholder="보고 내용을 입력하세요"
+                rows="4"
+            />
+          </el-form-item>
+        </el-form>
+      </div>
 
       <template #footer>
-        <el-button @click="dialogVisible = false">닫기</el-button>
-        <el-button type="primary" @click="saveReport">저장</el-button>
+        <el-button type="primary" @click="saveReport; dailyFlag = false">저장</el-button>
+        <el-button @click="dialogVisible = false; dailyFlag = false">닫기</el-button>
       </template>
     </el-dialog>
 
@@ -122,7 +111,7 @@
 <script setup>
 import {ref, onMounted, watch, computed} from 'vue'
 import api from 'axios'
-import {Delete, Edit, Search} from "@element-plus/icons-vue";
+import {Delete, Edit, Search , Plus} from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import DeptManagement from "../System/Dept/DeptManagement.js";
 import DailyReportManagement from "./DailyReportManagement.js";
@@ -137,6 +126,7 @@ const showDeptModal = ref(false)
 const holidays = ref([])
 const loading = ref(false)
 const depts = ref([])
+const dailyFlag = ref(false);
 
 const newReport = ref({
   dailyReportInfoId: null,
@@ -258,7 +248,7 @@ const deleteReport = async (index) => {
     ElMessage.error("삭제 실패")
   }
 }
-
+/*
 // ------------------ 공휴일 ------------------
 async function fetchHolidays(year) {
   try {
@@ -278,7 +268,7 @@ async function fetchHolidays(year) {
     holidays.value = []
   }
 }
-
+*/
 // ------------------ 부서 모달 ------------------
 async function openDeptModal() {
   showDeptModal.value = true
@@ -312,12 +302,12 @@ async function loadDepts() {
 // ------------------ 생명주기 ------------------
 onMounted(() => {
   const year = new Date().getFullYear()
-  fetchHolidays(year)
+  //fetchHolidays(year)
   fetchReports(formatDate(currentDate.value))
 })
 
 watch(currentDate, (newDate) => {
   const year = new Date(newDate).getFullYear()
-  fetchHolidays(year)
+  //fetchHolidays(year)
 })
 </script>

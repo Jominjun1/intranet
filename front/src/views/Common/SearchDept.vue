@@ -29,7 +29,7 @@
       </div>
       <div class="search-actions">
         <el-button type="primary" @click="emitSearch" :loading="loading">
-          <el-icon :component="Search" /> 검색
+          <el-icon><Search /></el-icon> 검색
         </el-button>
         <el-button @click="emitReset">
           <el-icon><Refresh /></el-icon> 초기화
@@ -41,6 +41,7 @@
 
 <script setup>
 import { reactive, watch } from "vue"
+import {Search} from "@element-plus/icons-vue";
 
 const props = defineProps({
   modelValue: Object,
