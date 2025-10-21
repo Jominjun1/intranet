@@ -23,8 +23,6 @@ public class DailyReportLog {
     @Column(name="CREATE_DT")
     private Date createDt; // 생성일
     private String CREATE_ID; // 생성자(사번)
-    private Date UPDATE_DT; // 수정일
-    private String UPDATE_ID; // 수정자(사번)
 
     @Column(name="DEPT_CD")
     private String deptCode; // 부서코드
@@ -34,6 +32,8 @@ public class DailyReportLog {
     private String projectCode; // 프로젝트 코드
     private String project_name; // 프로젝트 명
     private String project_leader; // 프로젝트 PM
+    private String txt; // 작성 내용
+
 
     private String DailyStatus; // 승인 여부
     private String Status; // 삭제 여부

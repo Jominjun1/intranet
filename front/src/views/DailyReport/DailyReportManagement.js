@@ -1,6 +1,9 @@
 import axios from 'axios';
 
 export default {
+
+    // dailyReportManagement
+
     async fetchReportsByDate(date) {
         const res = await axios.get('/daily/list', {params: {date}});
         return res.data;
@@ -17,5 +20,8 @@ export default {
     async deleteReport(id){
         return axios.put(`/daily/delete/${id}`);
     }
+
+
+    // effortManagement
 
 }

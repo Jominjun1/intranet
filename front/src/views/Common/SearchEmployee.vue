@@ -292,7 +292,7 @@ import {computed, onMounted, ref} from 'vue'
 import axios from 'axios'
 import '../../../css/System/User/UserManagement.css'
 import {ElMessage, ElMessageBox} from 'element-plus'
-import {Close, Delete, Edit, Plus, QuestionFilled, Search} from '@element-plus/icons-vue'
+import {Close, Delete, Edit, QuestionFilled, Search} from '@element-plus/icons-vue'
 
 const props = defineProps({
   userInfo: {

@@ -5,15 +5,20 @@
           v-model="localForm.searchProject"
           placeholder="프로젝트 명 입력"
           clearable
-          style="width: 300px"
+          style="width: 200px"
       />
     </el-form-item>
     <el-form-item label="PM">
       <el-input v-model="localForm.searchProjectPM" placeholder="PM 입력" clearable />
     </el-form-item>
     <el-form-item label="삭제여부">
-      <el-select v-model="localForm.searchDelFilter" placeholder="삭제여부 선택" style="width: 150px;">
+      <el-select v-model="localForm.searchDelFilter" placeholder="삭제여부 선택" style="width: 120px;">
         <el-option v-for="option in delFilterOptions" :key="option.value" :label="option.label" :value="option.value" />
+      </el-select>
+    </el-form-item>
+    <el-form-item label="진행여부">
+      <el-select v-model="localForm.searchDelFilter" placeholder="진행여부 선택" style="width: 120px;">
+        <el-option v-for="option in ingFilterOptions" :key="option.value" :label="option.label" :value="option.value" />
       </el-select>
     </el-form-item>
     <el-form-item>
@@ -24,7 +29,7 @@
 </template>
 
 <script setup>
-import { reactive, watch } from 'vue'
+import {reactive, watch} from 'vue'
 import {Search} from "@element-plus/icons-vue";
 
 const props = defineProps({
@@ -47,6 +52,13 @@ const delFilterOptions = [
   { label: '전체', value: 'all' },
   { label: '사용중', value: 'active' },
   { label: '삭제됨', value: 'deleted' }
+]
+
+const ingFilterOptions = [
+  { label: '전체', value: 'all' },
+  { label: '진행전' , value: 'not'},
+  { label: '진행중', value: 'ing' },
+  { label: '완료됨', value: 'complete' }
 ]
 
 function resetSearch() {

@@ -40,9 +40,9 @@ public class User {
     private String user_job; // 사용자 직책 ( 사원 , 대리 등 )
     private String user_stat; // 사용자 상태
 
-    private Long reg_id; // 등록한 사용자 ID
+    private String reg_id; // 등록한 사용자 ID
     private Date reg_dt; // 등록일자
-    private Long update_id; // 수정한 사용자 ID
+    private String update_id; // 수정한 사용자 ID
     private Date update_dt; // 수정일자
     private Date login_dt; // 로그인 일자
     private Date hire_dt; // 입사일자

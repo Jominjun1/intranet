@@ -1,0 +1,11 @@
+.project-cell-style {
+    white-space: nowrap;
+    text-align: center;
+}
+
+.project-header-style {
+    white-space: nowrap;
+    text-align: center;
+    background-color: #f5f7fa;
+    font-weight: bold;
+}

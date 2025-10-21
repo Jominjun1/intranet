@@ -1,4 +1,4 @@
-package com.example.tag_dev.SYSTEM.Model;
+package com.example.tag_dev.Common.Model;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;

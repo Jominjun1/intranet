@@ -164,7 +164,7 @@ import {computed, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import axios from 'axios'
 import {ElMessage} from 'element-plus'
-import {Close, Document, InfoFilled, QuestionFilled, Setting, Tools, Warning} from '@element-plus/icons-vue'
+import {Close, QuestionFilled} from '@element-plus/icons-vue'
 import '../../css/Tag/TagSearch.css'
 
 const router = useRouter()

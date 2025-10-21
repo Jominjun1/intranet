@@ -1,6 +1,6 @@
-package com.example.tag_dev.SYSTEM.Repository;
+package com.example.tag_dev.Common.Repository;
 
-import com.example.tag_dev.SYSTEM.Model.Dept_Info;
+import com.example.tag_dev.Common.Model.Dept_Info;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

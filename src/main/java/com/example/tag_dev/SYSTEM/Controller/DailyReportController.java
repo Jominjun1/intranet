@@ -21,12 +21,7 @@ public class DailyReportController {
 
     private final DailyService dailyService;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createReport(HttpSession session, @RequestBody DailyDTO dto) {
-        String userName = (String) session.getAttribute("user_name");
-        DailyReport_info report = dailyService.createReport(userName, dto);
-        return ResponseEntity.ok(report);
-    }
+    // 전체 보고 일
 
     // 특정 날짜 보고 조회
     @GetMapping("/list")
@@ -35,6 +30,14 @@ public class DailyReportController {
         String userName = (String) session.getAttribute("user_name");
         List<DailyReport_info> list = dailyService.getReportsByUser(userName, date);
         return ResponseEntity.ok(list);
+    }
+
+    // 보고 추가
+    @PostMapping("/create")
+    public ResponseEntity<?> createReport(HttpSession session, @RequestBody DailyDTO dto) {
+        String userName = (String) session.getAttribute("user_name");
+        DailyReport_info report = dailyService.createReport(userName, dto);
+        return ResponseEntity.ok(report);
     }
 
     // 보고 수정

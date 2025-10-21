@@ -10,7 +10,7 @@ import java.util.Date;
 @Setter
 @Entity
 @Table(name="TB_LOG_LOGN")
-public class UserLog {
+public class LoginLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +26,5 @@ public class UserLog {
     @Column(name="reg_dt")
     private Date regDt; // 등록일자
     private Date update_dt; // 수정일자
-    private Long update_id; // 수정한 사람
+    private String update_id; // 수정한 사람
 }

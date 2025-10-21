@@ -20,10 +20,11 @@ public class LogService {
     private final ProdAsLogRepository prodAsLogRepository;
     private final ProcStepLogRepository procStepLogRepository;
     private final SettingInfoRepository settingInfoRepository;
-    private final UserLogRepository userLogRepository;
+    private final LoginLogRepository loginLogRepository;
     private final VersionInfoLogRepository versionInfoLogRepository;
     private final SettingInfoLogRepository settingInfoLogRepository;
     private final DailyReportLogRepository dailyReportLogRepository;
+    private final CustomerLogRepository customerLogRepository;
 
     // 로그 조회
     public ResponseEntity<?> searchLog(String type, String startDate, String endDate) {
@@ -49,13 +50,13 @@ public class LogService {
 
             switch (type) {
                 case "user":
-                    List<UserLog> userLogs;
+                    List<LoginLog> loginLogs;
                     if (start != null && end != null) {
-                        userLogs = userLogRepository.findByRegDtBetween(start, end);
+                        loginLogs = loginLogRepository.findByRegDtBetween(start, end);
                     } else {
-                        userLogs = userLogRepository.findAll();
+                        loginLogs = loginLogRepository.findAll();
                     }
-                    for (UserLog log : userLogs) {
+                    for (LoginLog log : loginLogs) {
                         Map<String, Object> logMap = new HashMap<>();
                         logMap.put("logId", log.getLogId());
                         logMap.put("loginId", log.getLoginId());
@@ -221,7 +222,6 @@ public class LogService {
                         logMap.put("logId", log.getLogseq());
                         logMap.put("ordNo", log.getOrdNo());
                         logMap.put("tagVer", log.getTAG_VER());
-                        logMap.put("delRsn", log.getDEL_RSN());
                         logMap.put("createDt", log.getCreateDt());
                         logMap.put("createId", log.getCREATE_ID());
                         logMap.put("updateDt", log.getUPDATE_DT());
@@ -249,6 +249,18 @@ public class LogService {
                         dailyLogs = dailyReportLogRepository.findAll();
                     }
                     for (DailyReportLog log : dailyLogs) {
+                        Map<String, Object> logMap = new HashMap<>();
+                        logMap.put("logId" , log.getLog_seq());
+                    }
+                    break;
+                case "customer":
+                    List<CustomerLog> customerLogs;
+                    if (start != null && end != null) {
+                        customerLogs = customerLogRepository.findByCreateDtBetween(start, end);
+                    }else{
+                        customerLogs = customerLogRepository.findAll();
+                    }
+                    for(CustomerLog log : customerLogs){
                         Map<String, Object> logMap = new HashMap<>();
                         logMap.put("logId" , log.getLog_seq());
                     }

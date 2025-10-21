@@ -1,6 +1,6 @@
 package com.example.tag_dev.USER.Controller;
 
-import com.example.tag_dev.SYSTEM.DTO.DeptDTO;
+import com.example.tag_dev.Common.DTO.DeptDTO;
 import com.example.tag_dev.USER.DTO.UserDTO;
 import com.example.tag_dev.USER.Service.UserService;
 import lombok.RequiredArgsConstructor;

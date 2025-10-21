@@ -18,7 +18,7 @@
             :class="{ 'expanded': isDailyExpanded }"
         >
           <el-icon>
-            <Collection/>
+            <Edit/>
           </el-icon>
           <span v-show="!isCollapsed">일일보고</span>
           <el-icon v-show="!isCollapsed" class="expand-icon" :class="{'rotated': isDailyExpanded}">
@@ -47,38 +47,7 @@
               <el-icon>
                 <Document/>
               </el-icon>
-              <span v-show="!isCollapsed">일일보고 관리</span>
-            </div>
-          </div>
-        </transition>
-      </div>
-      <!-- 프로젝트 메뉴 그룹 -->
-      <div class="menu-group">
-        <div
-            class="menu-group-header"
-            @click="handleMenuGroupClick('project')"
-            :class="{ 'expanded': isProjectExpanded }"
-        >
-          <el-icon>
-            <Collection/>
-          </el-icon>
-          <span v-show="!isCollapsed">프로젝트</span>
-          <el-icon v-show="!isCollapsed" class="expand-icon" :class="{'rotated': isProjectExpanded}">
-            <ArrowDown/>
-          </el-icon>
-        </div>
-
-        <transition name="submenu">
-          <div v-show="isProjectExpanded" class="submenu-items">
-            <div
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'project-step' }"
-                @click="handleMenuSelect('project-step')"
-            >
-              <el-icon>
-                <Document/>
-              </el-icon>
-              <span v-show="!isCollapsed">프로젝트 관리</span>
+              <span v-show="!isCollapsed">일일보고 공수 관리</span>
             </div>
           </div>
         </transition>
@@ -91,7 +60,7 @@
             :class="{ 'expanded': isSmartTagExpanded }"
         >
           <el-icon>
-            <Collection/>
+            <Cpu />
           </el-icon>
           <span v-show="!isCollapsed">스마트태그</span>
           <el-icon v-show="!isCollapsed" class="expand-icon" :class="{ 'rotated': isSmartTagExpanded }">
@@ -179,7 +148,7 @@
             :class="{ 'expanded': isSystemExpanded }"
         >
           <el-icon>
-            <Collection/>
+            <Tools/>
           </el-icon>
           <span v-show="!isCollapsed">시스템</span>
           <el-icon v-show="!isCollapsed" class="expand-icon" :class="{ 'rotated': isSystemExpanded }">
@@ -189,6 +158,15 @@
 
         <transition name="submenu">
           <div v-show="isSystemExpanded" class="submenu-items">
+            <div   class="menu-item submenu-item"
+                   :class="{ active: activeMenu === 'CommonMenu' }"
+                   @click="handleMenuSelect('CommonMenu')"
+            >
+              <el-icon>
+                <User/>
+              </el-icon>
+              <span v-show="!isCollapsed">공통 메뉴 관리</span>
+          </div>
             <div
                 v-if="userAcl >= 3"
                 class="menu-item submenu-item"
@@ -211,6 +189,16 @@
                 <OfficeBuilding/>
               </el-icon>
               <span v-show="!isCollapsed">부서 관리</span>
+            </div>
+            <div
+                class="menu-item submenu-item"
+                :class="{ active: activeMenu === 'project-step' }"
+                @click="handleMenuSelect('project-step')"
+            >
+              <el-icon>
+                <Document/>
+              </el-icon>
+              <span v-show="!isCollapsed">프로젝트 관리</span>
             </div>
 
             <div

@@ -80,7 +80,7 @@
 </template>
 
 <script setup>
-import {Delete, Edit, QuestionFilled} from "@element-plus/icons-vue";
+import {Delete, Edit} from "@element-plus/icons-vue";
 import {ref} from "vue";
 import SearchTag from "../Common/SearchDept.vue";
 

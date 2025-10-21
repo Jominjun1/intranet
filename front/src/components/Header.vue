@@ -50,4 +50,8 @@ const userAcl = computed(() => parseInt(props.userInfo.user_acl || '0'))
 function handleUserCommand(command) {
   emit('user-command', command)
 }
+
+function handleMenuSelect(key) {
+  emit('menu-select', key)
+}
 </script>

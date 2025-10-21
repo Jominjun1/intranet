@@ -1,10 +1,10 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import {computed, onMounted, ref} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
 import LoginForm from './views/System/User/Login/LoginForm.vue'
 import Header from './components/Header.vue'
 import Sidebar from './components/Sidebar.vue'
-import { ElMessage } from 'element-plus'
+import {ElMessage} from 'element-plus'
 import './css/VUE/App.css'
 
 // =================================================================
@@ -67,6 +67,7 @@ function handleMenuSelect(key) {
     'daily-list': '/daily-management',
     'daily-step': '/daily-management',
     'dailyReport-management': '/daily-management',
+    'CommonMenu': '/CommonMenu',
     // tag- 서브메뉴 처리
     'tag-proc-step': '/tag-management/proc-step',
     'tag-setting': '/tag-management/setting',

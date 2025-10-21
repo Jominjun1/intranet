@@ -3,14 +3,7 @@
     <div class="search-section">
       <div class="search-header">
         <h3>사용자 검색</h3>
-        <el-button
-          type="info"
-          :icon="QuestionFilled"
-          circle
-          size="small"
-          @click="toggleHelp"
-          title="사용자 관리 도움말"
-        />
+        <el-button type="info" :icon="QuestionFilled" circle size="small" @click="toggleHelp" title="사용자 관리 도움말"/>
       </div>
       <el-form :inline="true" class="search-form">
         <el-form-item label="이름">
@@ -54,17 +47,8 @@
     </div>
 
     <div class="table-section">
-      <el-table
-        :data="paginatedData"
-        style="width:100%"
-        v-loading="loading"
-        :key="tableKey"
-        border
-        stripe
-        resizable
-        :table-layout="'auto'"
-        :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
-        :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+      <el-table class="selectUser" :data="paginatedData" style="width:100%" v-loading="loading" :key="tableKey"
+        border stripe resizable :table-layout="'auto'"
       >
         <el-table-column prop="user_id" label="사용자ID" align="center" resizable />
         <el-table-column prop="user_name" label="이름" align="center" resizable />
@@ -115,19 +99,11 @@
         <el-table-column label="작업" width="150" align="center" resizable>
           <template #default="{ row }">
             <div class="action-buttons">
-              <el-button
-                type="primary"
-                size="small"
-                @click="editUser(row)"
-              >
+              <el-button type="primary" size="small" @click="editUser(row)">
                 <el-icon><Edit /></el-icon>
                 수정
               </el-button>
-              <el-button
-                type="danger"
-                size="small"
-                @click="deleteUser(row)"
-              >
+              <el-button type="danger" size="small" @click="deleteUser(row)">
                 <el-icon><Delete /></el-icon>
                 삭제
               </el-button>
@@ -152,11 +128,7 @@
     <div class="help-sidebar" :class="{ 'show': showHelp }">
       <div class="sidebar-header">
         <h3>사용자 관리 도움말</h3>
-        <el-button type="text"
-          :icon="Close"
-          @click="showHelp = false"
-          class="close-btn"
-        />
+        <el-button type="text" :icon="Close" @click="showHelp = false" class="close-btn"/>
       </div>
       <div class="help-content">
         <div class="help-section">
@@ -219,11 +191,7 @@
         </el-form-item>
         <el-form-item label="비밀번호 변경" v-if="isEditMode">
           <el-input
-            v-model="userForm.password"
-            type="password"
-            placeholder="변경할 비밀번호를 입력하세요 (변경하지 않으려면 비워두세요)"
-            show-password
-          />
+            v-model="userForm.password" type="password" placeholder="변경할 비밀번호를 입력하세요 (변경하지 않으려면 비워두세요)" show-password/>
         </el-form-item>
         <el-form-item label="이메일" prop="user_email">
           <el-input v-model="userForm.user_email" placeholder="이메일을 입력하세요" />
@@ -267,22 +235,15 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="showAddUserForm = false">취소</el-button>
           <el-button type="primary" @click="saveUser">저장</el-button>
+          <el-button @click="showAddUserForm = false">취소</el-button>
         </div>
       </template>
     </el-dialog>
 
     <el-dialog v-model="showDeptModal" title="부서 선택" width="800px">
       <div class="dept-modal-content">
-        <el-table
-          :data="deptList"
-          style="width: 100%"
-          border
-          resizable
-          @row-click="selectDept"
-          highlight-current-row
-        >
+        <el-table :data="deptList" style="width: 100%" border resizable @row-click="selectDept" highlight-current-row>
           <el-table-column prop="deptCode" label="부서코드" resizable />
           <el-table-column prop="dept" label="부서명" min-resizable />
           <el-table-column prop="status" label="상태" resizable>
@@ -300,7 +261,6 @@
         </div>
       </template>
     </el-dialog>
-
   </div>
 </template>
 
@@ -313,12 +273,10 @@ import {Close, Delete, Edit, Plus, QuestionFilled, Search} from '@element-plus/i
 
 const props = defineProps({
   userInfo: {
-    type: Object,
-    default: () => ({})
+    type: Object, default: () => ({})
   },
   activeMenu: {
-    type: String,
-    default: 'user-management'
+    type: String, default: 'user-management'
   }
 })
 
@@ -362,17 +320,11 @@ const filteredData = computed(() => {
 
 // 사용자 폼
 const userForm = ref({
-  user_name: '',
-  user_en_name: '',
-  login_id: '',
-  password: '',
-  user_email: '',
-  user_phone_num: '',
-  dept_cd: '',
-  user_job: '',
-  user_acl: 1,
-  user_stat: 'ACTIVE',
-  hire_dt: null
+  user_name: '', user_en_name: '',
+  login_id: '', password: '',
+  user_email: '', user_phone_num: '',
+  dept_cd: '', user_job: '',
+  user_acl: 1, user_stat: 'ACTIVE', hire_dt: null
 })
 
 // 권한별 라벨과 타입
@@ -380,11 +332,8 @@ const getAclText = (acl) => {
   // 문자열을 숫자로 변환
   const aclNum = parseInt(acl)
   const labels = {
-    0: '잠금',
-    1: '일반사용자',
-    2: '관리자',
-    3: '시스템관리자',
-    4: '운영자'
+    0: '잠금', 1: '일반사용자',
+    2: '관리자', 3: '시스템관리자', 4: '운영자'
   }
   return labels[aclNum] || '알수없음'
 }
@@ -393,11 +342,8 @@ const getAclType = (acl) => {
   // 문자열을 숫자로 변환
   const aclNum = parseInt(acl)
   const types = {
-    0: 'danger',
-    1: 'info',
-    2: 'warning',
-    3: 'success',
-    4: 'primary'
+    0: 'danger', 1: 'info',
+    2: 'warning', 3: 'success', 4: 'primary'
   }
   return types[aclNum] || 'info'
 }
@@ -405,22 +351,16 @@ const getAclType = (acl) => {
 // 상태별 라벨과 타입
 const getStatusLabel = (status) => {
   const labels = {
-    'ACTIVE': '활성',
-    'PENDING': '활성',
-    'LOCK': '잠금',
-    'INACTIVE': '비활성',
-    'N' : '삭제'
+    'ACTIVE': '활성', 'PENDING': '활성',
+    'LOCK': '잠금', 'INACTIVE': '비활성', 'N' : '삭제'
   }
   return labels[status] || '알수없음'
 }
 
 const getStatusType = (status) => {
   const types = {
-    'ACTIVE': 'success',
-    'PENDING': 'success',
-    'LOCK': 'danger',
-    'INACTIVE': 'info',
-    'N' : 'delete'
+    'ACTIVE': 'success', 'PENDING': 'success',
+    'LOCK': 'danger', 'INACTIVE': 'info', 'N' : 'delete'
   }
   return types[status] || 'info'
 }
@@ -442,12 +382,9 @@ const formatDateTime = (dateString) => {
   try {
     const date = new Date(dateString)
     return date.toLocaleString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
+      year: 'numeric', month: '2-digit',
+      day: '2-digit', hour: '2-digit',
+      minute: '2-digit', second: '2-digit'
     })
   } catch (e) {
     return dateString
@@ -458,24 +395,13 @@ const formatDateTime = (dateString) => {
 async function loadUsers() {
   loading.value = true
   try {
-    // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로
-    // 클라이언트에서는 토큰을 직접 확인하지 않음
     const response = await axios.get('/Admin/all-user')
     console.log("서버 응답 데이터:", response.data)
 
     // 원본 데이터 그대로 사용 (매핑 제거)
     users.value = response.data.body || []
-
-    // 사용자 데이터 디버깅
-    if (users.value.length > 0) {
-      console.log("첫 번째 사용자 데이터:", users.value[0])
-      console.log("hire_dt 값:", users.value[0].hire_dt, "타입:", typeof users.value[0].hire_dt)
-      console.log("모든 키:", Object.keys(users.value[0]))
-    }
-
     // 테이블 키 업데이트로 강제 재렌더링
     tableKey.value++
-
 
   } catch (error) {
     console.error('사용자 목록 조회 오류:', error)
@@ -483,11 +409,6 @@ async function loadUsers() {
   } finally {
     loading.value = false
   }
-}
-
-// 권한 선택 변경 이벤트
-function onAclChange(value) {
-  console.log('권한 선택 변경:', value, '타입:', typeof value)
 }
 
 // 검색 및 페이지네이션 로직
@@ -584,9 +505,7 @@ async function deleteUser(user) {
 
     // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로 헤더 설정 불필요
     await axios.put(`/Admin/update/${user.user_id}` ,{
-      user: user.user,
-      user_stat: "N"
-        }
+      user: user.user, user_stat: "N"}
     )
 
     ElMessage.success('사용자가 삭제되었습니다.')
@@ -622,9 +541,6 @@ async function saveUser() {
     await userFormRef.value.validate()
 
     if (isEditMode.value) {
-      // 수정
-      // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로 헤더 설정 불필요
-
       // 비밀번호가 입력된 경우 비밀번호 변경 API 호출
       if (userForm.value.password && userForm.value.password.trim() !== '') {
         await axios.put(`/Admin/changePassword/${userForm.value.login_id}`, {
@@ -663,27 +579,14 @@ function resetUserForm() {
     login_id: '',    password: '',
     user_email: '',    user_phone_num: '',
     dept_cd: '',    user_job: '',
-    user_acl: 1,    user_stat: 'ACTIVE',
-    hire_dt: null
+    user_acl: 1,    user_stat: 'ACTIVE', hire_dt: null
   }
   isEditMode.value = false
 }
 
 // 도움말 토글
 function toggleHelp() {
-  console.log('도움말 버튼 클릭됨')
-  console.log('현재 showHelp 값:', showHelp.value)
   showHelp.value = !showHelp.value
-  console.log('변경된 showHelp 값:', showHelp.value)
-}
-
-// 헤더 이벤트 핸들러
-function handleMenuSelect(key) {
-  emit('menu-select', key)
-}
-
-function handleUserCommand(command) {
-  emit('user-command', command)
 }
 
 // 컴포넌트 마운트 시 사용자 목록 로드

@@ -1,13 +1,13 @@
 package com.example.tag_dev.USER.Service;
 
+import com.example.tag_dev.Common.DTO.DeptDTO;
+import com.example.tag_dev.Common.Model.Dept_Info;
+import com.example.tag_dev.Common.Repository.DeptRepository;
 import com.example.tag_dev.Config.JwtTokenProvider;
 import com.example.tag_dev.LOG.Model.DeptLog;
-import com.example.tag_dev.LOG.Model.UserLog;
+import com.example.tag_dev.LOG.Model.LoginLog;
 import com.example.tag_dev.LOG.Repository.DeptLogRepository;
-import com.example.tag_dev.LOG.Repository.UserLogRepository;
-import com.example.tag_dev.SYSTEM.DTO.DeptDTO;
-import com.example.tag_dev.SYSTEM.Model.Dept_Info;
-import com.example.tag_dev.SYSTEM.Repository.DeptRepository;
+import com.example.tag_dev.LOG.Repository.LoginLogRepository;
 import com.example.tag_dev.USER.DTO.UserDTO;
 import com.example.tag_dev.USER.Model.User;
 import com.example.tag_dev.USER.Repository.UserRepository;
@@ -27,7 +27,7 @@ import java.util.*;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserLogRepository userLogRepository;
+    private final LoginLogRepository loginLogRepository;
     private final DeptRepository deptRepository;
     private final DeptLogRepository deptLogRepository;
     private final JwtTokenProvider jwtTokenProvider;
@@ -91,13 +91,12 @@ public class UserService {
 
         // 업데이트 정보 설정
         user.setUpdate_dt(new Date());
-        // TODO: SecurityContext에서 현재 사용자 ID 가져오기
-        user.setUpdate_id(1L); // 임시로 1L 설정
+        user.setUpdate_id("관리자"); // 임시로 1L 설정
 
         userRepository.save(user);
 
         // 로그 생성
-        createUserLog(user, 1L); // 임시로 1L 설정
+        createUserLog(user, "관리자"); // 임시로 1L 설정
 
         return ResponseEntity.ok("사용자 정보 수정 완료");
     }
@@ -110,12 +109,12 @@ public class UserService {
             user.setUser_acl(userAcl);
             userRepository.save(user);
 
-            UserLog userLog = new UserLog();
-            userLog.setLoginId(user.getLoginId());
-            userLog.setUpdate_dt(new Date());
-            userLog.setUpdate_id(1L); // TODO: SecurityContext에서 현재 사용자 ID 가져오기
-            userLog.setStatus("권한수정");
-            userLogRepository.save(userLog);
+            LoginLog loginLog = new LoginLog();
+            loginLog.setLoginId(user.getLoginId());
+            loginLog.setUpdate_dt(new Date());
+            loginLog.setUpdate_id("관리자");
+            loginLog.setStatus("권한수정");
+            loginLogRepository.save(loginLog);
 
             return ResponseEntity.ok("권한 수정 완료");
         } else {
@@ -167,12 +166,12 @@ public class UserService {
             users.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             userRepository.save(users);
 
-            UserLog userLog = new UserLog();
-            userLog.setLoginId(users.getLoginId());
-            userLog.setUpdate_dt(new Date());
-            userLog.setUpdate_id(1L); // TODO: SecurityContext에서 현재 사용자 ID 가져오기
-            userLog.setStatus("비밀번호 변경");
-            userLogRepository.save(userLog);
+            LoginLog loginLog = new LoginLog();
+            loginLog.setLoginId(users.getLoginId());
+            loginLog.setUpdate_dt(new Date());
+            loginLog.setUpdate_id("관리자");
+            loginLog.setStatus("비밀번호 변경");
+            loginLogRepository.save(loginLog);
 
             return ResponseEntity.ok("변경 성공");
         } else {
@@ -204,17 +203,17 @@ public class UserService {
             user.setUser_stat(userDTO.getUser_stat());
             user.setHire_dt(userDTO.getHire_dt());
             user.setReg_dt(new Date());
-            user.setReg_id(1L); // TODO: SecurityContext에서 현재 사용자 ID 가져오기
+            user.setReg_id("관리자");
 
             userRepository.save(user);
 
             // 로그 기록
-            UserLog userLog = new UserLog();
-            userLog.setLoginId(user.getLoginId());
-            userLog.setStatus("사용자생성");
-            userLog.setRegDt(new Date());
-            userLog.setUpdate_id(1L); // TODO: SecurityContext에서 현재 사용자 ID 가져오기
-            userLogRepository.save(userLog);
+            LoginLog loginLog = new LoginLog();
+            loginLog.setLoginId(user.getLoginId());
+            loginLog.setStatus("사용자생성");
+            loginLog.setRegDt(new Date());
+            loginLog.setUpdate_id("관리자");
+            loginLogRepository.save(loginLog);
 
             return ResponseEntity.ok("사용자가 성공적으로 생성되었습니다.");
         } catch (Exception e) {
@@ -231,16 +230,16 @@ public class UserService {
                 User user = userOpt.get();
                 user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
                 user.setUpdate_dt(new Date());
-                user.setUpdate_id(1L); // TODO: SecurityContext에서 현재 사용자 ID 가져오기
+                user.setUpdate_id("관리자");
                 userRepository.save(user);
 
                 // 로그 기록
-                UserLog userLog = new UserLog();
-                userLog.setLoginId(loginId);
-                userLog.setStatus("관리자비밀번호변경");
-                userLog.setUpdate_dt(new Date());
-                userLog.setUpdate_id(1L); // TODO: SecurityContext에서 현재 사용자 ID 가져오기
-                userLogRepository.save(userLog);
+                LoginLog loginLog = new LoginLog();
+                loginLog.setLoginId(loginId);
+                loginLog.setStatus("관리자비밀번호변경");
+                loginLog.setUpdate_dt(new Date());
+                loginLog.setUpdate_id("관리자");
+                loginLogRepository.save(loginLog);
 
                 return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
             } else {
@@ -260,7 +259,7 @@ public class UserService {
             deptInfo.setDept(deptDTO.getDept());
             deptInfo.setRegDt(new Date());
             deptInfo.setStatus("Y");
-            deptInfo.setUserName("관리자"); // TODO: SecurityContext에서 현재 사용자명 가져오기
+            deptInfo.setUserName("관리자");
 
             // 상위 부서 코드 설정
             if (deptDTO.getParentDeptCode() != null && !deptDTO.getParentDeptCode().isBlank()) {
@@ -283,7 +282,7 @@ public class UserService {
 
             DeptLog deptLog = new DeptLog();
             deptLog.setStatus("생성");
-            deptLog.setUserName("관리자"); // TODO: SecurityContext에서 현재 사용자명 가져오기
+            deptLog.setUserName("관리자");
             deptLog.setRegDt(deptDTO.getRegDt());
             deptLog.setDeptCode(deptDTO.getDeptCode());
             deptLog.setDept(deptDTO.getDept());
@@ -298,9 +297,7 @@ public class UserService {
     // 부서 목록 조회
     public ResponseEntity<?> getDeptList() {
         try {
-            System.out.println("부서 목록 조회 시작...");
             List<Dept_Info> deptList = deptRepository.findAll();
-            System.out.println("조회된 부서 수: " + deptList.size());
             return ResponseEntity.ok(deptList);
         } catch (Exception e) {
             System.err.println("부서 목록 조회 오류: " + e.getMessage());
@@ -350,7 +347,7 @@ public class UserService {
 
         // 업데이트 정보 설정
         deptInfo.setUpdateDt(new Date());
-        deptInfo.setUpdateUser("관리자"); // TODO: SecurityContext에서 현재 사용자명 가져오기
+        deptInfo.setUpdateUser("관리자");
         deptRepository.save(deptInfo);
 
         // 부서 로그 생성
@@ -381,19 +378,19 @@ public class UserService {
     }
 
     // 사용자 로그 생성 헬퍼 메서드
-    private void createUserLog(User user, Long updateUserId) {
-        UserLog userLog = new UserLog();
-        userLog.setLoginId(user.getLoginId());
-        userLog.setUpdate_dt(new Date());
-        userLog.setUpdate_id(updateUserId);
+    private void createUserLog(User user, String updateUserId) {
+        LoginLog loginLog = new LoginLog();
+        loginLog.setLoginId(user.getLoginId());
+        loginLog.setUpdate_dt(new Date());
+        loginLog.setUpdate_id(updateUserId);
 
         if ("N".equals(user.getUser_stat())) {
-            userLog.setStatus("삭제");
+            loginLog.setStatus("삭제");
         } else {
-            userLog.setStatus("정보수정");
+            loginLog.setStatus("정보수정");
         }
 
-        userLogRepository.save(userLog);
+        loginLogRepository.save(loginLog);
     }
 
     // 부서 로그 생성 헬퍼 메서드
@@ -411,7 +408,7 @@ public class UserService {
         deptLog.setRegDt(deptDTO.getRegDt());
         deptLog.setUserName(deptDTO.getUserName());
         deptLog.setUpdateDt(new Date());
-        deptLog.setUpdateUser("관리자"); // TODO: SecurityContext에서 현재 사용자명 가져오기
+        deptLog.setUpdateUser("관리자");
 
         deptLogRepository.save(deptLog);
     }

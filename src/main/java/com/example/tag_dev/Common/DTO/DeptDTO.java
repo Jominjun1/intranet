@@ -1,4 +1,4 @@
-package com.example.tag_dev.SYSTEM.DTO;
+package com.example.tag_dev.Common.DTO;
 
 import lombok.Data;
 

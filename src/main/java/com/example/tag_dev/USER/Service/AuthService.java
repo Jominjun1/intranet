@@ -1,8 +1,8 @@
 package com.example.tag_dev.USER.Service;
 
 import com.example.tag_dev.Config.JwtTokenProvider;
-import com.example.tag_dev.LOG.Model.UserLog;
-import com.example.tag_dev.LOG.Repository.UserLogRepository;
+import com.example.tag_dev.LOG.Model.LoginLog;
+import com.example.tag_dev.LOG.Repository.LoginLogRepository;
 import com.example.tag_dev.USER.DTO.UserDTO;
 import com.example.tag_dev.USER.Model.RefreshToken;
 import com.example.tag_dev.USER.Model.User;
@@ -29,7 +29,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserLogRepository userLogRepository;
+    private final LoginLogRepository loginLogRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -82,7 +82,7 @@ public class AuthService {
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            UserLog userLog = new UserLog();
+            LoginLog loginLog = new LoginLog();
             boolean match = passwordEncoder.matches(userDTO.getPassword(), user.getPassword());
             if (match) {
                 user.setFail_login_cnt(0L);
@@ -120,13 +120,13 @@ public class AuthService {
 
                 userRepository.save(user);
 
-                userLog.setLoginId(user.getLoginId());
-                userLog.setStatus("성공");
-                userLog.setIp_addr(getClientIP(request));
-                userLog.setHttp_refr(request.getHeader("referer"));
-                userLog.setRegDt(new Date());
+                loginLog.setLoginId(user.getLoginId());
+                loginLog.setStatus("성공");
+                loginLog.setIp_addr(getClientIP(request));
+                loginLog.setHttp_refr(request.getHeader("referer"));
+                loginLog.setRegDt(new Date());
 
-                userLogRepository.save(userLog);
+                loginLogRepository.save(loginLog);
 
                 return ResponseEntity.ok(Map.of(
                         "accessToken", accessToken,
@@ -145,25 +145,25 @@ public class AuthService {
                     user.setUser_acl("0");
                     userRepository.save(user);
 
-                    userLog.setLoginId(user.getLoginId());
-                    userLog.setStatus("잠김");
-                    userLog.setIp_addr(getClientIP(request));
-                    userLog.setHttp_refr(request.getHeader("referer"));
-                    userLog.setRegDt(new Date());
+                    loginLog.setLoginId(user.getLoginId());
+                    loginLog.setStatus("잠김");
+                    loginLog.setIp_addr(getClientIP(request));
+                    loginLog.setHttp_refr(request.getHeader("referer"));
+                    loginLog.setRegDt(new Date());
 
-                    userLogRepository.save(userLog);
+                    loginLogRepository.save(loginLog);
 
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
                 }
                 userRepository.save(user);
 
-                userLog.setLoginId(user.getLoginId());
-                userLog.setStatus("실패");
-                userLog.setIp_addr(getClientIP(request));
-                userLog.setHttp_refr(request.getHeader("referer"));
-                userLog.setRegDt(new Date());
+                loginLog.setLoginId(user.getLoginId());
+                loginLog.setStatus("실패");
+                loginLog.setIp_addr(getClientIP(request));
+                loginLog.setHttp_refr(request.getHeader("referer"));
+                loginLog.setRegDt(new Date());
 
-                userLogRepository.save(userLog);
+                loginLogRepository.save(loginLog);
 
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호 일치 하지 않음");
             }
@@ -194,15 +194,15 @@ public class AuthService {
                 User user = userOpt.get();
                 userRepository.save(user);
 
-                UserLog userLog = new UserLog();
+                LoginLog loginLog = new LoginLog();
 
-                userLog.setLoginId(user.getLoginId());
-                userLog.setStatus("로그아웃");
-                userLog.setIp_addr(getClientIP(request));
-                userLog.setHttp_refr(request.getHeader("referer"));
-                userLog.setRegDt(new Date());
+                loginLog.setLoginId(user.getLoginId());
+                loginLog.setStatus("로그아웃");
+                loginLog.setIp_addr(getClientIP(request));
+                loginLog.setHttp_refr(request.getHeader("referer"));
+                loginLog.setRegDt(new Date());
 
-                userLogRepository.save(userLog);
+                loginLogRepository.save(loginLog);
 
             }
         }

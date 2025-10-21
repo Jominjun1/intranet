@@ -1,5 +1,9 @@
 <template>
   <div class="search-section">
+    <div class="search-header">
+      <h3>🔍 부서 목록</h3>
+      <el-button type="info" :icon="QuestionFilled" circle size="small" @click="showSearchHelp" title="프로젝트 관리 도움말"/>
+    </div>
     <div class="search-controls">
       <div class="search-group">
         <label>부서명</label>
@@ -40,8 +44,8 @@
 </template>
 
 <script setup>
-import { reactive, watch } from "vue"
-import {Search} from "@element-plus/icons-vue";
+import {reactive, watch} from "vue"
+import {QuestionFilled, Search} from "@element-plus/icons-vue";
 
 const props = defineProps({
   modelValue: Object,

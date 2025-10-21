@@ -1252,14 +1252,7 @@ import {useRoute, useRouter} from 'vue-router'
 import axios from 'axios'
 import '../../css/Tag/TagManagement.css'
 import {ElMessage, ElMessageBox} from 'element-plus'
-import {
-  Close,
-  Delete,
-  Edit,
-  InfoFilled,
-  Plus,
-  QuestionFilled,
-} from '@element-plus/icons-vue'
+import {Close, Delete, Edit, InfoFilled, Plus, QuestionFilled,} from '@element-plus/icons-vue'
 
 
 // Props

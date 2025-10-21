@@ -7,7 +7,6 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class SystemService {
 
-
     public ResponseEntity<?> getHoliday(int year) {
         String url = "https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo" +
                 "?solYear=" + year +

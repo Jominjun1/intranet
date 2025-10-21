@@ -17,9 +17,9 @@ public class UserDTO {
     private String dept_cd;
     private String user_job;
     private String user_stat;
-    private Long reg_id;
+    private String reg_id;
     private Date reg_dt;
-    private Long update_id;
+    private String update_id;
     private Date update_dt;
     private Date login_dt;
     private Date hire_dt;

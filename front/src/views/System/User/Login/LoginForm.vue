@@ -6,18 +6,11 @@
     </div>
     <div class="login-card-bizon">
       <div class="login-header-bizon">
-        <!-- <img src="/logo.svg" alt="로고" class="login-logo-bizon" /> -->
-        <h2>TEIA INTRANET</h2>
+         <h2>TEIA INTRANET</h2>
       </div>
       <el-form :model="loginForm" :rules="rules" ref="loginFormRef" class="login-form-bizon">
         <el-form-item prop="login_id">
-          <el-input
-              v-model="loginForm.login_id"
-              placeholder="아이디를 입력하세요"
-              size="large"
-              clearable
-              class="input-bizon"
-          >
+          <el-input v-model="loginForm.login_id" placeholder="아이디를 입력하세요" size="large" clearable class="input-bizon">
             <template #prefix>
               <el-icon>
                 <User />
@@ -27,14 +20,8 @@
         </el-form-item>
         <el-form-item prop="password">
           <el-input
-            v-model="loginForm.password"
-            type="password"
-            placeholder="비밀번호를 입력하세요"
-            size="large"
-            show-password
-            clearable
-            class="input-bizon"
-            @keyup.enter="handleLogin"
+            v-model="loginForm.password" type="password" placeholder="비밀번호를 입력하세요"
+            size="large" show-password clearable class="input-bizon" @keyup.enter="handleLogin"
           >
             <template #prefix>
               <el-icon><Lock /></el-icon>
@@ -42,23 +29,14 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button
-            type="primary"
-            size="large"
-            @click="handleLogin"
-            :loading="loading"
-            class="login-btn-bizon"
-            style="width: 100%"
+          <el-button type="primary" size="large"
+            @click="handleLogin" :loading="loading" class="login-btn-bizon" style="width: 100%"
           >
             로그인
           </el-button>
         </el-form-item>
         <div class="login-options-row">
-          <el-checkbox 
-            v-model="rememberId" 
-            class="remember-id-checkbox"
-            @change="handleRememberIdChange"
-          >
+          <el-checkbox v-model="rememberId" class="remember-id-checkbox" @change="handleRememberIdChange">
             아이디 저장
           </el-checkbox>
           <div class="login-links-bizon">
@@ -71,6 +49,7 @@
         <span>ⓒ 2025 by mmin0307</span>
       </div>
     </div>
+
     <!-- 아이디 찾기 모달 -->
     <el-dialog v-model="showFindId" title="아이디 찾기" width="400px">
       <el-form :model="findIdForm" label-width="100">
@@ -91,6 +70,7 @@
         </span>
       </template>
     </el-dialog>
+
     <!-- 비밀번호 찾기 모달 -->
     <el-dialog v-model="showFindPassword" title="비밀번호 찾기" width="400px">
       <el-form :model="findPasswordForm" label-width="100">

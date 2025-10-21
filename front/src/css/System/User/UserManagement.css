@@ -10,7 +10,17 @@
     margin: 0;
     box-sizing: border-box;
 }
+.project-cell-style {
+    white-space: nowrap;
+    text-align: center;
+}
 
+.project-header-style {
+    white-space: nowrap;
+    text-align: center;
+    background-color: #f5f7fa;
+    font-weight: bold;
+}
 .search-section {
     margin-bottom: 20px;
     padding: 20px;

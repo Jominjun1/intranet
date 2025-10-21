@@ -20,7 +20,6 @@ public class VersionInfoLog {
     @Column(name="ORD_NO")
     private String ordNo; // 스마트태그 번호
     private String TAG_VER; // 제품 번호
-    private String DEL_RSN; // 스마트 태그 삭제 사유
     @Column(name="CREATE_DT")
     private Date createDt; // 생성일
     private String CREATE_ID; // 생성자(사번)

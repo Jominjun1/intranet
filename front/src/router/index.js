@@ -5,7 +5,8 @@ import LogManagement from '../views/System/Log/LogManagement.vue'
 import DeptManagement from '../views/System/Dept/DeptManagement.vue'
 import LoginFrom from '../views/System/User/Login/LoginForm.vue'
 import DailyReportManagement from "../views/DailyReport/dailyReportManagement.vue";
-import ProjectManagement from "../views/Project/ProjectManagement.vue";
+import ProjectManagement from "../views/System/Project/ProjectManagement.vue";
+import CommonMenuManagement from "../views/System/CommonMenu/CommonMenu.vue";
 
 const routes = [
   {
@@ -123,6 +124,12 @@ const routes = [
     path: '/project-management',
     name: 'ProjectManagement',
     component: ProjectManagement,
+    meta: {requiresAuth: true}
+  },
+  {
+    path: '/CommonMenu',
+    name: 'CommonMenu',
+    component: CommonMenuManagement,
     meta: {requiresAuth: true}
   }
 ]

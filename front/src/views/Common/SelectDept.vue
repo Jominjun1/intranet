@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import {ref, watch, computed, onMounted} from 'vue'
+import {computed, onMounted, ref, watch} from 'vue'
 import DeptManagement from '../System/Dept/DeptManagement.js'
 import {ElMessage} from 'element-plus'
 

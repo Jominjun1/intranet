@@ -109,10 +109,9 @@
 </template>
 
 <script setup>
-import {ref, onMounted, watch, computed} from 'vue'
-import api from 'axios'
-import {Delete, Edit, Search , Plus} from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
+import {computed, onMounted, ref, watch} from 'vue'
+import {Plus, Search} from "@element-plus/icons-vue";
+import {ElMessage} from "element-plus";
 import DeptManagement from "../System/Dept/DeptManagement.js";
 import DailyReportManagement from "./DailyReportManagement.js";
 import SearchDept from "../Common/SearchDept.vue";

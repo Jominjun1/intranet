@@ -30,5 +30,7 @@ public class ProjectLog {
     private Date endDt; // 종료 날짜
     private Date createDt; // 생성일
     private String create_id; // 생성자
+    private Date updateDt; // 수정일
+    private String update_id; // 수정자
 
 }
