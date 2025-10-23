@@ -56,26 +56,18 @@
         <p>전체/사용중/삭제됨 중 선택하여 필터링할 수 있습니다.</p>
       </div>
 
-      <el-alert
-          title="💡 팁"
-          description="검색 조건을 입력하지 않으면 데이터가 표시되지 않습니다. 정확한 검색을 위해 가능한 많은 정보를 입력해주세요."
-          type="success"
-          :closable="false"
-          show-icon
-      />
+      <el-alert title="💡 팁" description="검색 조건을 입력하지 않으면 데이터가 표시되지 않습니다. 정확한 검색을 위해 가능한 많은 정보를 입력해주세요."
+          type="success" :closable="false" show-icon/>
     </div>
   </div>
-  <div class="pagination-section" v-if="tableData.length > 0">
-    <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        :total="tableData.length"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-    />
-  </div>
+  <!-- 페이지네이션 -->
+  <Pagination
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      :total="tableData.length"
+      @current-change="handleCurrentChange"
+      @size-change="handleSizeChange"
+  />
 
   <el-dialog v-model="showAddProjectForm" :title="isEditMode ? '프로젝트 수정' : '프로젝트 등록'" width="600px">
     <el-form :model="projectForm" ref="projectFormRef" label-width="120">
@@ -121,12 +113,13 @@
 
 <script setup>
 import {computed, ref,} from 'vue'
-import axios from 'axios'
 import '../../../css/Tag/TagManagement.css'
 import '../../../css/Project/ProjectManagement.css'
 import {ElMessage} from 'element-plus'
 import {Close, QuestionFilled, Search} from '@element-plus/icons-vue'
 import SearchProject from "../../Common/SearchProject.vue";
+import ProjectManagement from './ProjectManagement.js'
+import Pagination from "../../Common/Pagination.vue";
 
 const showSearchHelp = ref(false)
 const showAddProjectForm = ref(false)
@@ -152,13 +145,9 @@ const paginatedData = computed(() => {
 
 // 프로젝트 폼
 const projectForm = ref({
-  projectCode: '', project_name: '',
-  project_leader: '', project_category: '',
-  project_status: '', customer: '',
-  region: '', deptCd: '',
-  project_ing: '', createDt: null,
-  create_id: 'ACTIVE', updateDt: null,
-  update_id: 'ACTIVE', startDt: null, endDt: null,
+  projectCode: '', project_name: '', project_leader: '', project_category: '',
+  project_status: '', customer: '', region: '', deptCd: '', project_ing: '', createDt: null,
+  create_id: 'ACTIVE', updateDt: null, update_id: 'ACTIVE', startDt: null, endDt: null,
 })
 
 
@@ -179,8 +168,8 @@ async function doSearch(form) {
 
   loading.value = true
   try {
-    const res = await axios.get('/project/searchAll', { params: form })
-    tableData.value = res.data.body ?? []
+    const data = await ProjectManagement.searchProjects(form)
+    tableData.value = data
   } catch (error) {
     console.error(error)
     ElMessage.error('검색 중 오류가 발생했습니다.')
@@ -203,13 +192,9 @@ function addProject(){
 // 사용자 폼 초기화
 function resetProjectForm() {
   projectForm.value = {
-    projectCode: '', project_name: '',
-    project_leader: '', project_category: '',
-    project_status: '', customer: '',
-    region: '', deptCd: '',
-    project_ing: '', createDt: null,
-    create_id: 'ACTIVE', updateDt: null,
-    update_id: 'ACTIVE', startDt: null, endDt: null,
+    projectCode: '', project_name: '', project_leader: '', project_category: '',
+    project_status: '', customer: '', region: '', deptCd: '', project_ing: '', createDt: null,
+    create_id: 'ACTIVE', updateDt: null, update_id: 'ACTIVE', startDt: null, endDt: null,
   }
   isEditMode.value = false
 }
@@ -222,12 +207,8 @@ async function openDeptModal() {
 // 부서 목록 조회
 async function loadDeptList() {
   try {
-    const response = await axios.get('/user/getDeptList')
-    if (response.data && response.data.body) {
-      deptList.value = Array.isArray(response.data.body) ? response.data.body : []
-    } else {
-      deptList.value = []
-    }
+    const data = await ProjectManagement.getDeptList()
+    deptList.value = data
   } catch (error) {
     console.error('부서 목록 조회 오류:', error)
     ElMessage.error('부서 목록을 불러오는데 실패했습니다.')

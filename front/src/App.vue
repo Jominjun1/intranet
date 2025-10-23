@@ -6,6 +6,7 @@ import Header from './components/Header.vue'
 import Sidebar from './components/Sidebar.vue'
 import {ElMessage} from 'element-plus'
 import './css/VUE/App.css'
+import './css/VUE/Common.css'
 
 // =================================================================
 // 1. 상태 및 라우터 설정

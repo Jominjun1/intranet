@@ -1,11 +1,6 @@
 <template>
   <div class="dept-management">
-    <SearchDept
-        v-model="searchForm"
-        :loading="loading"
-        @search="loadDepts"
-        @reset="resetSearch"
-    />
+    <SearchDept v-model="searchForm" :loading="loading" @search="loadDepts" @reset="resetSearch"/>
 
     <div class="table-section">
       <el-table :data="displayedDepts" v-loading="loading" stripe border resizable style="width: 100%" empty-text="등록된 부서가 없습니다.">
@@ -84,8 +79,7 @@ import SearchDept from "../../Common/SearchDept.vue";
 
 const props = defineProps({
   userInfo: {
-    type: Object,
-    default: () => ({})
+    type: Object, default: () => ({})
   }
 })
 
@@ -154,17 +148,12 @@ async function saveDept() {
 
     if (isEditMode.value) {
       await DeptManagement.updateDept(deptForm.value.deptCode, {
-        dept: deptForm.value.dept,
-        status: 'Y',
-        parentDeptCode: deptForm.value.parentDeptCode || ''
+        dept: deptForm.value.dept, status: 'Y', parentDeptCode: deptForm.value.parentDeptCode || ''
       })
       ElMessage.success('부서 정보가 수정되었습니다.')
     } else {
       await DeptManagement.createDept({
-        deptCode: deptForm.value.deptCode,
-        dept: deptForm.value.dept,
-        regDt: new Date(),
-        parentDeptCode: deptForm.value.parentDeptCode || ''
+        deptCode: deptForm.value.deptCode, dept: deptForm.value.dept, regDt: new Date(), parentDeptCode: deptForm.value.parentDeptCode || ''
       })
       ElMessage.success('부서가 등록되었습니다.')
     }
@@ -214,9 +203,7 @@ function showAddDeptForm() {
 function editDept(dept) {
   isEditMode.value = true
   deptForm.value = {
-    deptCode: dept.deptCode,
-    dept: dept.dept,
-    parentDeptCode: dept.parentDept?.deptCode || ''
+    deptCode: dept.deptCode, dept: dept.dept, parentDeptCode: dept.parentDept?.deptCode || ''
   }
   showDeptForm.value = true
 }

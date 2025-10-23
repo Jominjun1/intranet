@@ -1,22 +1,7 @@
 <template>
-  <el-dialog
-      v-model="visible"
-      title="부서 선택"
-      width="800px"
-      append-to-body
-      :close-on-click-modal="false"
-  >
+  <el-dialog v-model="visible" title="부서 선택" width="800px" append-to-body :close-on-click-modal="false">
     <div class="table-section">
-      <el-table
-          :data="filteredDepts"
-          v-loading="loading"
-          stripe
-          border
-          resizable
-          style="width: 100%"
-          empty-text="등록된 부서가 없습니다."
-          @row-click="onSelectDept"
-      >
+      <el-table :data="filteredDepts" v-loading="loading" stripe border resizable style="width: 100%" empty-text="등록된 부서가 없습니다." @row-click="onSelectDept">
         <el-table-column prop="deptCode" label="부서코드" align="center" resizable />
         <el-table-column prop="dept" label="부서명" min-align="center" resizable />
         <el-table-column prop="status" label="상태" align="center" resizable>

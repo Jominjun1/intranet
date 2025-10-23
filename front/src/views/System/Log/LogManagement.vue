@@ -35,11 +35,7 @@
 
     <!-- 테이블 영역 -->
     <div class="table-section">
-      <el-table 
-        :data="paginatedData" style="width: 100%" v-loading="loading" stripe border resizable
-        :key="tableKey" :table-layout="'auto'" :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
-        :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
-      >
+      <el-table class="common-table" :data="paginatedData" style="width: 100%" v-loading="loading" stripe border resizable :key="tableKey" :table-layout="'auto'">
         <!-- 사용자 로그 -->
         <template v-if="selectedLogType === 'user'">
           <el-table-column prop="logId" label="로그 ID" align="center" />
@@ -270,30 +266,22 @@
           <el-table-column prop="updateId" label="수정자" align="center" />
         </template>
       </el-table>
-      
+
       <!-- 페이지네이션 -->
-      <div class="pagination-section" v-if="logs.length > 0">
-        <el-pagination
+      <Pagination
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
           :total="logs.length"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-        />
-      </div>
+          @size-change="handleSizeChange"
+      />
     </div>
 
     <!-- 도움말 사이드바 -->
     <div class="help-sidebar" :class="{ show: showHelp }">
       <div class="sidebar-header">
         <h3>로그 관리 도움말</h3>
-        <el-button type="link"
-          :icon="Close"
-          @click="toggleHelp"
-          class="close-btn"
-        />
+        <el-button type="link" :icon="Close" @click="toggleHelp" class="close-btn"/>
       </div>
       <div class="help-content">
         <div class="help-section">
@@ -347,17 +335,17 @@
 <script setup>
 import {computed, onMounted, ref} from 'vue'
 import {ElMessage} from 'element-plus'
+import '../../../css/VUE/Common.css'
 import {Close, Download, QuestionFilled} from '@element-plus/icons-vue'
 import LogManagement from '../Log/LogManagement.js'
+import Pagination from "../../Common/Pagination.vue";
 
 const props = defineProps({
   userInfo: {
-    type: Object,
-    default: () => ({})
+    type: Object, default: () => ({})
   },
   activeMenu: {
-    type: String,
-    default: 'log-management'
+    type: String, default: 'log-management'
   }
 })
 

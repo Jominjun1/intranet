@@ -3,7 +3,7 @@
     <h3 class="text-2xl font-bold mb-4">일일 업무 보고</h3>
 
     <!-- 달력 -->
-    <el-calendar v-model="currentDate" >
+    <el-calendar v-model="currentDate" @click="onCalendarClick">
       <template #date-cell="{ data }" >
        <div class="calendar-day" @click="onDateClick(toDate(data.day))">
           {{ toDate(data.day).getDate() }}
@@ -12,20 +12,9 @@
     </el-calendar>
 
     <!-- 선택된 날짜 모달 -->
-    <el-dialog
-        v-model="dialogVisible"
-        :title="formatDate(selectedDate) + ' 일일보고'"
-        width="600px"
-        append-to-body
-        class="custom-dialog"
-    >
+    <el-dialog v-model="dialogVisible" :title="formatDate(selectedDate) + ' 일일보고'" width="600px" append-to-body class="custom-dialog">
       <div v-if="reports[selectedDate]?.length" class="mb-4">
-        <el-card
-            v-for="(report, index) in reports[selectedDate]"
-            :key="report.dailyReportInfoId"
-            class="mb-3"
-            shadow="hover"
-        >
+        <el-card v-for="(report, index) in reports[selectedDate]" :key="report.dailyReportInfoId" class="mb-3" shadow="hover">
           <div class="flex justify-between items-center">
             <div>
               <strong>{{ report.title }}</strong>
@@ -67,12 +56,7 @@
           </el-form-item>
 
           <el-form-item label="내용">
-            <el-input
-                type="textarea"
-                v-model="newReport.content"
-                placeholder="보고 내용을 입력하세요"
-                rows="4"
-            />
+            <el-input type="textarea" v-model="newReport.content" placeholder="보고 내용을 입력하세요" rows="4"/>
           </el-form-item>
         </el-form>
       </div>
@@ -84,26 +68,9 @@
     </el-dialog>
 
     <!-- 부서 선택 모달 -->
-    <el-dialog
-        v-model="showDeptModal"
-        title="부서 선택"
-        width="800px"
-        append-to-body
-        :close-on-click-modal="false"
-        class="dept-dialog"
-    >
-      <SearchDept
-          v-model="searchForm"
-          :loading="loading"
-          @search="loadDepts"
-          @reset="resetSearch"
-      />
-      <SelectDept
-          v-model="showDeptModal"
-          :search-form="searchForm"
-          @select="selectDept"
-
-      />
+    <el-dialog v-model="showDeptModal" title="부서 선택" width="800px" append-to-body :close-on-click-modal="false" class="dept-dialog">
+      <SearchDept v-model="searchForm" :loading="loading" @search="loadDepts" @reset="resetSearch"/>
+      <SelectDept v-model="showDeptModal" :search-form="searchForm" @select="selectDept"/>
     </el-dialog>
   </div>
 </template>
@@ -128,16 +95,10 @@ const depts = ref([])
 const dailyFlag = ref(false);
 
 const newReport = ref({
-  dailyReportInfoId: null,
-  deptCode: "",
-  title: "",
-  time: [],
-  content: ""
+  dailyReportInfoId: null, deptCode: "", title: "", time: [], content: ""
 })
 const searchForm = ref({
-  dept: '',
-  deptCode: '',
-  status: 'all'
+  dept: '', deptCode: '', status: 'all'
 })
 const displayedDepts = computed(() => {
   const name = (searchForm.value.dept || '').trim()
@@ -176,11 +137,7 @@ function isHoliday(dateObj) {
   return holidays.value.includes(str)
 }
 function resetSearch() {
-  searchForm.value = {
-    dept: '',
-    deptCode: '',
-    status: 'all'
-  }
+  searchForm.value = {dept: '', deptCode: '', status: 'all'}
   loadDepts()
 }
 
@@ -193,17 +150,43 @@ const onDateClick = async (date) => {
   await fetchReports(selectedDate.value)
 }
 
+const onCalendarClick = async (event) => {
+  // el-calendar-day 클래스를 가진 요소를 클릭했을 때
+  if (event.target.classList.contains('el-calendar-day')) {
+    const dayElement = event.target
+    const dayText = dayElement.textContent.trim()
+    
+    if (dayText && !isNaN(dayText)) {
+      // 현재 달력의 년월과 클릭한 일자를 조합하여 날짜 생성
+      const currentYear = currentDate.value.getFullYear()
+      const currentMonth = currentDate.value.getMonth()
+      const clickedDate = new Date(currentYear, currentMonth, parseInt(dayText))
+      
+      selectedDate.value = formatDate(clickedDate)
+      dialogVisible.value = true
+      newReport.value = { dailyReportInfoId: null, title: "", time: [], deptCode: "", content: "" }
+      await fetchReports(selectedDate.value)
+    }
+  }
+  // 달력의 빈 공간을 클릭했을 때 현재 선택된 날짜로 모달 열기
+  else if (event.target.classList.contains('el-calendar__body') || 
+           event.target.classList.contains('el-calendar__table')) {
+    selectedDate.value = formatDate(currentDate.value)
+    dialogVisible.value = true
+    newReport.value = { dailyReportInfoId: null, title: "", time: [], deptCode: "", content: "" }
+    await fetchReports(selectedDate.value)
+  }
+}
+
 // ------------------ 보고 CRUD ------------------
 
 const fetchReports = async (date) => {
   try {
     const data =  await DailyReportManagement.fetchReportsByDate(date)
     reports.value[date] = data.map(r => ({
-      dailyReportInfoId: r.dailyReportInfoId,
-      title: r.txt.slice(0,10),
+      dailyReportInfoId: r.dailyReportInfoId, title: r.txt.slice(0,10),
       time: [`${r.hour.toString().padStart(2,'0')}:${r.minute.toString().padStart(2,'0')}`],
-      content: r.txt,
-      deptCode: r.deptCode
+      content: r.txt, deptCode: r.deptCode
     }))
   } catch (err) {
     console.error(err)
@@ -233,7 +216,6 @@ const saveReport = async () => {
 const editReport = (index) => {
   newReport.value = { ...reports.value[selectedDate.value][index] }
   reports.value[selectedDate.value].splice(index, 1)
- // dialogVisible.value = true
 }
 
 const deleteReport = async (index) => {

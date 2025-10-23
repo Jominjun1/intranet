@@ -112,17 +112,14 @@
         </el-table-column>
       </el-table>
 
-      <div class="pagination-section" v-if="users.length > 0">
-        <el-pagination
+      <!-- 페이지네이션 -->
+      <Pagination
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
           :total="users.length"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-        />
-      </div>
+          @size-change="handleSizeChange"
+      />
     </div>
 
     <div class="help-sidebar" :class="{ 'show': showHelp }">
@@ -266,10 +263,11 @@
 
 <script setup>
 import {computed, onMounted, ref} from 'vue'
-import axios from 'axios'
 import '../../../css/System/User/UserManagement.css'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {Close, Delete, Edit, Plus, QuestionFilled, Search} from '@element-plus/icons-vue'
+import UserManagement from './UserManagement.js'
+import Pagination from "../../Common/Pagination.vue";
 
 const props = defineProps({
   userInfo: {
@@ -320,11 +318,8 @@ const filteredData = computed(() => {
 
 // 사용자 폼
 const userForm = ref({
-  user_name: '', user_en_name: '',
-  login_id: '', password: '',
-  user_email: '', user_phone_num: '',
-  dept_cd: '', user_job: '',
-  user_acl: 1, user_stat: 'ACTIVE', hire_dt: null
+  user_name: '', user_en_name: '', login_id: '', password: '', user_email: '', user_phone_num: '', dept_cd: '',
+  user_job: '', user_acl: 1, user_stat: 'ACTIVE', hire_dt: null
 })
 
 // 권한별 라벨과 타입
@@ -332,8 +327,7 @@ const getAclText = (acl) => {
   // 문자열을 숫자로 변환
   const aclNum = parseInt(acl)
   const labels = {
-    0: '잠금', 1: '일반사용자',
-    2: '관리자', 3: '시스템관리자', 4: '운영자'
+    0: '잠금', 1: '일반사용자', 2: '관리자', 3: '시스템관리자', 4: '운영자'
   }
   return labels[aclNum] || '알수없음'
 }
@@ -342,8 +336,7 @@ const getAclType = (acl) => {
   // 문자열을 숫자로 변환
   const aclNum = parseInt(acl)
   const types = {
-    0: 'danger', 1: 'info',
-    2: 'warning', 3: 'success', 4: 'primary'
+    0: 'danger', 1: 'info', 2: 'warning', 3: 'success', 4: 'primary'
   }
   return types[aclNum] || 'info'
 }
@@ -351,16 +344,14 @@ const getAclType = (acl) => {
 // 상태별 라벨과 타입
 const getStatusLabel = (status) => {
   const labels = {
-    'ACTIVE': '활성', 'PENDING': '활성',
-    'LOCK': '잠금', 'INACTIVE': '비활성', 'N' : '삭제'
+    'ACTIVE': '활성', 'PENDING': '활성', 'LOCK': '잠금', 'INACTIVE': '비활성', 'N' : '삭제'
   }
   return labels[status] || '알수없음'
 }
 
 const getStatusType = (status) => {
   const types = {
-    'ACTIVE': 'success', 'PENDING': 'success',
-    'LOCK': 'danger', 'INACTIVE': 'info', 'N' : 'delete'
+    'ACTIVE': 'success', 'PENDING': 'success', 'LOCK': 'danger', 'INACTIVE': 'info', 'N' : 'delete'
   }
   return types[status] || 'info'
 }
@@ -382,9 +373,7 @@ const formatDateTime = (dateString) => {
   try {
     const date = new Date(dateString)
     return date.toLocaleString('ko-KR', {
-      year: 'numeric', month: '2-digit',
-      day: '2-digit', hour: '2-digit',
-      minute: '2-digit', second: '2-digit'
+      year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
     })
   } catch (e) {
     return dateString
@@ -395,11 +384,11 @@ const formatDateTime = (dateString) => {
 async function loadUsers() {
   loading.value = true
   try {
-    const response = await axios.get('/Admin/all-user')
-    console.log("서버 응답 데이터:", response.data)
+    const data = await UserManagement.fetchAllUsers()
+    console.log("서버 응답 데이터:", data)
 
     // 원본 데이터 그대로 사용 (매핑 제거)
-    users.value = response.data.body || []
+    users.value = data
     // 테이블 키 업데이트로 강제 재렌더링
     tableKey.value++
 
@@ -446,12 +435,8 @@ function addUser() {
 // 부서 목록 조회
 async function loadDeptList() {
   try {
-    const response = await axios.get('/user/getDeptList')
-    if (response.data && response.data.body) {
-      deptList.value = Array.isArray(response.data.body) ? response.data.body : []
-    } else {
-      deptList.value = []
-    }
+    const data = await UserManagement.fetchDeptList()
+    deptList.value = data
   } catch (error) {
     console.error('부서 목록 조회 오류:', error)
     ElMessage.error('부서 목록을 불러오는데 실패했습니다.')
@@ -479,32 +464,21 @@ function selectDept(dept) {
 // 사용자 삭제
 async function deleteUser(user) {
   try {
-    // 디버깅을 위한 로그
-    console.log('삭제할 사용자 데이터:', user)
-    console.log('loginId 값:', user.loginId, '타입:', typeof user.loginId)
-    console.log('login_id 값:', user.login_id, '타입:', typeof user.login_id)
-
-    // login_id 값 사용
     const loginId = user.login_id
-
-    // loginId가 null이거나 undefined인 경우 처리
     if (!loginId) {
       ElMessage.error('로그인 ID가 없어 삭제할 수 없습니다.')
       return
     }
 
     await ElMessageBox.confirm(
-      `정말 사용자 "${user.user_name}" (${loginId})을(를) 삭제하시겠습니까?`,
-      '사용자 삭제 확인',
+      `정말 사용자 "${user.user_name}" (${loginId})을(를) 삭제하시겠습니까?`, '사용자 삭제 확인',
       {
-        confirmButtonText: '삭제',
-        cancelButtonText: '취소',
-        type: 'warning'
+        confirmButtonText: '삭제', cancelButtonText: '취소', type: 'warning'
       }
     )
 
     // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로 헤더 설정 불필요
-    await axios.put(`/Admin/update/${user.user_id}` ,{
+    await UserManagement.updateUser(user.user_id, {
       user: user.user, user_stat: "N"}
     )
 
@@ -522,8 +496,7 @@ async function deleteUser(user) {
 function editUser(user) {
   isEditMode.value = true
   userForm.value = {
-    user_id: user.user_id,
-    user_name: user.user_name || '',  user_en_name: user.user_en_name || '',
+    user_id: user.user_id, user_name: user.user_name || '',  user_en_name: user.user_en_name || '',
     login_id: user.login_id || '',    password: '', // 비밀번호는 빈 값으로 초기화
     user_email: user.user_email || '',    user_phone_num: user.user_phone_num || '',
     dept_cd: user.dept_cd || '',    user_job: user.user_job || '',
@@ -543,7 +516,7 @@ async function saveUser() {
     if (isEditMode.value) {
       // 비밀번호가 입력된 경우 비밀번호 변경 API 호출
       if (userForm.value.password && userForm.value.password.trim() !== '') {
-        await axios.put(`/Admin/changePassword/${userForm.value.login_id}`, {
+        await UserManagement.changePWD(userForm.value.login_id, {
           password: userForm.value.password
         })
         ElMessage.success('비밀번호가 변경되었습니다.')
@@ -553,12 +526,12 @@ async function saveUser() {
       const userDataForUpdate = { ...userForm.value }
       delete userDataForUpdate.password // 비밀번호는 별도로 처리했으므로 제거
 
-      await axios.put(`/Admin/update/${userForm.value.user_id}`, userDataForUpdate)
+      await UserManagement.updateUser(userForm.value.user_id, userDataForUpdate)
       ElMessage.success('사용자 정보가 수정되었습니다.')
     } else {
       // 등록
       // 백엔드에서 httpOnly 쿠키로 토큰을 관리하므로 헤더 설정 불필요
-      await axios.post('/Admin/createUser', userForm.value)
+      await UserManagement.createUser(userForm.value)
       ElMessage.success('사용자가 등록되었습니다.')
     }
 
@@ -575,10 +548,8 @@ async function saveUser() {
 // 사용자 폼 초기화
 function resetUserForm() {
   userForm.value = {
-    user_name: '',  user_en_name: '',
-    login_id: '',    password: '',
-    user_email: '',    user_phone_num: '',
-    dept_cd: '',    user_job: '',
+    user_name: '',  user_en_name: '', login_id: '',    password: '',
+    user_email: '',    user_phone_num: '', dept_cd: '',    user_job: '',
     user_acl: 1,    user_stat: 'ACTIVE', hire_dt: null
   }
   isEditMode.value = false

@@ -29,17 +29,17 @@
           <el-input v-model="searchFacCd" placeholder="공장코드 입력" clearable />
         </el-form-item>
         <el-form-item label="삭제여부">
-          <el-select 
-            v-model="searchDelFilter" 
-            placeholder="삭제여부 선택"
-            style="width: 150px;"
-            clearable
+          <el-select
+              v-model="searchDelFilter"
+              placeholder="삭제여부 선택"
+              style="width: 150px;"
+              clearable
           >
-            <el-option 
-              v-for="option in delFilterOptions" 
-              :key="option.value"
-              :label="option.label" 
-              :value="option.value" 
+            <el-option
+                v-for="option in delFilterOptions"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
             />
           </el-select>
         </el-form-item>
@@ -52,16 +52,16 @@
 
     <div v-if="tableData.length > 0">
       <h3>검색된 태그 목록</h3>
-      <el-table 
-        :data="paginatedData" 
-        style="width:100%" 
-        v-loading="loading" 
-        border 
-        stripe
-        resizable
-        :table-layout="'auto'"
-        :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
-        :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+      <el-table
+          :data="paginatedData"
+          style="width:100%"
+          v-loading="loading"
+          border
+          stripe
+          resizable
+          :table-layout="'auto'"
+          :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+          :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
       >
         <el-table-column prop="tag_No" label="태그번호" width="150" align="center" resizable />
         <el-table-column prop="mac_Addr" label="MAC주소" width="150" align="center" resizable />
@@ -87,18 +87,18 @@
         <el-table-column label="작업 선택" align="center" resizable>
           <template #default="{ row }">
             <div class="action-select">
-              <el-select 
-                v-model="selectedAction[row.tag_No]" 
-                placeholder="작업 선택"
-                @change="handleActionChange(row.tag_No, $event)"
-                style="width: 180px;"
-                clearable
+              <el-select
+                  v-model="selectedAction[row.tag_No]"
+                  placeholder="작업 선택"
+                  @change="handleActionChange(row.tag_No, $event)"
+                  style="width: 180px;"
+                  clearable
               >
                 <el-option
-                  v-for="action in actionOptions"
-                  :key="action.value"
-                  :label="action.label"
-                  :value="action.value"
+                    v-for="action in actionOptions"
+                    :key="action.value"
+                    :label="action.label"
+                    :value="action.value"
                 >
                   <span style="float: left">
                     <el-icon><component :is="action.icon" /></el-icon>
@@ -113,13 +113,13 @@
 
       <div class="pagination-section" v-if="tableData.length > 0">
         <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="tableData.length"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="tableData.length"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
         />
       </div>
     </div>
@@ -128,9 +128,9 @@
       <div class="sidebar-header">
         <h3>🔍 검색 도움말</h3>
         <el-button type="text"
-          :icon="Close" 
-          @click="showSearchHelp = false"
-          class="close-btn"
+                   :icon="Close"
+                   @click="showSearchHelp = false"
+                   class="close-btn"
         />
       </div>
       <div class="search-help-content">
@@ -148,11 +148,11 @@
           <p>태그의 시리얼 번호를 입력하세요.</p>
         </div>
         <el-alert
-          title="💡 팁"
-          description="검색 조건을 입력하지 않으면 데이터가 표시되지 않습니다. 정확한 검색을 위해 가능한 많은 정보를 입력해주세요."
-          type="success"
-          :closable="false"
-          show-icon
+            title="💡 팁"
+            description="검색 조건을 입력하지 않으면 데이터가 표시되지 않습니다. 정확한 검색을 위해 가능한 많은 정보를 입력해주세요."
+            type="success"
+            :closable="false"
+            show-icon
         />
       </div>
     </div>
@@ -189,30 +189,30 @@ const showSearchHelp = ref(false)
 const selectedAction = ref({})
 
 const actionOptions = [
-  { 
-    value: 'proc-step', 
-    label: '처리단계', 
-    icon: 'Setting' 
+  {
+    value: 'proc-step',
+    label: '처리단계',
+    icon: 'Setting'
   },
-  { 
-    value: 'setting', 
-    label: '세팅정보', 
-    icon: 'Tools' 
+  {
+    value: 'setting',
+    label: '세팅정보',
+    icon: 'Tools'
   },
-  { 
-    value: 'version', 
-    label: '버전이력', 
-    icon: 'Document' 
+  {
+    value: 'version',
+    label: '버전이력',
+    icon: 'Document'
   },
-  { 
-    value: 'common', 
-    label: '공통정보', 
-    icon: 'InfoFilled' 
+  {
+    value: 'common',
+    label: '공통정보',
+    icon: 'InfoFilled'
   },
-  { 
-    value: 'as', 
-    label: 'AS이력', 
-    icon: 'Warning' 
+  {
+    value: 'as',
+    label: 'AS이력',
+    icon: 'Warning'
   }
 ]
 
@@ -257,10 +257,10 @@ async function doSearch() {
     }
   }
 
-  const hasSearchCondition = (searchTagNo.value && searchTagNo.value.trim()) || 
-                           (macAddr && macAddr.trim()) || 
-                           (facCd && facCd.trim()) || 
-                           (facNo && facNo.trim())
+  const hasSearchCondition = (searchTagNo.value && searchTagNo.value.trim()) ||
+      (macAddr && macAddr.trim()) ||
+      (facCd && facCd.trim()) ||
+      (facNo && facNo.trim())
   if (!hasSearchCondition) {
     ElMessage.warning('검색 조건을 하나 이상 입력해주세요.')
     return
@@ -302,7 +302,7 @@ function resetSearch() {
 
 function handleActionChange(tagNo, action) {
   if (!action) return
-  
+
   const routeMap = {
     'proc-step': `/tag-management/proc-step/${tagNo}`,
     'setting': `/tag-management/setting/${tagNo}`,
@@ -310,7 +310,7 @@ function handleActionChange(tagNo, action) {
     'common': `/tag-management/common/${tagNo}`,
     'as': `/tag-management/as/${tagNo}`
   }
-  
+
   const route = routeMap[action]
   if (route) {
     router.push(route)
@@ -319,5 +319,4 @@ function handleActionChange(tagNo, action) {
   }
 }
 </script>
-
 

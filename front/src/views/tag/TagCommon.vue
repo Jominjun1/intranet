@@ -15,16 +15,7 @@
           <el-button type="primary" @click="addNewCommon">새 공통정보 등록</el-button>
         </div>
       </div>
-      <el-table 
-        :data="Array.isArray(commonHistoryData) ? commonHistoryData : [commonHistoryData]" 
-        style="width: 100%" 
-        border 
-        stripe
-        resizable
-        :table-layout="'auto'"
-        :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
-        :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
-      >
+      <el-table class="common-table" :data="Array.isArray(commonHistoryData) ? commonHistoryData : [commonHistoryData]" style="width: 100%" border stripe resizable :table-layout="'auto'">
         <el-table-column prop="mac_ADDR" label="MAC주소" width="180" align="center" resizable />
         <el-table-column prop="fac_CD" label="공장코드" align="center" resizable />
         <el-table-column prop="fac_NO" label="시리얼번호" align="center" resizable />
@@ -46,6 +37,7 @@ import {ref} from 'vue'
 import axios from 'axios'
 import {ElMessage} from 'element-plus'
 import '../../css/Tag/TagCommon.css'
+import '../../css/VUE/Common.css'
 import SearchTag from "../Common/SearchDept.vue";
 
 const userAcl = 3
@@ -67,5 +59,4 @@ async function searchCommonHistory() {
 
 function addNewCommon() { ElMessage.info('공통정보 등록 기능은 개발 중입니다.') }
 </script>
-
 

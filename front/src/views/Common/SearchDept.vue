@@ -7,21 +7,11 @@
     <div class="search-controls">
       <div class="search-group">
         <label>부서명</label>
-        <el-input
-            v-model="localForm.dept"
-            placeholder="부서명을 입력하세요"
-            clearable
-            @keyup.enter="emitSearch"
-        />
+        <el-input v-model="localForm.dept" placeholder="부서명을 입력하세요" clearable @keyup.enter="emitSearch"/>
       </div>
       <div class="search-group">
         <label>부서코드</label>
-        <el-input
-            v-model="localForm.deptCode"
-            placeholder="부서코드를 입력하세요"
-            clearable
-            @keyup.enter="emitSearch"
-        />
+        <el-input v-model="localForm.deptCode" placeholder="부서코드를 입력하세요" clearable @keyup.enter="emitSearch"/>
       </div>
       <div class="search-group">
         <label>상태</label>
@@ -48,8 +38,7 @@ import {reactive, watch} from "vue"
 import {QuestionFilled, Search} from "@element-plus/icons-vue";
 
 const props = defineProps({
-  modelValue: Object,
-  loading: Boolean
+  modelValue: Object, loading: Boolean
 })
 
 const emit = defineEmits(["update:modelValue", "search", "reset"])

@@ -29,9 +29,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="large"
-            @click="handleLogin" :loading="loading" class="login-btn-bizon" style="width: 100%"
-          >
+          <el-button type="primary" size="large" @click="handleLogin" :loading="loading" class="login-btn-bizon" style="width: 100%">
             로그인
           </el-button>
         </el-form-item>
@@ -44,6 +42,7 @@
             <el-button type="link" @click="showFindPassword = true">비밀번호 찾기</el-button>
           </div>
         </div>
+
       </el-form>
       <div class="login-footer-bizon">
         <span>ⓒ 2025 by mmin0307</span>

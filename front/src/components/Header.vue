@@ -34,12 +34,10 @@ import '../css/VUE/Header.css'
 
 const props = defineProps({
   activeMenu: {
-    type: String,
-    default: ''
+    type: String, default: ''
   },
   userInfo: {
-    type: Object,
-    default: () => ({})
+    type: Object, default: () => ({})
   }
 })
 

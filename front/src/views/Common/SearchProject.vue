@@ -1,12 +1,7 @@
 <template>
   <el-form :inline="true" class="search-form">
     <el-form-item label="프로젝트">
-      <el-input
-          v-model="localForm.searchProject"
-          placeholder="프로젝트 명 입력"
-          clearable
-          style="width: 200px"
-      />
+      <el-input v-model="localForm.searchProject" placeholder="프로젝트 명 입력" clearable style="width: 200px"/>
     </el-form-item>
     <el-form-item label="PM">
       <el-input v-model="localForm.searchProjectPM" placeholder="PM 입력" clearable />
@@ -33,8 +28,7 @@ import {reactive, watch} from 'vue'
 import {Search} from "@element-plus/icons-vue";
 
 const props = defineProps({
-  modelValue: Object,
-  loading: Boolean
+  modelValue: Object, loading: Boolean
 })
 const emit = defineEmits(['update:modelValue', 'search', 'reset'])
 
@@ -49,16 +43,11 @@ watch(
 watch(localForm, (val) => emit('update:modelValue', val), { deep: true })
 
 const delFilterOptions = [
-  { label: '전체', value: 'all' },
-  { label: '사용중', value: 'active' },
-  { label: '삭제됨', value: 'deleted' }
+  { label: '전체', value: 'all' }, { label: '사용중', value: 'active' }, { label: '삭제됨', value: 'deleted' }
 ]
 
 const ingFilterOptions = [
-  { label: '전체', value: 'all' },
-  { label: '진행전' , value: 'not'},
-  { label: '진행중', value: 'ing' },
-  { label: '완료됨', value: 'complete' }
+  { label: '전체', value: 'all' }, { label: '진행전' , value: 'not'}, { label: '진행중', value: 'ing' }, { label: '완료됨', value: 'complete' }
 ]
 
 function resetSearch() {

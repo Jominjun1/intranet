@@ -30,10 +30,10 @@
 
 <script setup>
 import {ref} from 'vue'
-import axios from 'axios'
 import {ElMessage} from 'element-plus'
 import '../../css/Tag/TagVersion.css'
 import SearchTag from "../Common/SearchDept.vue";
+import TagManagement from './TagManagement.js'
 
 const userAcl = 3
 const searchTagNo = ref('')
@@ -46,8 +46,8 @@ function formatDate(dateString) { if (!dateString) return '-'; try { const d = n
 async function searchVersionHistory() {
   if (!searchTagNo.value.trim()) { ElMessage.warning('태그번호를 입력해주세요.'); return }
   try {
-    const res = await axios.get(`/tags/version-history/${searchTagNo.value.trim()}`)
-    versionHistoryData.value = res.data.body || res.data || []
+    const data = await TagManagement.getVersionHistory(searchTagNo.value.trim())
+    versionHistoryData.value = data
     if (!versionHistoryData.value || versionHistoryData.value.length === 0) ElMessage.warning('해당 태그의 버전 이력이 없습니다.')
   } catch (e) { console.error('버전 이력 조회 오류:', e); ElMessage.error('버전 이력을 불러오는 중 오류가 발생했습니다.') }
 }

@@ -12,11 +12,7 @@
     <!-- 일일보고 메뉴 그룹 -->
     <nav class="sidebar-nav">
       <div class="menu-group">
-        <div
-            class="menu-group-header"
-            @click="handleMenuGroupClick('daily')"
-            :class="{ 'expanded': isDailyExpanded }"
-        >
+        <div class="menu-group-header" @click="handleMenuGroupClick('daily')" :class="{ 'expanded': isDailyExpanded }">
           <el-icon>
             <Edit/>
           </el-icon>
@@ -28,22 +24,14 @@
 
         <transition name="submenu">
           <div v-show="isDailyExpanded" class="submenu-items">
-            <div
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'daily-list' }"
-                @click="handleMenuSelect('daily-list')"
-            >
+            <div class="menu-item submenu-item" :class="{ active: activeMenu === 'daily-list' }" @click="handleMenuSelect('daily-list')">
               <el-icon>
                 <Search/>
               </el-icon>
               <span v-show="!isCollapsed">일일보고 목록</span>
             </div>
 
-            <div
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'daily-step' }"
-                @click="handleMenuSelect('daily-step')"
-            >
+            <div class="menu-item submenu-item" :class="{ active: activeMenu === 'daily-step' }" @click="handleMenuSelect('daily-step')">
               <el-icon>
                 <Document/>
               </el-icon>
@@ -54,11 +42,7 @@
       </div>
       <!-- 스마트태그 메뉴 그룹 -->
       <div class="menu-group">
-        <div
-            class="menu-group-header"
-            @click="handleMenuGroupClick('smartTag')"
-            :class="{ 'expanded': isSmartTagExpanded }"
-        >
+        <div class="menu-group-header" @click="handleMenuGroupClick('smartTag')" :class="{ 'expanded': isSmartTagExpanded }">
           <el-icon>
             <Cpu />
           </el-icon>
@@ -70,66 +54,42 @@
 
         <transition name="submenu">
           <div v-show="isSmartTagExpanded" class="submenu-items">
-            <div
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'tag-search' }"
-                @click="handleMenuSelect('tag-search')"
-            >
+            <div class="menu-item submenu-item" :class="{ active: activeMenu === 'tag-search' }" @click="handleMenuSelect('tag-search')">
               <el-icon>
                 <Search/>
               </el-icon>
               <span v-show="!isCollapsed">태그 검색</span>
             </div>
 
-            <div
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'tag-proc-step' }"
-                @click="handleMenuSelect('tag-proc-step')"
-            >
+            <div class="menu-item submenu-item" :class="{ active: activeMenu === 'tag-proc-step' }" @click="handleMenuSelect('tag-proc-step')">
               <el-icon>
                 <Document/>
               </el-icon>
               <span v-show="!isCollapsed">처리단계 관리</span>
             </div>
 
-            <div
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'tag-setting' }"
-                @click="handleMenuSelect('tag-setting')"
-            >
+            <div class="menu-item submenu-item" :class="{ active: activeMenu === 'tag-setting' }" @click="handleMenuSelect('tag-setting')">
               <el-icon>
                 <Setting/>
               </el-icon>
               <span v-show="!isCollapsed">세팅정보 관리</span>
             </div>
 
-            <div
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'tag-version' }"
-                @click="handleMenuSelect('tag-version')"
-            >
+            <div class="menu-item submenu-item" :class="{ active: activeMenu === 'tag-version' }" @click="handleMenuSelect('tag-version')">
               <el-icon>
                 <Histogram/>
               </el-icon>
               <span v-show="!isCollapsed">버전 이력 관리</span>
             </div>
 
-            <div
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'tag-common' }"
-                @click="handleMenuSelect('tag-common')"
-            >
+            <div class="menu-item submenu-item" :class="{ active: activeMenu === 'tag-common' }" @click="handleMenuSelect('tag-common')">
               <el-icon>
                 <Collection/>
               </el-icon>
               <span v-show="!isCollapsed">공통정보 관리</span>
             </div>
 
-            <div
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'tag-as' }"
-                @click="handleMenuSelect('tag-as')"
-            >
+            <div class="menu-item submenu-item" :class="{ active: activeMenu === 'tag-as' }" @click="handleMenuSelect('tag-as')">
               <el-icon>
                 <Tools/>
               </el-icon>
@@ -142,11 +102,7 @@
 
       <!-- 시스템 관리 메뉴 그룹 -->
       <div class="menu-group">
-        <div
-            class="menu-group-header"
-            @click="handleMenuGroupClick('system')"
-            :class="{ 'expanded': isSystemExpanded }"
-        >
+        <div class="menu-group-header" @click="handleMenuGroupClick('system')" :class="{ 'expanded': isSystemExpanded }">
           <el-icon>
             <Tools/>
           </el-icon>
@@ -158,54 +114,33 @@
 
         <transition name="submenu">
           <div v-show="isSystemExpanded" class="submenu-items">
-            <div   class="menu-item submenu-item"
-                   :class="{ active: activeMenu === 'CommonMenu' }"
-                   @click="handleMenuSelect('CommonMenu')"
-            >
+            <div class="menu-item submenu-item" :class="{ active: activeMenu === 'CommonMenu' }" @click="handleMenuSelect('CommonMenu')">
               <el-icon>
                 <User/>
               </el-icon>
               <span v-show="!isCollapsed">공통 메뉴 관리</span>
           </div>
-            <div
-                v-if="userAcl >= 3"
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'user-management' }"
-                @click="handleMenuSelect('user-management')"
-            >
+            <div v-if="userAcl >= 3" class="menu-item submenu-item" :class="{ active: activeMenu === 'user-management' }" @click="handleMenuSelect('user-management')">
               <el-icon>
                 <User/>
               </el-icon>
               <span v-show="!isCollapsed">사용자 관리</span>
             </div>
 
-            <div
-                v-if="userAcl >= 3"
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'dept-management' }"
-                @click="handleMenuSelect('dept-management')"
-            >
+            <div v-if="userAcl >= 3" class="menu-item submenu-item" :class="{ active: activeMenu === 'dept-management' }" @click="handleMenuSelect('dept-management')">
               <el-icon>
                 <OfficeBuilding/>
               </el-icon>
               <span v-show="!isCollapsed">부서 관리</span>
             </div>
-            <div
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'project-step' }"
-                @click="handleMenuSelect('project-step')"
-            >
+            <div class="menu-item submenu-item" :class="{ active: activeMenu === 'project-step' }" @click="handleMenuSelect('project-step')">
               <el-icon>
                 <Document/>
               </el-icon>
               <span v-show="!isCollapsed">프로젝트 관리</span>
             </div>
 
-            <div
-                class="menu-item submenu-item"
-                :class="{ active: activeMenu === 'log-management' }"
-                @click="handleMenuSelect('log-management')"
-            >
+            <div class="menu-item submenu-item" :class="{ active: activeMenu === 'log-management' }" @click="handleMenuSelect('log-management')">
               <el-icon>
                 <DocumentCopy/>
               </el-icon>
@@ -238,12 +173,10 @@ import '../css/VUE/Sidebar.css'
 // Props
 const props = defineProps({
   activeMenu: {
-    type: String,
-    default: 'tag-management'
+    type: String, default: 'tag-management'
   },
   userInfo: {
-    type: Object,
-    default: () => ({})
+    type: Object, default: () => ({})
   }
 })
 

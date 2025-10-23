@@ -11,16 +11,16 @@
     <!-- 태그번호 검색 결과 목록 -->
     <div v-if="tagNumberList.length > 0" class="tag-search-results">
       <h3>검색된 태그번호 목록 (총 {{ totalTagCount }}개)</h3>
-      <el-table 
-        :data="paginatedTagList" 
-        style="width: 100%" 
-        @row-click="selectTagNumber" 
-        border 
-        stripe
-        resizable
-        :table-layout="'auto'"
-        :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
-        :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
+      <el-table
+          :data="paginatedTagList"
+          style="width: 100%"
+          @row-click="selectTagNumber"
+          border
+          stripe
+          resizable
+          :table-layout="'auto'"
+          :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
+          :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
       >
         <el-table-column prop="tag_No" label="태그번호" width="300" align="center" resizable />
         <el-table-column prop="mac_Addr" label="MAC주소" align="center" resizable />
@@ -32,17 +32,13 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="pagination-wrapper">
-        <el-pagination
+
+      <!-- 페이지네이션 -->
+      <Pagination
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
-          :page-sizes="[5, 10, 20]"
           :total="tagNumberList.length"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
-      </div>
+      />
     </div>
 
     <!-- AS 이력 테이블 -->
@@ -57,16 +53,7 @@
         </div>
       </div>
 
-      <el-table 
-        :data="asInfoData" 
-        style="width: 100%" 
-        border 
-        stripe
-        resizable
-        :table-layout="'auto'"
-        :cell-style="{ 'white-space': 'nowrap', 'text-align': 'center' }"
-        :header-cell-style="{ 'white-space': 'nowrap', 'text-align': 'center', 'background-color': '#f5f7fa', 'font-weight': 'bold' }"
-      >
+      <el-table class="common-table" :data="asInfoData" style="width: 100%" border stripe resizable :table-layout="'auto'">
         <el-table-column prop="as_Cnt" label="AS 횟수" align="center" resizable />
         <el-table-column prop="mac_ADDR" label="MAC주소" width="150" align="center" resizable />
         <el-table-column prop="as_Doc" label="AS 문서번호" align="center" resizable />
@@ -142,6 +129,7 @@ import axios from 'axios'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {Delete, Edit, Plus} from '@element-plus/icons-vue'
 import SearchTag from "../Common/SearchDept.vue";
+import Pagination from "../Common/Pagination.vue";
 
 const userAcl = 3 // 권한 표시용(필요시 상위에서 주입하도록 변경 가능)
 
@@ -263,5 +251,4 @@ async function deleteAs(row) {
   }
 }
 </script>
-
 
