@@ -1,0 +1,11 @@
+.common-table .el-table__cell {
+    white-space: nowrap;
+    text-align: center;
+}
+
+.common-table .el-table__header-wrapper th {
+    white-space: nowrap;
+    text-align: center;
+    background-color: #f5f7fa;
+    font-weight: bold;
+}
